@@ -108,14 +108,14 @@ app.post("/sendMail/", function (req, res){
       // 5.semester : 54497be50bfa1518de532d19
       // BoardID + Path defined
       // BoardLists array init'd
+      // and ofc the boarDname variable is defined
         var boardId = userBoard;
         var boardPath = "/1/boards/" + boardId;
         var boardLists = [];
-
         var boardName = "";
 
-      // List Object init'd
-        var list = function(id, name){
+      // List class defined - makes list objects (I heard this should be big?)
+        var List = function(id, name){
           this._id = id;
           this._name = name;
           this._cards = [];
@@ -144,19 +144,26 @@ app.post("/sendMail/", function (req, res){
           async.series([
             function(callback){
               // code a
+              // Console.log for linebreak and indicating where in the script we are.
               console.log();
               console.log("|a|");
+
+              // Connection to trello object and trello api, and try getout the specified boardId name.
               t.get(boardPath, function(err, data) {
                 if (err) throw err;
                 console.log("+ Board name: " +data.name);
                 boardName = data.name;
+                // Saying continue after this point - to the next function in line
                 callback(null, "a");
               });
             },
             function(callback){
-              // code b
+            // code b
+            // Console.log for linebreak and indicating where in the script we are.
               console.log();
               console.log("|ab|");
+
+            // Connection to trello object and trello api, and try fetch the lists inside board.
               t.get("/1/boards/" + boardId + "/lists", function(err, data){
                     data.forEach(function(item){
                       var addMe = new list(item.id, item.name);
@@ -168,8 +175,12 @@ app.post("/sendMail/", function (req, res){
             },
             function(callback){
               // code c
+	          // Console.log for linebreak and indicating where in the script we are.
+
               console.log();
               console.log("|abc|");
+
+              // Init' counter
               var counter = 0;
               var doublecounter = 0;
               var continueThis = false;
