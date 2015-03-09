@@ -1,4 +1,5 @@
 "use strict";
+//
 
 // Requirements of Modules
 //  Trello module
@@ -10,7 +11,7 @@ var app = express();
 var bodyParser = require("body-parser");
 
 
-//  Making the "t" object (based on Trello module) - with token key and secret key from Trello
+//  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello("ef463438274bb639009b76098f83b026", "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836");
 
 // Get all board ids out
@@ -24,12 +25,14 @@ var t = new Trello("ef463438274bb639009b76098f83b026", "d0deb23a479200f4274823ca
 //   );
 // });
 
+
+// This is used for letting another one into your system (from example from another ip and port)
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:8888");
 
-    // Request methods you wish to allow
+    // Request methods you wish to allow - Remember to remove delete put patch options. Pls remember that. Rubas
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
 
     // Request headers you wish to allow
@@ -43,20 +46,15 @@ app.use(function (req, res, next) {
     next();
 });
 
+// This is for understanding aliens when they try to communicate with you.
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Same goes for the JSON aliens
 app.use(bodyParser.json());
 
-app.post("/sendMail/", function (req, res){
 
-  var userEmail = req.body.email;
-  var userBoard = req.body.board;
-  var wantedLists = req.body.lists;
 
-  var justContinue = true;
-
-  res.send("OK");
-
-  // Get week number.
+  // Get week number. (Remember to move this away or outside this post request)
   Date.prototype.getWeek = function() {
         var onejan = new Date(this.getFullYear(),0,1);
         return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
@@ -82,6 +80,22 @@ app.post("/sendMail/", function (req, res){
   function errorHandling (err) {
     console.error(err);
   }
+
+
+
+// This is the fun part, here is the "POST" method, that handles the email send to customers. Btw, it also includes alot of other stuff - read on.
+app.post("/sendMail/", function (req, res){
+
+// Defining userEmail, userBoard and WantedLists, from the request body. (Sent to us through JSON)
+  var userEmail = req.body.email;
+  var userBoard = req.body.board;
+  var wantedLists = req.body.lists;
+
+// This is some bullshit lazy variable, I will remove this soon.
+  var justContinue = true;
+
+// Just a temp "OK" back return, to the guy who handles the cronjob
+  res.send("OK");
 
   if(justContinue){
 
@@ -113,6 +127,10 @@ app.post("/sendMail/", function (req, res){
 
         // Init'd emailContent
         var emailContent = "";
+
+        // This is for checking up on if there should be sent an email or not. If there is no changes in the specified lists,
+        // for the last 7 days, then this script will run with boolSendMail as false. (Result: no mail sent)
+        // If this is set to true, the content in emailContent will be sent to a user. (Will tell more about it later)
         var boolSendMail = false;
         /* t.get(boardPath, function(err, data) {
           if (err) throw err;
@@ -122,6 +140,7 @@ app.post("/sendMail/", function (req, res){
           // Simple greetings to everyone :)
           console.log("(.*.) Greetings (.*.)");
 
+          // This is the famous async calls, read up on series and waterfall - heavy shit.
           async.series([
             function(callback){
               // code a
