@@ -8,7 +8,7 @@
     <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,700,600,300italic' rel='stylesheet' type='text/css'>
 </head>
 <body>
-    <div class="modal-wrap">
+    <!-- <div class="modal-wrap">
         <div id="modalbox">
             <div class="close-btn">X</div>
             <form id="modal-form" action="#submit-answer" method="POST">
@@ -49,7 +49,7 @@
                 <input type="hidden" name="submitted" value="true">
             </form>
         </div>
-    </div>
+    </div> -->
 
     <h1>Trello-Train</h1>
 
@@ -61,25 +61,14 @@
         <label for="email">Email:</label>
         <input type="text" placeholder="email@example.com" id="email" name="email" autocomplete="off">
 
-        <label for="board">Boardnavn:</label>
-        <select>
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="mercedes">Mercedes</option>
-            <option value="audi">Audi</option>
+        <label for="board">Board:</label>
+        <select onChange="fetchLists()" id="myBoards">
+            <option value="none">None chosen</option>
         </select>
 
         <fieldset id="new-radio-btn">
             <h3>Listnavne:</h3>
-            <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-            <input type="checkbox" name="titless" id="this" value="This"><label for="this">This</label>
-            <input type="checkbox" name="titlesss" id="testing" value="Testing"><label for="testing">Testing</label>
-            <input type="checkbox" name="titlessss" id="this" value="This"><label for="this">This</label>
-            <input type="checkbox" name="titlesssss" id="testing" value="Testing"><label for="testing">Testing</label>
-            <input type="checkbox" name="titlesz" id="this" value="This"><label for="this">This</label>
-            <input type="checkbox" name="titlezz" id="testing" value="Testing"><label for="testing">Testing</label>
-            <input type="checkbox" name="titleszzz" id="this" value="This"><label for="this">This</label>
-            <input type="checkbox" name="titleszzzz" id="this" value="This"><label for="this">This</label>
+            <div id="lists"><div><input name="lists[]" type="checkbox" value="54497c1191b1cc348619d5eb"><label>Algoritmer og datastrukturer</label><input name="lists[]" type="checkbox" value="54497c4f61ab16dc05409624"><label>Empiriske metoder og statistik</label><input name="lists[]" type="checkbox" value="54497c8b4b35f4dfb2844eee"><label>Netværk og Sikkerhed</label><input name="lists[]" type="checkbox" value="54497c3fe8496ab9b15ada57"><label>Doing</label><input name="lists[]" type="checkbox" value="5463691c2dc84fa5aacc3b53"><label>Done</label><input type="hidden" value="54497be50bfa1518de532d19" name="board"></div></div>
         </fieldset>
 
         <input type="submit" value="Submit" id="frm-submit">
@@ -87,7 +76,7 @@
     </form>
 
     <div id="submit-answer"></div>
-    
+
     <!-- Display all mail notifiers -->
     <form id="sub-frm" class="clearfix">
         <h2>Current email notifiers</h2>
