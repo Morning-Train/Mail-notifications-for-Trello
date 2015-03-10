@@ -17,11 +17,23 @@ $(function() {
 
             // Hide lists! :)
             $('#new-radio-btn').hide();
+
+            getFreshData();
+
         }).
         fail(function(err) {
             $('#submit-answer').html(err.responseText);
         });
     });
+
+    var getFreshData = function() {
+        $.get( "php/get.php", function( data ) {
+            $( ".current_notifiers" ).remove();
+            $( "#field-info" ).after(data);
+        });
+    };
+
+    getFreshData();
 
     // Edit / Save fieldsets
     $('.rm-dis').click(function() {

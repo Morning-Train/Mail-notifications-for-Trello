@@ -25,7 +25,6 @@ function sendData($db) {
 	}
 
 
-
 }
 
 try {

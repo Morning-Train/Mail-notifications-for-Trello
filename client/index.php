@@ -88,13 +88,7 @@
             <div class="field-info-item"><p>Boardnavn</p></div>
             <div class="edit"><p>Edit</p></div>
         </div>
-            <fieldset disabled>
-            <input type='text' class='field-info-item project-name' value="Inwatec">
-            <input type='text' class='field-info-item board-name' value="To do board">
-            <input type='text' class='field-info-item email-name' value="Inwatec@gmail.com">
-            <div class='edit rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' width='20%' />
-            </div>
-            </fieldset>
+
         <div class="space"></div> 
     </form>
 
