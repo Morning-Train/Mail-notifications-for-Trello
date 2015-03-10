@@ -163,7 +163,7 @@ fieldset#radio-btn {
     padding: 5px 0 50px 0px;
 }
 
-fieldset#radio-btn, fieldset#new-radio-btn h3 {
+h3 {
     font-weight: 300;
     font-size: 1em;
 }
@@ -177,6 +177,36 @@ fieldset#radio-btn input {
 fieldset#radio-btn label {
     width: 10.6%;
     display: inline-block;
+}
+
+/*======================================
+=            Error handling            =
+======================================*/
+#submit-success, #submit-error {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    width: 250px;
+    height: 120px;
+    text-align: center;
+}
+
+#submit-success h3, #submit-error h3 {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1em;
+    margin: 0;
+    padding: 40px 15px 0 15px;
+}
+
+#submit-success {
+    display: none;
+    background-color: #2ecc71;
+}
+
+#submit-error {
+    display: none;
+    background-color: #e74c3c;
 }
 
 /*=======================================
@@ -216,6 +246,7 @@ input#frm-submit {
     background: #2ecc71;
     color: #fff;
     border: none;
+    margin-top: 20px;
     -webkit-transition: background .5s; /* For Safari 3.1 to 6.0 */
     -moz-transition: background .5s;
     -o-transition: background .5s;
@@ -245,8 +276,14 @@ fieldset#new-radio-btn input {
 }
 
 fieldset#new-radio-btn label {
-    width: 19.5%;
+    width: 85%;
     display: inline-block;
+    padding-left: 2%;
+}
+
+.checkbox {
+    width: 50%;
+    float: left;
 }
 
 /*=========================================

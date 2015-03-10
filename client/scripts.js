@@ -10,6 +10,7 @@ $(function() {
             data: $('#new-custom-frm').serialize()
         }).
         done(function(res) {
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
             $('#submit-answer').html(res);
 
             // Reset form on submit
@@ -22,6 +23,7 @@ $(function() {
 
         }).
         fail(function(err) {
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
             $('#submit-answer').html(err.responseText);
         });
     });
@@ -38,14 +40,15 @@ $(function() {
     // Edit / Save fieldsets
     $('.rm-dis').click(function() {
         $('.modal-wrap').toggle();
-        var currentProject = $(this).find('.project-name').val();
-        console.log(currentProject);
+        var currentProject = $(this).parent('fieldset').find('.project-name').val();
+        var currentEmail = $(this).parent('fieldset').find('.email-name').val();
         $('#modal-project').val(currentProject);
+        $('#modal-email').val(currentEmail);
     });
 
     // Close modal box on close click
     $('.close-btn').click(function() {
-        $('.modal-wrap').toggle();
+        $('.modal-wrap').hide();
     })
 
     // Loading boards from NodeJS server

@@ -8,7 +8,7 @@
     <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,700,600,300italic' rel='stylesheet' type='text/css'>
 </head>
 <body>
-    <!-- <div class="modal-wrap">
+    <div class="modal-wrap">
         <div id="modalbox">
             <div class="close-btn">X</div>
             <form id="modal-form" action="#submit-answer" method="POST">
@@ -49,7 +49,15 @@
                 <input type="hidden" name="submitted" value="true">
             </form>
         </div>
-    </div> -->
+    </div>
+
+    <div id="submit-success">
+        <h3>Successfully created new record!</h3>
+    </div>
+
+    <div id="submit-error">
+        <h3>Error occured in creating new record!</h3>
+    </div>
 
     <h1>Trello-Train</h1>
 
@@ -94,7 +102,8 @@
 
     <div class="space"></div>
 
-<script src="jquery.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="scripts.js"></script>
 </body>
 </html>
