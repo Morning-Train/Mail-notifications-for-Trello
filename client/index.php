@@ -79,7 +79,7 @@
 
         <fieldset id="new-radio-btn" style="display: none">
             <div id="lists">
-                <h3>Listnavne:</h3>
+                <h3>Listenavne:</h3>
             </div>
         </fieldset>
 
