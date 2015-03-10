@@ -79,6 +79,7 @@ app.use(bodyParser.json());
   // Handling error and send it to me
   function errorHandling (err) {
     console.error(err);
+   
   }
 
 
@@ -91,18 +92,20 @@ app.post("/sendMail/", function (req, res){
   var userBoard = req.body.board;
   var wantedLists = req.body.lists;
 
+  console.log(req.body.lists);
+
 // This is some bullshit lazy variable, I will remove this soon.
   var justContinue = true;
 
 // Just a temp "OK" back return, to the guy who handles the cronjob
-  res.send("OK");
 
   if(justContinue){
 
     // Is Email, BoardID and ListID defined? (* = all lists)
     if(userEmail === undefined || userBoard === undefined || wantedLists === undefined){
       errorHandling("Email, BoardID or ListID is not specificed");
-      process.exit(1);
+	   res.status(400);
+		res.send('None shall pass');
 
     } else {
       // 5.semester : 54497be50bfa1518de532d19
@@ -115,7 +118,7 @@ app.post("/sendMail/", function (req, res){
         var boardName = "";
 
       // List class defined - makes list objects (I heard this should be big?)
-        var List = function(id, name){
+        var list = function(id, name){
           this._id = id;
           this._name = name;
           this._cards = [];
@@ -165,9 +168,10 @@ app.post("/sendMail/", function (req, res){
 
             // Connection to trello object and trello api, and try fetch the lists inside board.
               t.get("/1/boards/" + boardId + "/lists", function(err, data){
+              	// for each list returned, make a new list object with list id and name, thereafter push into boardLists array (array of objects).
                     data.forEach(function(item){
                       var addMe = new list(item.id, item.name);
-                      console.log(" + List: " + item.name);
+                      console.log(" + List: " + item.name + " " + item.id);
                       boardLists.push(addMe);
                     });
                     callback(null, "b");
@@ -272,6 +276,7 @@ app.post("/sendMail/", function (req, res){
                       emailContent += "<li><font color='" + styleColor + "'>" + cards[0] + "</font></li>";
                     });
                     emailContent += "</ul>";
+
                   }
                 }
               });
@@ -330,10 +335,10 @@ app.post("/sendMail/", function (req, res){
 
               console.log();
               console.log("(.*.) Farewell! Thank you for being a part of this mess.... (.*.)");
-
+              res.send("Bye!");
             }
           );
-    }
+    } // This else if process needs to be removed!
   } else if(process.argv[2] === "getBoards") {
     var board = function(id, name){
       this.id = id;
@@ -357,10 +362,11 @@ app.post("/sendMail/", function (req, res){
           t.get(boardPath, function(err, data) {
             counter++;
                 if (err) throw err;
+                console.log("============REQUEST FOR==============")
                 console.log("+ Board name: " + data.name + " ID: " + data.id);
                 var currentBoard = new board(data.id, data.name);
                 boardArray.push(currentBoard);
-
+                console.log("============REQUEST END==============")
                 if(counter === boardSize){
                   console.log(boardArray);
                 }
@@ -370,7 +376,7 @@ app.post("/sendMail/", function (req, res){
     });
 
   } else {
-    console.log("Nothing specified...");
+    console.log("Sorry, we are closed today");
   }
 
 });
@@ -391,6 +397,7 @@ app.get('/getBoards', function (req, res) {
     if (err) {
        throw err;
     }
+  console.log("============REQUEST FOR BOARDLISTS===========")
 
     boardSize = data.idBoards.length;
     data.idBoards.forEach(function (datax){
@@ -406,6 +413,7 @@ app.get('/getBoards', function (req, res) {
 
               if(counter === boardSize){
                 res.send(boardArray);
+                console.log("============REQUEST END==============")
               }
         });
       }
