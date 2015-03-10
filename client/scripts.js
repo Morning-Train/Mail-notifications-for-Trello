@@ -38,18 +38,27 @@ $(function() {
     getFreshData();
 
     // Edit / Save fieldsets
-    $('.rm-dis').click(function() {
+    $( "#sub-frm" ).on( "click", ".rm-dis", function() {
         $('.modal-wrap').toggle();
-        var currentProject = $(this).parent('fieldset').find('.project-name').val();
-        var currentEmail = $(this).parent('fieldset').find('.email-name').val();
-        $('#modal-project').val(currentProject);
-        $('#modal-email').val(currentEmail);
+        var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        $('#mySoloBoards').empty();
+
+        $.get( "php/getSolo.php?id=" + currentId, function( data ) {
+          $('#modal-notifier-id').val(data[0].id);
+          $('#modal-project').val(data[0].project);
+          $('#modal-email').val(data[0].email);
+          var $options = $("#myBoards > option").clone();
+          $('#mySoloBoards').append($options);
+          $('#mySoloBoards').val(data[0].board);
+          console.log(data);
+        }, "json");
     });
 
     // Close modal box on close click
     $('.close-btn').click(function() {
         $('.modal-wrap').hide();
-    })
+    });
+
 
     // Loading boards from NodeJS server
     window.onload = function() {

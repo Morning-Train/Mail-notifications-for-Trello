@@ -12,6 +12,7 @@
         <div id="modalbox">
             <div class="close-btn">X</div>
             <form id="modal-form" action="#submit-answer" method="POST">
+                <input type="hidden" id="notifier_id">
                 <fieldset>
                     <label for="project">Projektnavn:</label>
                     <input type="text" placeholder="eks. Inwatec" name="project_name" id="modal-project" autocomplete="off">
@@ -24,12 +25,9 @@
 
                 <fieldset>
                     <label for="board">Boardnavn:</label>
-                    <select>
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
-                        <option value="mercedes">Mercedes</option>
-                        <option value="audi">Audi</option>
-                    </select>
+                        <select onChange="fetchLists()" id="mySoloBoards">
+
+                        </select>
                 </fieldset>
 
                 <fieldset id="radio-btn">
@@ -102,6 +100,7 @@
 
     <div class="space"></div>
 
+<pre>Don't do anything stupid</pre>
 <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 <script src="scripts.js"></script>

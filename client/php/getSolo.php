@@ -10,7 +10,7 @@ if(isset($_GET['id'])){
 	$stmt->execute();
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-	var_dump($rows);
+	echo json_encode($rows);
 }
 
 ?>
