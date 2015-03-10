@@ -1,5 +1,5 @@
-$(function() {
-
+$(document).ready(function() {
+    $('#loader').fadeOut('slow');
     //AJAX call for contact form
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
@@ -38,7 +38,8 @@ $(function() {
     getFreshData();
 
     // Edit / Save fieldsets
-    $('.rm-dis').click(function() {
+    $('body').on('click', '.rm-dis', function() {
+        console.log('now');
         $('.modal-wrap').toggle();
         var currentProject = $(this).parent('fieldset').find('.project-name').val();
         var currentEmail = $(this).parent('fieldset').find('.email-name').val();
@@ -81,63 +82,61 @@ $(function() {
         console.log(xhr.statusText);
     }
 
+    $("#myBoards").change(function fetchLists(){
+        var theFieldSet = document.getElementById("new-radio-btn");
+        theFieldSet.setAttribute('style', 'display=block');
 
+        var myselect = document.getElementById("myBoards");
+        var theBoard = myselect.options[myselect.selectedIndex].value;
+        var select = document.createElement("div");
+        var xoxo = document.getElementById("lists");
+        xoxo.innerHTML = "";
+
+        var path = "http://localhost:3000/getLists/" + theBoard;
+        console.log(path);
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var myArr = JSON.parse(xhr.responseText);
+                myFunction(myArr);
+                console.log(myArr);
+            }
+        }
+        xhr.open("GET", path, false);
+        xhr.send();
+
+            function myFunction(arr) {
+
+                var out = "";
+                var i;
+
+                var board = document.createElement("input");
+                board.setAttribute('type', 'hidden');
+                board.setAttribute('value', theBoard);
+                board.setAttribute('name', 'board');
+
+
+                for(i = 0; i < arr.length; i++) {
+                    var divBeforeCheckbox = document.createElement("div");
+                    divBeforeCheckbox.setAttribute("class", "checkbox");
+                    var opt = arr[i].name;
+                    var el = document.createElement("input");
+                    el.setAttribute("name", "lists[]");
+                    var label = document.createElement("label");
+                    label.textContent = arr[i].name;
+                    el.type="checkbox";
+                    el.value = arr[i].id;
+                    divBeforeCheckbox.appendChild(el);
+                    divBeforeCheckbox.appendChild(label);
+                    divBeforeCheckbox.appendChild(board);
+                    select.appendChild(divBeforeCheckbox);
+                }
+
+
+                xoxo.appendChild(select);
+
+            }
+        console.log(xhr.status);
+        console.log(xhr.statusText);
+    });
 });
-
-function fetchLists(){
-              var theFieldSet = document.getElementById("new-radio-btn");
-              theFieldSet.setAttribute('style', 'display=block');
-
-              var myselect = document.getElementById("myBoards");
-              var theBoard = myselect.options[myselect.selectedIndex].value;
-              var select = document.createElement("div");
-              var xoxo = document.getElementById("lists");
-              xoxo.innerHTML = "";
-
-              var path = "http://localhost:3000/getLists/" + theBoard;
-              console.log(path);
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        var myArr = JSON.parse(xhr.responseText);
-                        myFunction(myArr);
-                        console.log(myArr);
-                    }
-                }
-                xhr.open("GET", path, false);
-                xhr.send();
-
-                function myFunction(arr) {
-
-                    var out = "";
-                    var i;
-
-                    var board = document.createElement("input");
-                    board.setAttribute('type', 'hidden');
-                    board.setAttribute('value', theBoard);
-                    board.setAttribute('name', 'board');
-
-
-                    for(i = 0; i < arr.length; i++) {
-                        var divBeforeCheckbox = document.createElement("div");
-                        divBeforeCheckbox.setAttribute("class", "checkbox");
-                        var opt = arr[i].name;
-                        var el = document.createElement("input");
-                        el.setAttribute("name", "lists[]");
-                        var label = document.createElement("label");
-                        label.textContent = arr[i].name;
-                        el.type="checkbox";
-                        el.value = arr[i].id;
-                        divBeforeCheckbox.appendChild(el);
-                        divBeforeCheckbox.appendChild(label);
-                        divBeforeCheckbox.appendChild(board);
-                        select.appendChild(divBeforeCheckbox);
-                    }
-
-
-                    xoxo.appendChild(select);
-
-                }
-                console.log(xhr.status);
-                console.log(xhr.statusText);
-}

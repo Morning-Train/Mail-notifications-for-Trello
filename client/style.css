@@ -48,6 +48,19 @@ input:focus {
     outline: 0;
 }
 
+#loader {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: #fff url('img/preloader.svg') no-repeat center center;
+    background-size: 200px 100px;
+}
+
+#loader img {
+    display: block;
+    margin: 200px auto;
+}
+
 /*=================================
 =            Modal box            =
 =================================*/

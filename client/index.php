@@ -8,6 +8,9 @@
     <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,700,600,300italic' rel='stylesheet' type='text/css'>
 </head>
 <body>
+    <div id="loader">
+    </div>
+
     <div class="modal-wrap">
         <div id="modalbox">
             <div class="close-btn">X</div>
@@ -75,9 +78,8 @@
         </select>
 
         <fieldset id="new-radio-btn" style="display: none">
-            <h3>Listnavne:</h3>
             <div id="lists">
-
+                <h3>Listnavne:</h3>
             </div>
         </fieldset>
 
