@@ -66,9 +66,11 @@
             <option value="none">None chosen</option>
         </select>
 
-        <fieldset id="new-radio-btn">
+        <fieldset id="new-radio-btn" style="display: none">
             <h3>Listnavne:</h3>
-            <div id="lists"><div><input name="lists[]" type="checkbox" value="54497c1191b1cc348619d5eb"><label>Algoritmer og datastrukturer</label><input name="lists[]" type="checkbox" value="54497c4f61ab16dc05409624"><label>Empiriske metoder og statistik</label><input name="lists[]" type="checkbox" value="54497c8b4b35f4dfb2844eee"><label>Netværk og Sikkerhed</label><input name="lists[]" type="checkbox" value="54497c3fe8496ab9b15ada57"><label>Doing</label><input name="lists[]" type="checkbox" value="5463691c2dc84fa5aacc3b53"><label>Done</label><input type="hidden" value="54497be50bfa1518de532d19" name="board"></div></div>
+            <div id="lists">
+
+            </div>
         </fieldset>
 
         <input type="submit" value="Submit" id="frm-submit">

@@ -12,8 +12,19 @@ function sendData($db) {
    	$stmt = $db->prepare("INSERT INTO notifiers(project, email, board) VALUES(:project, :email, :board)");
 	$stmt->execute(array(':project' => $project_name, ':email' => $email, ':board' => $board));
 	$affected_rows = $stmt->rowCount();
+	$insertId = $db->lastInsertId();
+	echo $insertId;
 
-	echo $affected_rows;
+
+	$list = '';
+	$stmt = $db->prepare("INSERT INTO lists(notifierId, listId) VALUES(:notifierId, :listId)");
+	$stmt->bindParam(':notifierId', $insertId, PDO::PARAM_STR);
+	$stmt->bindParam(':listId', $listId, PDO::PARAM_STR);
+	foreach($lists as $listId) {
+	   $stmt->execute();
+	}
+
+
 
 }
 

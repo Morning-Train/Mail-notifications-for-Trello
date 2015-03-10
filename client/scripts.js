@@ -14,6 +14,9 @@ $(function() {
 
             // Reset form on submit
             $('#new-custom-frm')[0].reset();
+
+            // Hide lists! :)
+            $('#new-radio-btn').hide();
         }).
         fail(function(err) {
             $('#submit-answer').html(err.responseText);
@@ -67,6 +70,9 @@ $(function() {
 });
 
 function fetchLists(){
+              var theFieldSet = document.getElementById("new-radio-btn");
+              theFieldSet.setAttribute('style', 'display=block');
+
               var myselect = document.getElementById("myBoards");
               var theBoard = myselect.options[myselect.selectedIndex].value;
               var select = document.createElement("div");
