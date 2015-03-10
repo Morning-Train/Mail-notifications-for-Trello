@@ -421,7 +421,7 @@ app.get('/getLists/:boardId', function (req, res){
   t.get("/1/boards/" + boardId + "/lists", function(err, data){
       res.send(data);
   });
-})
+});
 
 var server = app.listen(3000, function () {
 

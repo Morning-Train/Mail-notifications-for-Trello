@@ -19,7 +19,7 @@
 
                 <fieldset>
                     <label for="email">Email:</label>
-                    <input type="text" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off">
+                    <input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off">
                 </fieldset>
 
                 <fieldset>
@@ -67,7 +67,7 @@
         <input type="text" placeholder="eks. Inwatec" id="project" name="project_name" autocomplete="off">
 
         <label for="email">Email:</label>
-        <input type="text" placeholder="email@example.com" id="email" name="email" autocomplete="off">
+        <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
 
         <label for="board">Board:</label>
         <select onChange="fetchLists()" id="myBoards">

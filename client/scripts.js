@@ -9,7 +9,7 @@ $(function() {
             url:'php/post.php',
             data: $('#new-custom-frm').serialize()
         }).
-        done(function(res) {
+        success(function(res) {
             $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
             $('#submit-answer').html(res);
 
@@ -18,7 +18,7 @@ $(function() {
 
             // Hide lists! :)
             $('#new-radio-btn').hide();
-
+            console.log(res);
             getFreshData();
 
         }).
@@ -119,6 +119,8 @@ function fetchLists(){
 
 
                     for(i = 0; i < arr.length; i++) {
+                        var divBeforeCheckbox = document.createElement("div");
+                        divBeforeCheckbox.setAttribute("class", "checkbox");
                         var opt = arr[i].name;
                         var el = document.createElement("input");
                         el.setAttribute("name", "lists[]");
@@ -126,14 +128,14 @@ function fetchLists(){
                         label.textContent = arr[i].name;
                         el.type="checkbox";
                         el.value = arr[i].id;
-                        select.appendChild(el);
-                        select.appendChild(label);
-                        select.appendChild(board);
+                        divBeforeCheckbox.appendChild(el);
+                        divBeforeCheckbox.appendChild(label);
+                        divBeforeCheckbox.appendChild(board);
+                        select.appendChild(divBeforeCheckbox);
                     }
 
 
                     xoxo.appendChild(select);
-
 
                 }
                 console.log(xhr.status);
