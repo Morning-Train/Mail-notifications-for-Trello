@@ -59,39 +59,23 @@ $(document).ready(function() {
         $('.modal-wrap').hide();
     });
 
-
-    // Loading boards from NodeJS server
-    window.onload = function() {
-        var select = document.getElementById("myBoards");
-
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var myArr = JSON.parse(xhr.responseText);
-                myFunction(myArr);
-                console.log(myArr);
-            }
-        }
-        xhr.open("GET", "http://localhost:3000/getBoards", false);
-        xhr.send();
-
-        function myFunction(arr) {
-            var out = "";
-            var i;
+    $.get( "http://localhost:3000/getBoards", function( data ) {
+            var elements = $();
+            arr = data;
             for(i = 0; i < arr.length; i++) {
-                var opt = arr[i].name;
-                var el = document.createElement("option");
-                el.textContent = opt;
-                el.value = arr[i].id;
-                select.appendChild(el);
+                $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
             }
-        }
-        console.log(xhr.status);
-        console.log(xhr.statusText);
-    }
+            console.log(data);
+    });
 
-    $("#myBoards").change(function fetchLists(){
-        var theFieldSet = document.getElementById("new-radio-btn");
+
+    $("#myBoards").change(function fetchLists(state){
+        if(state == "solo"){
+            var theFieldSet = document.getElementById("radio-btn");
+        } else {
+            var theFieldSet = document.getElementById("new-radio-btn");
+        }
+
         theFieldSet.setAttribute('style', 'display=block');
 
         var myselect = document.getElementById("myBoards");

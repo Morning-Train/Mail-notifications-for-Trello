@@ -28,7 +28,7 @@
 
                 <fieldset>
                     <label for="board">Boardnavn:</label>
-                        <select onChange="fetchLists()" id="mySoloBoards">
+                        <select onChange="fetchLists(solo)" id="mySoloBoards">
 
                         </select>
                 </fieldset>
