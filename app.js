@@ -81,6 +81,13 @@ app.use(bodyParser.json());
   }
 
 
+app.use(express.static('./client'));
+
+app.get("/", function (req, res){
+  res.sendfile(__dirname + '/client/index.html');
+});
+
+
 
 // This is the fun part, here is the "POST" method, that handles the email send to customers. Btw, it also includes alot of other stuff - read on.
 app.post("/sendMail/", function (req, res){
@@ -93,8 +100,6 @@ app.post("/sendMail/", function (req, res){
   var wantedLists = req.body.lists;
 
 // console.log(req.body.lists);
-
-// Just a temp "OK" back return, to the guy who handles the cronjob
 
   if(justContinue){
 
