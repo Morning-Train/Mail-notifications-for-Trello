@@ -200,7 +200,7 @@ $(document).ready(function() {
             }
 
 
-            $("#radio-btn").html("<h3>Listenavne:</h3>");
+            $("#radio-btn").html("<h3>Listnames:</h3>");
             $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
                 arr = data;
                 console.log(" done of getSolo ");
