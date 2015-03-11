@@ -213,7 +213,7 @@ header h1 {
 }
 
 .modal-web fieldset {
-    width: 70%;
+    width: 100%;
     max-width: 630px;
     margin: 0 auto;
     float: none;
@@ -243,7 +243,7 @@ header h1 {
 }
 
 .modal-form {
-    width: 90%;
+    width: 85%;
     height: auto;
     margin: 0 auto;
     padding-top: 50px;
@@ -276,10 +276,13 @@ input#modal-submit, input#modal-webhooks-submit, input#modal-rmv, input#modal-we
     -moz-transition: background .5s;
     -o-transition: background .5s;
     transition: background .5s;
-    width: 40%;
-    margin-right: 10%;
+    width: 48%;
     display: block;
     float: left;
+}
+
+input#modal-rmv {
+    float: right;
 }
 
 .remove-record {
@@ -296,7 +299,8 @@ input#modal-submit:hover, input#modal-rmv:hover {
 
 input#modal-webhooks-submit, input#modal-webhooks-rmv {
     background: #3498db;
-    width: 70%;
+    width: 100%;
+    max-width: 630px;
     float: none;
     margin: 10px auto;
 }
@@ -327,9 +331,47 @@ fieldset#radio-btn input {
     display: inline-block;
 }
 
+@media screen and (min-width: 1036px) {
+    fieldset#radio-btn label {
+        width: 28.9%;
+        min-width: 160px;
+    }
+}
+
+
 fieldset#radio-btn label {
-    width: 10.6%;
+    width: 21%;
+    margin-left: 5px;
     display: inline-block;
+}
+
+@media screen and (max-width: 1035px) {
+    fieldset#radio-btn label {
+        width: 29%;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    fieldset#radio-btn label {
+        width: 45%;
+        margin-left: 5px;
+    }
+
+    .modalbox {
+        margin: 10px auto;
+        height: 700px;
+    }
+}
+
+@media screen and (max-width: 466px) {
+    fieldset#radio-btn label {
+        width: 43%;
+        margin-left: 5px;
+    }
+
+    fieldset#radio-btn {
+      padding: 5px 0 20px 0px;
+    }
 }
 
 /*======================================
@@ -386,6 +428,11 @@ fieldset#radio-btn label {
     #new-custom-frm, #web-custom-frm {
         width: 95%;
     }
+}
+
+#lists {
+    overflow: hidden;
+    margin-bottom: 15px;
 }
 
 #new-custom-frm input, #new-custom-frm select, #web-custom-frm input, #web-custom-frm select {
@@ -465,13 +512,19 @@ fieldset#new-radio-btn label {
     background-color: #fff;
     border: 1px solid #dadada;
     margin-top: 50px;
+    text-align: center;
 }
 
 #sub-frm h2, #web-sub-frm h2 {
     margin: 30px 0px 0px 5%;
-    float: left;
-    text-transform: uppercase;
-    font-weight: 400;
+    font-weight: 700;
+    font-size: 2em;
+}
+
+@media screen and (max-width: 320px) {
+    #sub-frm h2, #web-sub-frm h2 {
+        font-size: 1.3em;
+    }
 }
 
 input#sub-frm-submit {
@@ -495,7 +548,7 @@ input#sub-frm-submit:hover {
 #field-info, #web-field-info {
     clear: both;
     width: 90%;
-    margin: 90px auto 0 auto;
+    margin: 45px auto 0 auto;
     height: 40px;
     border: 1px solid #dadada;
     box-sizing: border-box;

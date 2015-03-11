@@ -18,8 +18,8 @@
             <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
                 <input type="hidden" name="notifier_id" id="modal-notifier-id">
                 <fieldset>
-                    <label for="project">Projektnavn:</label>
-                    <input type="text" placeholder="eks. Inwatec" name="project_name" id="modal-project" autocomplete="off">
+                    <label for="project">Projectname:</label>
+                    <input type="text" placeholder="Super awesome project" name="project_name" id="modal-project" autocomplete="off">
                 </fieldset>
 
                 <fieldset>
@@ -28,14 +28,14 @@
                 </fieldset>
 
                 <fieldset>
-                    <label for="board">Boardnavn:</label>
+                    <label for="board">Boardname:</label>
                         <select name="board" id="mySoloBoards">
 
                         </select>
                 </fieldset>
 
                 <fieldset id="radio-btn">
-                    <h3>Listenavne:</h3>
+                    <h3>Listnames:</h3>
                     <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
                     <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
                     <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
@@ -67,7 +67,7 @@
                 </fieldset>
 
                 <fieldset>
-                    <label for="modal-desc">Beskrivelse:</label>
+                    <label for="modal-desc">Description:</label>
                     <textarea name="desc-area" id="modal-desc" autocomplete="off"></textarea>
                 </fieldset>
 
@@ -126,12 +126,11 @@
             </select>
                 <fieldset id="new-radio-btn" style="display: none">
                     <div id="lists">
-                        <h3>Listenavne:</h3>
                     </div>
                 </fieldset>
 
-            <label for="project">Projektnavn</label>
-            <input type="text" placeholder="eks. Inwatec" id="project" name="project_name" autocomplete="off">
+            <label for="project">Projectname:</label>
+            <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
 
             <label for="email">Email:</label>
             <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
@@ -144,11 +143,11 @@
 
         <!-- Display all mail notifiers -->
         <form id="sub-frm" class="clearfix">
-            <h2>Current email notifiers</h2>
+            <h2>Current Email Notifiers</h2>
             <div id="field-info" class="clearfix">
-                <div class="field-info-item"><p>Projektnavn</p></div>
+                <div class="field-info-item"><p>Projectname</p></div>
                 <div class="field-info-item res-hide"><p>Email</p></div>
-                <div class="field-info-item"><p>Boardnavn</p></div>
+                <div class="field-info-item"><p>Boardname</p></div>
                 <div class="edit"><p>Edit</p></div>
             </div>
 
@@ -167,11 +166,11 @@
             <select class="mySoloBoards">
             </select>
 
-            <label for="web-desc res-hide">Beskrivelse:</label>
-            <textarea name="desc-area" id="web-desc" autocomplete="off" placeholder="Formålet med dette webhook, er at . . ."></textarea>
+            <label for="web-desc res-hide">Description:</label>
+            <textarea name="desc-area" id="web-desc" autocomplete="off" placeholder="The purpose of this awesome webhook"></textarea>
 
             <label for="callback-url">Callback URL:</label>
-            <input type="textarea" name="callback-area" id="callback-url" autocomplete="off" placeholder="eks. www.morningtrain.dk">
+            <input type="textarea" name="callback-area" id="callback-url" autocomplete="off" placeholder="example: http://morningtrain.dk/script-with-superpower">
 
             <input type="submit" value="Submit" id="web-submit">
             <input type="hidden" name="submitted" value="true">
@@ -181,9 +180,9 @@
 
         <!-- Display all webhooks -->
         <form id="web-sub-frm" class="clearfix">
-            <h2>Current email notifiers</h2>
+            <h2>Current Webhooks</h2>
             <div id="web-field-info" class="clearfix">
-                <div class="field-info-item"><p>Boardnavn</p></div>
+                <div class="field-info-item"><p>Boardname</p></div>
                 <div class="field-info-item res-hide"><p>Description</p></div>
                 <div class="field-info-item"><p>Created Time</p></div>
                 <div class="edit"><p>Edit</p></div>
