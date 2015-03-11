@@ -59,6 +59,23 @@ input:focus {
     z-index:9999;
 }
 
+/* Header */
+header {
+    width: 100%;
+    height: 50px;
+    text-align: center;
+    background: #2c3e50;
+}
+
+header h1 {
+    font-size: 1em;
+    font-weight: 700;
+    font-style: italic;
+    padding-top: 0;
+    line-height: 50px;
+    color: #fff;
+}
+
 /*============================
 =            Tabs            =
 ============================*/
@@ -68,6 +85,7 @@ input:focus {
     position: fixed;
     text-align: center;
     cursor: pointer;
+    z-index: 99;
 }
 
 .tab-desc {
@@ -122,20 +140,62 @@ input:focus {
     left: 0;
 }
 
+@media screen and (max-width: 850px) {
+    .tab {
+        width: 50%;
+        height: 60px;
+        float: left;
+        position: relative;
+    }
+
+    .green, .blue {
+        left: 0px;
+        top: 0px;
+        margin-top: 0px;
+        -moz-transition: background .5s ease;
+        -o-transition: background .5s ease;
+        -webkit-transition: background .5s ease;
+        transition: background .5s ease;
+    }
+
+    .green:hover {
+        background: #34ec82;
+    }
+
+    .blue:hover {
+        background: #6ec7fa;
+    }
+
+    .tab-desc {
+        width: 100%;
+    }
+
+    .tab-img {
+        display: none;
+    }
+}
+
 /*=================================
 =            Modal box            =
 =================================*/
 .modal-wrap {
-    display: none;
     position: fixed;
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.75);
-    z-index: 1;
+    z-index: 99999;
 }
 
-#modalbox {
-    width: 1000px;
+.notify {
+    display: none;
+}
+
+.webhooks {
+    display: none;
+}
+
+.modalbox {
+    width: 88%;
     height: 600px;
     background-color: #fff;
     margin: 50px auto;
@@ -143,13 +203,20 @@ input:focus {
     position: relative;
 }
 
-#modalbox fieldset {
+.modalbox fieldset {
     width: 50%;
     float: left;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
     border: none;
+}
+
+.modal-web fieldset {
+    width: 70%;
+    max-width: 630px;
+    margin: 0 auto;
+    float: none;
 }
 
 .close-btn {
@@ -175,25 +242,14 @@ input:focus {
     background-color: #2ecc71;
 }
 
-#modal-form {
-    margin-top: 0;
-    padding-top: 50px;
-}
-
-#modal-form {
+.modal-form {
     width: 90%;
     height: auto;
     margin: 0 auto;
-    margin-top: 50px;
+    padding-top: 50px;
 }
 
-@media screen and (max-width: 960px) {
-}
-
-@media screen and (max-width: 400px) {
-}
-
-#modal-form input, #modal-form select {
+.modal-form input, .modal-form select {
     width: 90%;
     height: 50px;
     margin-bottom: 20px;
@@ -209,24 +265,47 @@ input:focus {
     border-radius: 0;  /* Opera 10.5, IE 9, Safari 5, Chrome, Firefox 4, iOS 4, Android 2.1+ */
 }
 
-input#modal-submit {
-    background: #2ecc71;
+.modal-web input, .modal-web select {
+    width: 100%;
+}
+
+input#modal-submit, input#modal-webhooks-submit, input#modal-rmv, input#modal-webhooks-rmv {
     color: #fff;
     border: none;
     -webkit-transition: background .5s; /* For Safari 3.1 to 6.0 */
     -moz-transition: background .5s;
     -o-transition: background .5s;
     transition: background .5s;
-    width: 50%;
+    width: 40%;
+    margin-right: 10%;
     display: block;
-    margin: 0 auto;
+    float: left;
 }
 
-input#modal-submit:hover {
+.remove-record {
+    margin-right: 0;
+}
+
+input#modal-submit, input#modal-rmv {
+    background: #2ecc71;
+}
+
+input#modal-submit:hover, input#modal-rmv:hover {
     background: #34ec82;
 }
 
-#modal-form label {
+input#modal-webhooks-submit, input#modal-webhooks-rmv {
+    background: #3498db;
+    width: 70%;
+    float: none;
+    margin: 10px auto;
+}
+
+input#modal-webhooks-submit:hover, input#modal-webhooks-rmv:hover {
+    background: #6ec7fa;
+}
+
+.modal-form label {
     display: block;
     margin-bottom: 5px;
 }
@@ -286,7 +365,11 @@ fieldset#radio-btn label {
 /*=======================================
 =            New mail notify            =
 =======================================*/
-#new-custom-frm {
+#notify-content {
+    display: block;
+}
+
+#new-custom-frm, #web-custom-frm {
     width: 50%;
     height: auto;
     margin: 0 auto;
@@ -294,18 +377,18 @@ fieldset#radio-btn label {
 }
 
 @media screen and (max-width: 960px) {
-    #new-custom-frm {
+    #new-custom-frm, #web-custom-frm {
         width: 80%;
     }
 }
 
 @media screen and (max-width: 400px) {
-    #new-custom-frm {
+    #new-custom-frm, #web-custom-frm {
         width: 95%;
     }
 }
 
-#new-custom-frm input, select {
+#new-custom-frm input, #new-custom-frm select, #web-custom-frm input, #web-custom-frm select {
     width: 100%;
     height: 50px;
     margin-bottom: 20px;
@@ -316,8 +399,7 @@ fieldset#radio-btn label {
     border: 1px solid #dadada;
 }
 
-input#frm-submit {
-    background: #2ecc71;
+input#frm-submit, input#web-submit {
     color: #fff;
     border: none;
     margin-top: 20px;
@@ -327,11 +409,23 @@ input#frm-submit {
     transition: background .5s;
 }
 
+input#frm-submit {
+    background: #2ecc71;
+}
+
 input#frm-submit:hover {
     background: #34ec82;
 }
 
-#new-custom-frm label {
+input#web-submit {
+    background: #3498db;
+}
+
+input#web-submit:hover {
+    background: #6ec7fa;
+}
+
+#new-custom-frm label, #web-custom-frm label {
     margin-bottom: 6px;
     display: block;
 }
@@ -361,19 +455,19 @@ fieldset#new-radio-btn label {
 }
 
 /*=========================================
-=            All mail notifiers           =
+=            List overview starts         =
 =========================================*/
 
-#sub-frm {
+#sub-frm, #web-sub-frm {
     width: 90%;
-    min-width: 1100px;
+    max-width: 1100px;
     margin: 0 auto;
     background-color: #fff;
     border: 1px solid #dadada;
     margin-top: 50px;
 }
 
-#sub-frm h2 {
+#sub-frm h2, #web-sub-frm h2 {
     margin: 30px 0px 0px 5%;
     float: left;
     text-transform: uppercase;
@@ -398,7 +492,7 @@ input#sub-frm-submit:hover {
     background: #34ec82;
 }
 
-#field-info {
+#field-info, #web-field-info {
     clear: both;
     width: 90%;
     margin: 90px auto 0 auto;
@@ -426,7 +520,7 @@ input#sub-frm-submit:hover {
 
 .edit img {
     display: block;
-    margin: 12px auto;
+    margin: 10px auto;
     cursor: pointer;
 }
 
@@ -439,7 +533,7 @@ input#sub-frm-submit:hover {
     padding-right: 2%;
 }
 
-#sub-frm fieldset {
+#sub-frm fieldset, fieldset.current_webhooks {
     clear: both;
     border: 1px solid #dadada;
     border-top:none;
@@ -457,10 +551,53 @@ input[type="text"]:disabled {
     color: #95a5a6;
 }
 
-/*======================================
-=            Webhooks start            =
-======================================*/
+.img-swap {
+    width: 19px;
+}
 
+@media screen and (max-width: 750px) {
+    .res-hide {
+        display: none;
+    }
+
+    .field-info-item {
+        width: 35.3%;
+        padding-left: 4%;
+        padding-right: 4%;
+    }
+}
+
+@media screen and (max-width: 416px) {
+    .field-info-item {
+        width: 35%;
+        overflow: hidden;
+    }
+}
+
+/*======================================
+=    Webhooks specific styles start    =
+======================================*/
 #webhooks-content {
     display: none;
+}
+
+textarea#web-desc, textarea#modal-desc {
+    max-width: 100%;
+    min-width: 100%;
+    height: 50px;
+    box-sizing: border-box;
+    border: 1px solid #dadada;
+    margin-bottom: 20px;
+    padding: 12px 0px 0px 10px;
+}
+
+textarea#modal-desc {
+    padding: 12px 10px 10px 10px;
+    resize: none;
+    height: 150px;
+}
+
+
+.web-btn:hover {
+    background: #3498db;
 }

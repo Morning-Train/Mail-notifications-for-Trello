@@ -49,9 +49,26 @@ $(document).ready(function() {
 
     getFreshData();
 
-    // Edit / Save fieldsets
+    // Edit / Save fieldsets -> Mail notify
     $( "#sub-frm" ).on( "click", ".rm-dis", function() {
-        $('.modal-wrap').toggle();
+        $('.notify').show();
+        var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        $('#mySoloBoards').empty();
+
+        $.get( "php/getSolo.php?id=" + currentId, function( data ) {
+          $('#modal-notifier-id').val(data[0].id);
+          $('#modal-project').val(data[0].project);
+          $('#modal-email').val(data[0].email);
+          var $options = $("#myBoards > option").clone();
+          $('#mySoloBoards').append($options);
+          $('#mySoloBoards').val(data[0].board);
+          console.log(data);
+        }, "json");
+    });
+
+    // Edit / Save fieldsets -> Webhooks
+    $( "#web-sub-frm" ).on( "click", ".edit-web", function() {
+        $('.webhooks').show();
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
 
@@ -68,7 +85,8 @@ $(document).ready(function() {
 
     // Close modal box on close click
     $('.close-btn').click(function() {
-        $('.modal-wrap').hide();
+        $('.notify').hide();
+        $('.webhooks').hide();
     });
 
     $.get( "http://localhost:3000/getBoards", function( data ) {
