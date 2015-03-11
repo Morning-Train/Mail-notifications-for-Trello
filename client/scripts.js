@@ -128,7 +128,40 @@ $(document).ready(function() {
           $('#mySoloBoards').append($options);
           $('#mySoloBoards').val(data[0].board);
           console.log(data);
-        }, "json");
+        }, "json").done(function(data){
+
+            console.log(" done of getSolo ");
+
+            var myCheckedLists = [];
+
+            data[0].lists.forEach(function(entry){
+                myCheckedLists.push(entry.listId);
+            })
+            console.log("myCheckedLists");
+
+            function arrayIndexOf(searchTerm){
+                      for(var i = 0, len = myCheckedLists.length; i < len; i++){
+                        if(myCheckedLists[i] === searchTerm) return true;
+                      }
+                      return false;
+            }
+
+
+            $("#radio-btn").html("<h3>Listenavne:</h3>");
+            $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
+                arr = data;
+                console.log(" done of getSolo ");
+                console.log(data);
+                for(i = 0; i < arr.length; i++) {
+                    if(arrayIndexOf(arr[i].id)){
+                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                    } else {
+                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                    }
+
+                }
+            });
+        });
     });
 
     // Edit / Save fieldsets -> Webhooks
@@ -161,7 +194,7 @@ $(document).ready(function() {
             data[0].lists.forEach(function(entry){
                 myCheckedLists.push(entry.listId);
             })
-            console.log(myCheckedLists);
+            console.log("myCheckedLists");
 
             function arrayIndexOf(searchTerm){
                       for(var i = 0, len = myCheckedLists.length; i < len; i++){
@@ -178,9 +211,9 @@ $(document).ready(function() {
                 console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                        $("#radio-btn").append('<input name="lists[]" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
                     } else {
-                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                        $("#radio-btn").append('<input name="lists[]" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
                     }
 
                 }
@@ -215,7 +248,7 @@ $(document).ready(function() {
         $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                $("#radio-btn").append('<input name="lists[]" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
             }
         });
     });
