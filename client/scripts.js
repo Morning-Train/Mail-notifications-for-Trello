@@ -226,6 +226,8 @@ $(document).ready(function() {
     });
 
     $("#myBoards").change(function() {
+        $("#boardIdInForm").remove();
+
         $("#lists").html("<h3>Listenavne:</h3>");
         $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
             $("#new-radio-btn").show();
@@ -234,7 +236,8 @@ $(document).ready(function() {
             for(i = 0; i < arr.length; i++) {
                 $("#lists").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
             }
-            $("#new-custom-frm").append('<input type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+            $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+
         });
     });
 

@@ -94,18 +94,8 @@ app.use(bodyParser.json());
 
 app.use(express.static('./client'));
 
-app.get("/hello/", function (req, res){
-Notifier.create(
-  {
-    name: 'Master Javscript', 
-    completed: true, 
-    note: 'Getting better everyday'
-  }, 
-  function(err, todo){
-    if(err) console.log(err);
-    else res.send(todo);
-  }
-);
+app.post("/php/post.php", function (req, res){
+res.end(" " + console.log(req.body));
   //res.sendfile(__dirname + '/client/index.html');
 });
 
