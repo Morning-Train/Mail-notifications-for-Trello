@@ -48,17 +48,78 @@ input:focus {
     outline: 0;
 }
 
+/* Page Loader */
+
 #loader {
     width: 100%;
     height: 100%;
     position: fixed;
     background: #fff url('img/preloader.svg') no-repeat center center;
     background-size: 200px 100px;
+    z-index:9999;
 }
 
-#loader img {
+/*============================
+=            Tabs            =
+============================*/
+.tab {
+    width: 210px;
+    height: 60px;
+    position: fixed;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tab-desc {
+    width: 150px;
+    float: left;
+}
+
+.tab p {
+    font-size: 1em;
+    font-weight: 700;
+    line-height: 60px;
+    color: #fff;
+}
+
+.tab-img {
+    width: 60px;
+    float: left;
+}
+
+.tab-img img {
     display: block;
-    margin: 200px auto;
+    width: 40%;
+    margin: 18px auto;
+}
+
+.green {
+    background: #2ecc71;
+    left: -150px;
+    top: 50%;
+    margin-top: -60px;
+    -moz-transition:left .5s ease;
+    -o-transition: left .5s ease;
+    -webkit-transition: left .5s ease;
+    transition: left .5s ease;
+}
+
+.green:hover {
+    left: 0;
+}
+
+.blue {
+    background: #3498db;
+    left: -150px;
+    top: 50%;
+    -moz-transition:left .5s ease;
+    -o-transition: left .5s ease;
+    -webkit-transition: left .5s ease;
+    transition: left .5s ease;
+}
+
+.blue:hover {
+    left: 0;
 }
 
 /*=================================
@@ -394,4 +455,12 @@ input[type="text"] {
 
 input[type="text"]:disabled {
     color: #95a5a6;
+}
+
+/*======================================
+=            Webhooks start            =
+======================================*/
+
+#webhooks-content {
+    display: none;
 }
