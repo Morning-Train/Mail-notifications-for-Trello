@@ -61,7 +61,7 @@
     <div id="submit-error">
         <h3>Error occured in creating new record!</h3>
     </div>
-    
+
     <!-- Content tabs -->
     <div class="tab green">
         <div class="tab-desc">
@@ -79,7 +79,7 @@
         <img src="img/w.svg" alt="webhooks">
         </div>
     </div>
-    
+
     <!-- Page title -->
     <h1>Trello-Train</h1>
 
