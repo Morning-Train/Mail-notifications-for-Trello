@@ -22,7 +22,18 @@ var nodemailer = require("nodemailer");
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test3');
 
+// Connect to the db
+var NotifierSchema = new mongoose.Schema({
+  project: String,
+  email: Boolean,
+  board: String,
+  updated_at: { type: Date, default: Date.now },
+});
+
+var Notifier = mongoose.model('Notifier', NotifierSchema);
 
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello(trelloApplicationKey, trelloUserToken);
@@ -83,9 +94,32 @@ app.use(bodyParser.json());
 
 app.use(express.static('./client'));
 
-app.get("/", function (req, res){
-  res.sendfile(__dirname + '/client/index.html');
+app.get("/hello/", function (req, res){
+Notifier.create(
+  {
+    name: 'Master Javscript', 
+    completed: true, 
+    note: 'Getting better everyday'
+  }, 
+  function(err, todo){
+    if(err) console.log(err);
+    else res.send(todo);
+  }
+);
+  //res.sendfile(__dirname + '/client/index.html');
 });
+
+app.get("/all/", function(req, res){
+  Todo.find({}, function(err, todos){
+    var todoMap = {}
+
+    todos.forEach(function(user){
+      todoMap[user._id] = user;
+    })
+
+    res.send(todoMap);
+  })
+})
 
 
 

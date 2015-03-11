@@ -2,7 +2,7 @@
 
 $db = new PDO('mysql:host=localhost;dbname=trellotrain;charset=utf8', 'root', 'root');
 
-function updateData($db) {
+function deleteData($db) {
 
 	$id = $_GET['notifier_id'];
 	$validation = true;
@@ -28,7 +28,7 @@ function updateData($db) {
 }
 
 try {
-   updateData($db);
+   deleteData($db);
 } catch(PDOException $ex) {
    //handle me.
 }
