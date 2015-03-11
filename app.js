@@ -14,17 +14,6 @@ var bodyParser = require("body-parser");
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello("ef463438274bb639009b76098f83b026", "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836");
 
-// Get all board ids out
-// t.get("/1/members/me", function (err, data) {
-//   if (err) {
-//      throw err;
-//   }
-//   data.idBoards.forEach(function (datax){
-//       console.log(datax);
-//     }
-//   );
-// });
-
 
 // This is used for letting another one into your system (from example from another ip and port)
 app.use(function (req, res, next) {
