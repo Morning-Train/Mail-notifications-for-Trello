@@ -15,8 +15,8 @@
     <div class="modal-wrap notify">
         <div class="modalbox">
             <div class="close-btn">X</div>
-            <form class="modal-form" action="#submit-answer" method="POST">
-                <input type="hidden" id="notifier_id">
+            <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
+                <input type="hidden" name="notifier_id" id="modal-notifier-id">
                 <fieldset>
                     <label for="project">Projektnavn:</label>
                     <input type="text" placeholder="eks. Inwatec" name="project_name" id="modal-project" autocomplete="off">
@@ -29,7 +29,7 @@
 
                 <fieldset>
                     <label for="board">Boardnavn:</label>
-                        <select onChange="fetchLists(solo)" id="mySoloBoards">
+                        <select name="board" id="mySoloBoards">
 
                         </select>
                 </fieldset>
@@ -95,7 +95,7 @@
     <div id="submit-error">
         <h3>Error occured in creating new record!</h3>
     </div>
-    
+
     <!-- Content tabs -->
     <div class="tab green">
         <div class="tab-desc">
@@ -126,11 +126,10 @@
             <label for="email">Email:</label>
             <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
 
-            <label for="board">Board:</label>
-            <select id="myBoards">
-                <option value="none">None chosen</option>
-            </select>
-
+        <label for="board">Board:</label>
+        <select id="myBoards">
+            <option value="none">None chosen</option>
+        </select>
             <fieldset id="new-radio-btn" style="display: none">
                 <div id="lists">
                     <h3>Listenavne:</h3>

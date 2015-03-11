@@ -87,6 +87,8 @@ app.use(bodyParser.json());
 // This is the fun part, here is the "POST" method, that handles the email send to customers. Btw, it also includes alot of other stuff - read on.
 app.post("/sendMail/", function (req, res){
 
+console.log(req.body);
+
 // Defining userEmail, userBoard and WantedLists, from the request body. (Sent to us through JSON)
   var userEmail = req.body.email;
   var userBoard = req.body.board;
