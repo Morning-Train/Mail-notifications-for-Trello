@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    // Loader
     $('#loader').fadeOut('slow');
 
     // Select tab
@@ -16,6 +17,8 @@ $(document).ready(function() {
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
         console.log($('#new-custom-frm').serialize());
+
+        // Ajax call to php/post.php
         $.ajax({
             type: 'POST',
             url:'php/post.php',
@@ -31,6 +34,8 @@ $(document).ready(function() {
             // Hide lists! :)
             $('#new-radio-btn').hide();
             console.log(res);
+
+            // Refresh current list of mail notifiers.
             getFreshData();
 
         }).
@@ -40,7 +45,37 @@ $(document).ready(function() {
         });
     });
 
+    // update mail notifier
+    $('#update-mail-notifier').submit(function(e) {
+        e.preventDefault();
+        console.log($('#update-mail-notifier').serialize());
+    });
+
+    // Modal submit - change this to modal-update-notifier
+    $('#modal-submit').click(function(e){
+        e.preventDefault();
+
+        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        $.ajax({
+            type: 'POST',
+            url:'php/update.php',
+            // Remember to change this.
+            data: $('#modal-form').serialize()
+        }).
+        success(function(res) {
+            console.log(res);
+
+            // Update notifier list (on frontpage)
+            getFreshData();
+
+        }).
+        fail(function(err) {
+            // Setup fail handling! (We need this someday)
+        });
+    })
+
     var getFreshData = function() {
+        // Get freshData just gets fresh data (notifiers) from database.
         $.get( "php/get.php", function( data ) {
             $( ".current_notifiers" ).remove();
             $( "#field-info" ).after(data);
@@ -52,19 +87,61 @@ $(document).ready(function() {
     // Edit / Save fieldsets
     $( "#sub-frm" ).on( "click", ".rm-dis", function() {
         $('.modal-wrap').toggle();
+
+        // Set currentId (from the pressed notifier)
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        var boardId = "";
+        // Empty the Edit->Modal->Board Selection
         $('#mySoloBoards').empty();
 
+        // Get information about the notifier you want to edit
         $.get( "php/getSolo.php?id=" + currentId, function( data ) {
+        // Set the values for id + project name + email + board (we are still)
           $('#modal-notifier-id').val(data[0].id);
+          console.log(data[0].id);
           $('#modal-project').val(data[0].project);
           $('#modal-email').val(data[0].email);
           var $options = $("#myBoards > option").clone();
           $('#mySoloBoards').append($options);
           $('#mySoloBoards').val(data[0].board);
-          console.log(data);
-        }, "json");
+          console.log("Boar ID: " + data[0].board);
+        }, "json").done(function(data){
+
+            console.log(" done of getSolo ");
+
+            var myCheckedLists = [];
+
+            data[0].lists.forEach(function(entry){
+                myCheckedLists.push(entry.listId);
+            })
+            console.log(myCheckedLists);
+
+            function arrayIndexOf(searchTerm){
+                      for(var i = 0, len = myCheckedLists.length; i < len; i++){
+                        if(myCheckedLists[i] === searchTerm) return true;
+                      }
+                      return false;
+            }
+
+
+            $("#radio-btn").html("<h3>Listenavne:</h3>");
+            $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
+                arr = data;
+                console.log(" done of getSolo ");
+                console.log(data);
+                for(i = 0; i < arr.length; i++) {
+                    if(arrayIndexOf(arr[i].id)){
+                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                    } else {
+                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                    }
+
+                }
+            });
+        });
+
     });
+
 
     // Close modal box on close click
     $('.close-btn').click(function() {
@@ -97,6 +174,17 @@ $(document).ready(function() {
                 $("#lists").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
             }
             $("#new-custom-frm").append('<input type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+        });
+    });
+
+    $("#mySoloBoards").change(function() {
+        $("#radio-btn").empty();
+        $("#radio-btn").html("<h3>Listenavne:</h3>");
+        $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
+            arr = data;
+            for(i = 0; i < arr.length; i++) {
+                $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+            }
         });
     });
 

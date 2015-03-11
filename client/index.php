@@ -15,8 +15,8 @@
     <div class="modal-wrap">
         <div id="modalbox">
             <div class="close-btn">X</div>
-            <form id="modal-form" action="#submit-answer" method="POST">
-                <input type="hidden" id="notifier_id">
+            <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
+                <input type="hidden" name="notifier_id" id="modal-notifier-id">
                 <fieldset>
                     <label for="project">Projektnavn:</label>
                     <input type="text" placeholder="eks. Inwatec" name="project_name" id="modal-project" autocomplete="off">
@@ -29,7 +29,7 @@
 
                 <fieldset>
                     <label for="board">Boardnavn:</label>
-                        <select id="mySoloBoards">
+                        <select name="board" id="mySoloBoards">
 
                         </select>
                 </fieldset>
