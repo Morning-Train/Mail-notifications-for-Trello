@@ -1,5 +1,18 @@
 "use strict";
-//
+
+// Configuration for using Trello-Train (MUST BE FILLED WITH PROPER INFORMATION :))
+var daysBetweenNotifiers = 7; // Change this to the interval of notifiers.
+var clientWebsite = "http://localhost:8888"; // Change this to the URL of the client web ui.
+
+// TRELLO API ACCESS
+var trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+
+// Disable email system
+var justContinue = true; // Put to false if you want to skip sending emails at the moment.
+
+/* WARNING WARNING WARNING WARNING */
+/* DO NOT EDIT ANYTHING BEYOND THIS POINT - unless you know what you are doing ;) */
 
 // Requirements of Modules
 //  Trello module
@@ -12,17 +25,16 @@ var bodyParser = require("body-parser");
 
 
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
-var t = new Trello("ef463438274bb639009b76098f83b026", "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836");
-
+var t = new Trello(trelloApplicationKey, trelloUserToken);
 
 // This is used for letting another one into your system (from example from another ip and port)
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:8888");
+    res.setHeader("Access-Control-Allow-Origin", clientWebsite);
 
     // Request methods you wish to allow - Remember to remove delete put patch options. Pls remember that. Rubas
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST");
 
     // Request headers you wish to allow
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
@@ -82,9 +94,6 @@ app.post("/sendMail/", function (req, res){
 
 // console.log(req.body.lists);
 
-// This is some bullshit lazy variable, I will remove this soon.
-  var justContinue = true;
-
 // Just a temp "OK" back return, to the guy who handles the cronjob
 
   if(justContinue){
@@ -93,8 +102,7 @@ app.post("/sendMail/", function (req, res){
     if(userEmail === undefined || userBoard === undefined || wantedLists === undefined){
       errorHandling("Email, BoardID or ListID is not specificed");
 	    res.status(400);
-	    res.send('None shall pass');
-
+	    res.send("None shall pass");
     } else {
       // 5.semester : 54497be50bfa1518de532d19
       // BoardID + Path defined
@@ -107,7 +115,7 @@ app.post("/sendMail/", function (req, res){
         var boardName = "";
 
       // List class defined - makes list objects (I heard this should be big?)
-        var list = function(id, name){
+        var List = function(id, name){
           this._id = id;
           this._name = name;
           this._cards = [];
@@ -116,7 +124,7 @@ app.post("/sendMail/", function (req, res){
         // Init'd emailContent
         var emailContent = "";
 
-        // This variable is set for checking up on if there should be sent an email or not. 
+        // This variable is set for checking up on if there should be sent an email or not.
         // If there is no changes in the specified lists,
         // for the last 7 days, then this script will run with boolSendMail as false. (Result: no mail sent)
         // If this is set to true, the content in emailContent will be sent to a user. (Will tell more about it later)
@@ -154,7 +162,7 @@ app.post("/sendMail/", function (req, res){
               t.get("/1/boards/" + boardId + "/lists", function(err, data){
               	// for each list returned, make a new list object with list id and name, thereafter push into boardLists array (array of objects).
                     data.forEach(function(item){
-                      var addMe = new list(item.id, item.name);
+                      var addMe = new List(item.id, item.name);
                       // console.log(" + List: " + item.name + " " + item.id);
                       boardLists.push(addMe);
                     });
@@ -210,7 +218,7 @@ app.post("/sendMail/", function (req, res){
                     var myTime = new Date(theDate[0], theDate[1]-1, theDate[2]);
 
                     // If days are more than "7" (default), then appendCard to array of objects of lists - append to ._cards of Lists
-                    if(numDaysBetween(date, myTime) < 7){
+                    if(numDaysBetween(date, myTime) < daysBetweenNotifiers){
                       appendCards(posi, data[k].name);
                     }
 
@@ -324,17 +332,22 @@ app.post("/sendMail/", function (req, res){
               console.log();
               console.log("(.*.) Farewell! Thank you for being a part of this mess.... (.*.)");
               res.send("Bye!");
+
+              console.log(err);
+              console.log(results);
             }
           );
-    } // This else if process needs to be removed!
+    }
   } else {
+    res.send("Sorry, we are closed today");
+    res.status(418);
     console.log("Sorry, we are closed today");
   }
 
 });
 
-app.get('/getBoards', function (req, res) {
-  var board = function(id, name){
+app.get("/getBoards", function (req, res) {
+  var Board = function(id, name){
     this.id = id;
     this.name = name;
   };
@@ -354,14 +367,12 @@ app.get('/getBoards', function (req, res) {
     boardSize = data.idBoards.length;
     data.idBoards.forEach(function (datax){
       var boardPath = "/1/boards/" + datax;
-      var boardId = "";
         t.get(boardPath, function(err, data) {
           counter++;
               if (err) throw err;
               //console.log("+ Board name: " + data.name + " ID: " + data.id);
-              var currentBoard = new board(data.id, data.name);
+              var currentBoard = new Board(data.id, data.name);
               boardArray.push(currentBoard);
-              var boardId = data.id;
 
               if(counter === boardSize){
                 res.send(boardArray);
@@ -374,9 +385,8 @@ app.get('/getBoards', function (req, res) {
 });
 
 
-app.get('/getLists/:boardId', function (req, res){
+app.get("/getLists/:boardId", function (req, res){
   var boardId = req.params.boardId;
-  var lists = [];
 
   t.get("/1/boards/" + boardId + "/lists", function(err, data){
       res.send(data);
@@ -385,9 +395,9 @@ app.get('/getLists/:boardId', function (req, res){
 
 var server = app.listen(3000, function () {
 
-  var host = server.address().address
-  var port = server.address().port
+  var host = server.address().address;
+  var port = server.address().port;
 
-  console.log('Example app listening at http://%s:%s', host, port);
+  console.log("Example app listening at http://%s:%s", host, port);
 
 });

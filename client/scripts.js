@@ -1,6 +1,5 @@
 $(document).ready(function() {
 
-    var allBoardsInfo = [];
 
     var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
         var elements = $();
@@ -8,13 +7,11 @@ $(document).ready(function() {
 
         for(i = 0; i < arr.length; i++) {
             $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-            allBoardsInfo.push([arr[i].name, arr[i].id]);
         }
 
         // console.log(data);
     }).done(function(){
         $('#loader').fadeOut('slow');
-        console.log(allBoardsInfo);
     });
 
     getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
@@ -106,8 +103,7 @@ $(document).ready(function() {
             $( "#field-info" ).after(data);
         }).done(function(){
             $( ".board-name" ).each(function( index ) {
-              console.log( index + ": " + $( this ).val() );
-              console.log(allBoardsInfo);
+              // console.log( index + ": " + $( this ).val() );
             });
         });
     };
@@ -147,7 +143,7 @@ $(document).ready(function() {
             }
 
 
-            $("#radio-btn").html("<h3>Listenavne:</h3>");
+            $("#radio-btn").html("<h3>Listnames:</h3>");
             $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
                 arr = data;
                 console.log(" done of getSolo ");

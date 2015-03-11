@@ -53,8 +53,7 @@ if($_GET['action'] == "all"){
 		$result = file_get_contents( $url, false, $context );
 		$response = json_decode( $result );
 
-		echo "OK!";
-
+		var_dump(http_response_code());
 	}
 }
 
