@@ -1,8 +1,6 @@
 <?php
 $db = new PDO('mysql:host=localhost;dbname=trellotrain;charset=utf8', 'root', 'root');
 
-var_dump($_POST);
-
 function sendData($db) {
 
 	$project_name = $_POST['project_name'];
@@ -38,7 +36,7 @@ function sendData($db) {
 		$stmt->execute(array(':project' => $project_name, ':email' => $email, ':board' => $board));
 		$affected_rows = $stmt->rowCount();
 		$insertId = $db->lastInsertId();
-		echo $insertId;
+		// echo $insertId;
 
 
 		$list = '';
@@ -49,7 +47,7 @@ function sendData($db) {
 		   $stmt->execute();
 		}
 	} else {
-		echo $validationErrorMsg;
+		echo "<center><strong>".$validationErrorMsg."</strong></center>";
 	}
 
 

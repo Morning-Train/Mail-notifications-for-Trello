@@ -1,6 +1,31 @@
 $(document).ready(function() {
+
+    var allBoardsInfo = [];
+
+    var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
+        var elements = $();
+        arr = data;
+
+        for(i = 0; i < arr.length; i++) {
+            $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
+            allBoardsInfo.push([arr[i].name, arr[i].id]);
+        }
+
+        // console.log(data);
+    }).done(function(){
+        $('#loader').fadeOut('slow');
+        console.log(allBoardsInfo);
+    });
+
+    getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
+        if (textStatus == 'timeout')
+            console.log('The server is not responding');
+
+        if (textStatus == 'error')
+            alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
+    });
+
     // Loader
-    $('#loader').fadeOut('slow');
 
     // Select tab
     $('.green').click(function() {
@@ -79,6 +104,11 @@ $(document).ready(function() {
         $.get( "php/get.php", function( data ) {
             $( ".current_notifiers" ).remove();
             $( "#field-info" ).after(data);
+        }).done(function(){
+            $( ".board-name" ).each(function( index ) {
+              console.log( index + ": " + $( this ).val() );
+              console.log(allBoardsInfo);
+            });
         });
     };
 
@@ -166,27 +196,11 @@ $(document).ready(function() {
         $('.webhooks').hide();
     });
 
-    var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
-            var elements = $();
-            arr = data;
-            for(i = 0; i < arr.length; i++) {
-                $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-            }
-            // console.log(data);
-    });
-
-    getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
-        if (textStatus == 'timeout')
-            console.log('The server is not responding');
-
-        if (textStatus == 'error')
-            alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function");
-    });
-
     $("#myBoards").change(function() {
         $("#lists").html("<h3>Listenavne:</h3>");
         $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
             $("#new-radio-btn").show();
+            $("#project").val($("#myBoards option:selected").text());
             arr = data;
             for(i = 0; i < arr.length; i++) {
                 $("#lists").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
