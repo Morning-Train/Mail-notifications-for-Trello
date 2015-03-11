@@ -28,7 +28,7 @@
 
                 <fieldset>
                     <label for="board">Boardnavn:</label>
-                        <select onChange="fetchLists(solo)" id="mySoloBoards">
+                        <select id="mySoloBoards">
 
                         </select>
                 </fieldset>
@@ -71,7 +71,7 @@
         <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
 
         <label for="board">Board:</label>
-        <select onChange="fetchLists()" id="myBoards">
+        <select id="myBoards">
             <option value="none">None chosen</option>
         </select>
 

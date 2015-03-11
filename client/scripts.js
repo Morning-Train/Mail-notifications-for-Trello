@@ -59,76 +59,97 @@ $(document).ready(function() {
         $('.modal-wrap').hide();
     });
 
-    $.get( "http://localhost:3000/getBoards", function( data ) {
+    var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
             var elements = $();
             arr = data;
             for(i = 0; i < arr.length; i++) {
                 $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
             }
-            console.log(data);
+            // console.log(data);
+    });
+
+    getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
+        if (textStatus == 'timeout')
+            console.log('The server is not responding');
+
+        if (textStatus == 'error')
+            alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function");
+    });
+
+    $("#myBoards").change(function() {
+        $("#lists").html("<h3>Listenavne:</h3>");
+        $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
+            $("#new-radio-btn").show();
+            arr = data;
+            for(i = 0; i < arr.length; i++) {
+                $("#lists").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+            }
+            $("#new-custom-frm").append('<input type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+        });
     });
 
 
-    $("#myBoards").change(function fetchLists(state){
-        if(state == "solo"){
-            var theFieldSet = document.getElementById("radio-btn");
-        } else {
-            var theFieldSet = document.getElementById("new-radio-btn");
-        }
+    //  $("#myBoards").change(function fetchLists(state){
+    //     if(state == "solo"){
+    //         var theFieldSet = document.getElementById("radio-btn");
+    //     } else {
+    //         var theFieldSet = document.getElementById("new-radio-btn");
+    //     }
 
-        theFieldSet.setAttribute('style', 'display=block');
+    //     theFieldSet.setAttribute('style', 'display=block');
 
-        var myselect = document.getElementById("myBoards");
-        var theBoard = myselect.options[myselect.selectedIndex].value;
-        var select = document.createElement("div");
-        var xoxo = document.getElementById("lists");
-        xoxo.innerHTML = "";
+    //     var myselect = document.getElementById("myBoards");
+    //     var theBoard = myselect.options[myselect.selectedIndex].value;
+    //     var select = document.createElement("div");
+    //     var xoxo = document.getElementById("lists");
+    //     xoxo.innerHTML = "";
 
-        var path = "http://localhost:3000/getLists/" + theBoard;
-        console.log(path);
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var myArr = JSON.parse(xhr.responseText);
-                myFunction(myArr);
-                console.log(myArr);
-            }
-        }
-        xhr.open("GET", path, false);
-        xhr.send();
+    //     var path = "http://localhost:3000/getLists/" + theBoard;
+    //     console.log(path);
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.onreadystatechange = function() {
+    //         if (xhr.readyState == 4 && xhr.status == 200) {
+    //             var myArr = JSON.parse(xhr.responseText);
+    //             myFunction(myArr);
+    //             console.log(myArr);
+    //         }
+    //     }
+    //     xhr.open("GET", path, false);
+    //     xhr.send();
 
-            function myFunction(arr) {
+    //         function myFunction(arr) {
 
-                var out = "";
-                var i;
+    //             var out = "";
+    //             var i;
 
-                var board = document.createElement("input");
-                board.setAttribute('type', 'hidden');
-                board.setAttribute('value', theBoard);
-                board.setAttribute('name', 'board');
-
-
-                for(i = 0; i < arr.length; i++) {
-                    var divBeforeCheckbox = document.createElement("div");
-                    divBeforeCheckbox.setAttribute("class", "checkbox");
-                    var opt = arr[i].name;
-                    var el = document.createElement("input");
-                    el.setAttribute("name", "lists[]");
-                    var label = document.createElement("label");
-                    label.textContent = arr[i].name;
-                    el.type="checkbox";
-                    el.value = arr[i].id;
-                    divBeforeCheckbox.appendChild(el);
-                    divBeforeCheckbox.appendChild(label);
-                    divBeforeCheckbox.appendChild(board);
-                    select.appendChild(divBeforeCheckbox);
-                }
+    //             var board = document.createElement("input");
+    //             board.setAttribute('type', 'hidden');
+    //             board.setAttribute('value', theBoard);
+    //             board.setAttribute('name', 'board');
 
 
-                xoxo.appendChild(select);
+    //             for(i = 0; i < arr.length; i++) {
+    //                 var divBeforeCheckbox = document.createElement("div");
+    //                 divBeforeCheckbox.setAttribute("class", "checkbox");
+    //                 var opt = arr[i].name;
+    //                 var el = document.createElement("input");
+    //                 el.setAttribute("name", "lists[]");
+    //                 var label = document.createElement("label");
+    //                 label.textContent = arr[i].name;
+    //                 el.type="checkbox";
+    //                 el.value = arr[i].id;
+    //                 divBeforeCheckbox.appendChild(el);
+    //                 divBeforeCheckbox.appendChild(label);
+    //                 divBeforeCheckbox.appendChild(board);
+    //                 select.appendChild(divBeforeCheckbox);
+    //             }
 
-            }
-        console.log(xhr.status);
-        console.log(xhr.statusText);
-    });
+
+    //             xoxo.appendChild(select);
+
+    //         }
+    //     console.log(xhr.status);
+    //     console.log(xhr.statusText);
+    // });
+    
 });

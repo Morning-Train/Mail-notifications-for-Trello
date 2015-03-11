@@ -1,6 +1,8 @@
 <?php
 $db = new PDO('mysql:host=localhost;dbname=trellotrain;charset=utf8', 'root', 'root');
 
+var_dump($_POST);
+
 function sendData($db) {
 
 	$project_name = $_POST['project_name'];
