@@ -26,11 +26,13 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test3');
 
 // Connect to the db
+
 var NotifierSchema = new mongoose.Schema({
   project: String,
   email: Boolean,
   board: String,
-  updated_at: { type: Date, default: Date.now },
+  lists: [{ list: 'string' }],
+  updated_at: { type: Date, default: Date.now }
 });
 
 var Notifier = mongoose.model('Notifier', NotifierSchema);
@@ -95,19 +97,54 @@ app.use(bodyParser.json());
 app.use(express.static('./client'));
 
 app.post("/php/post.php", function (req, res){
-res.end(" " + console.log(req.body));
+var continueThis = true;
+
+if(req.body.project_name == ""){
+  res.status(418);
+  res.send("<center><strong>Empty project name</strong></center>");
+  continueThis = false;
+}
+
+if(req.body.email == false){
+  res.status(418)
+  res.send("<center><strong>Empty email</strong></center>");
+  continueThis = false;
+}
+
+res.send(req.body.lists);
+
+if(!continueThis){
+Notifier.create(
+  {
+    project: req.body.project_name, 
+    email: req.body.email, 
+    board: req.body.board,
+    lists: req.body.lists
+  }, 
+  function(err, todo){
+    if(err) console.log(err);
+    else res.send(todo);
+  }
+);
+}
   //res.sendfile(__dirname + '/client/index.html');
 });
 
 app.get("/all/", function(req, res){
-  Todo.find({}, function(err, todos){
-    var todoMap = {}
+  Notifier.find({}, function(err, notifiers){
+    var notifierMap = {}
 
-    todos.forEach(function(user){
-      todoMap[user._id] = user;
+    notifiers.forEach(function(user){
+      notifierMap[user._id] = user;
     })
 
-    res.send(todoMap);
+    res.send(notifierMap);
+  })
+})
+
+app.get(/deleteAll/, function(req, res){
+  Notifier.remove({}, function(err){
+    res.send('collection removed');
   })
 })
 
