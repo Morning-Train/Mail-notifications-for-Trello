@@ -88,21 +88,21 @@
 
         <!-- Add new mail notify -->
         <form id="new-custom-frm" action="#submit-answer" method="POST">
+            <label for="board">Board:</label>
+            <select id="myBoards">
+                <option value="none">None chosen</option>
+            </select>
+                <fieldset id="new-radio-btn" style="display: none">
+                    <div id="lists">
+                        <h3>Listenavne:</h3>
+                    </div>
+                </fieldset>
+
             <label for="project">Projektnavn</label>
             <input type="text" placeholder="eks. Inwatec" id="project" name="project_name" autocomplete="off">
 
             <label for="email">Email:</label>
             <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
-
-        <label for="board">Board:</label>
-        <select id="myBoards">
-            <option value="none">None chosen</option>
-        </select>
-            <fieldset id="new-radio-btn" style="display: none">
-                <div id="lists">
-                    <h3>Listenavne:</h3>
-                </div>
-            </fieldset>
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
