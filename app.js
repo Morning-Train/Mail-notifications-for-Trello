@@ -79,7 +79,6 @@ app.use(bodyParser.json());
   // Handling error and send it to me
   function errorHandling (err) {
     console.error(err);
-   
   }
 
 
@@ -106,8 +105,8 @@ console.log(req.body);
     // Is Email, BoardID and ListID defined? (* = all lists)
     if(userEmail === undefined || userBoard === undefined || wantedLists === undefined){
       errorHandling("Email, BoardID or ListID is not specificed");
-	   res.status(400);
-		res.send('None shall pass');
+	    res.status(400);
+	    res.send('None shall pass');
 
     } else {
       // 5.semester : 54497be50bfa1518de532d19
@@ -341,42 +340,6 @@ console.log(req.body);
             }
           );
     } // This else if process needs to be removed!
-  } else if(process.argv[2] === "getBoards") {
-    var board = function(id, name){
-      this.id = id;
-      this.name = name;
-    };
-
-    var boardArray = [];
-
-    var counter = 0;
-    var boardSize = 0;
-
-    // Get all board ids out
-    t.get("/1/members/me", function (err, data) {
-      if (err) {
-         throw err;
-      }
-
-      boardSize = data.idBoards.length;
-      data.idBoards.forEach(function (datax){
-        var boardPath = "/1/boards/" + datax;
-          t.get(boardPath, function(err, data) {
-            counter++;
-                if (err) throw err;
-                console.log("============REQUEST FOR==============")
-                console.log("+ Board name: " + data.name + " ID: " + data.id);
-                var currentBoard = new board(data.id, data.name);
-                boardArray.push(currentBoard);
-                console.log("============REQUEST END==============")
-                if(counter === boardSize){
-                  console.log(boardArray);
-                }
-          });
-        }
-      );
-    });
-
   } else {
     console.log("Sorry, we are closed today");
   }
