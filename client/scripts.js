@@ -1,6 +1,18 @@
 $(document).ready(function() {
     $('#loader').fadeOut('slow');
-    //AJAX call for contact form
+
+    // Select tab
+    $('.green').click(function() {
+        $('#webhooks-content').hide();
+        $('#notify-content').show();
+    });
+
+    $('.blue').click(function() {
+        $('#notify-content').hide();
+        $('#webhooks-content').show();
+    });
+
+    // Submit new mail notifier
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
         console.log($('#new-custom-frm').serialize());
