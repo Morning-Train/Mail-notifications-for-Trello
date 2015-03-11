@@ -170,7 +170,7 @@
             <textarea name="desc-area" id="web-desc" autocomplete="off" placeholder="The purpose of this awesome webhook"></textarea>
 
             <label for="callback-url">Callback URL:</label>
-            <input type="textarea" name="callback-area" id="callback-url" autocomplete="off" placeholder="example: http://morningtrain.dk/script-with-superpower">
+            <input type="textarea" name="callback-area" id="callback-url" autocomplete="off" placeholder="http://morningtrain.dk/script-with-superpower">
 
             <input type="submit" value="Submit" id="web-submit">
             <input type="hidden" name="submitted" value="true">
