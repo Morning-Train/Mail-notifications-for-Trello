@@ -7,84 +7,100 @@
     <link rel="stylesheet" href="style.css">
     <link href='http://fonts.googleapis.com/css?family=Titillium+Web:400,700,600,300italic' rel='stylesheet' type='text/css'>
 </head>
-<body>
+<body class="no-scroll">
     <div id="loader">
+    </div>
+    
+    <!-- Approve remove -->
+    <div id="approve-wrap">
+        <div class="approve-alert">
+            <p>Are you sure you want to remove this record?</p>
+            <button id="yes">Yes</button>
+            <button id="no">No</button>
+        </div>
     </div>
 
     <!-- Notify Modal Box -->
     <div class="modal-wrap notify">
-        <div class="modalbox">
+        <div class="close-btn-fix">
             <div class="close-btn">X</div>
-            <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
-                <input type="hidden" name="notifier_id" id="modal-notifier-id">
-                <fieldset>
-                    <label for="project">Projectname:</label>
-                    <input type="text" placeholder="Super awesome project" name="project_name" id="modal-project" autocomplete="off">
-                </fieldset>
+            <div class="modalbox">
+                <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
+                    <input type="hidden" name="notifier_id" id="modal-notifier-id">
+                    <fieldset>
+                        <label for="project">Projectname:</label>
+                        <input type="text" placeholder="Super awesome project" name="project_name" id="modal-project" autocomplete="off">
+                    </fieldset>
 
-                <fieldset>
-                    <label for="email">Email:</label>
-                    <input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off">
-                </fieldset>
+                    <fieldset>
+                        <label for="email">Email:</label>
+                        <input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off">
+                    </fieldset>
 
-                <fieldset>
-                    <label for="board">Boardname:</label>
-                        <select name="board" id="mySoloBoards">
+                    <fieldset>
+                        <label for="board">Boardname:</label>
+                            <select name="board" id="mySoloBoards">
 
-                        </select>
-                </fieldset>
+                            </select>
+                    </fieldset>
 
-                <fieldset id="radio-btn">
-                    <h3>Listnames:</h3>
-                    <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                    <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                    <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                    <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                    <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                    <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                    <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                    <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                    <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                </fieldset>
+                    <fieldset id="check-btn">
+                        <h3>Listnames:</h3>
+                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
+                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
+                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
+                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
+                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
+                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
+                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
+                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
+                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
+                    </fieldset>
 
-                <input type="submit" value="Update" id="modal-submit">
-                <input type="submit" value="Remove" id="modal-rmv" class="remove-record">
-                <input type="hidden" name="submitted" value="true">
-            </form>
+                    <input type="submit" value="Update" id="modal-submit">
+                    <input type="submit" value="Remove" id="modal-rmv" class="remove-record">
+                    <div class="clearfix"></div>
+                    <input type="hidden" name="submitted" value="true">
+                    <div class="small-space"></div>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Webhooks Modal Box -->
     <div class="modal-wrap webhooks">
-        <div class="modalbox web-box">
+        <div class="close-btn-fix">
             <div class="close-btn web-btn">X</div>
-            <form class="modal-form modal-web" action="#submit-answer" method="POST">
-                <input type="hidden" id="webhooks_id">
-                <fieldset>
-                    <label for="board">Board:</label>
-                        <select class="mySoloBoards">
-                        </select>
-                </fieldset>
+            <div class="modalbox web-box">
+                <form class="modal-form modal-web" action="#submit-answer" method="POST">
+                    <input type="hidden" id="webhooks_id">
+                    <fieldset>
+                        <label for="board">Board:</label>
+                            <select class="mySoloBoards">
+                            </select>
+                    </fieldset>
 
-                <fieldset>
-                    <label for="modal-desc">Description:</label>
-                    <textarea name="desc-area" id="modal-desc" autocomplete="off"></textarea>
-                </fieldset>
+                    <fieldset>
+                        <label for="modal-desc">Description:</label>
+                        <textarea name="desc-area" id="modal-desc" autocomplete="off"></textarea>
+                    </fieldset>
 
-                <fieldset>
-                    <label for="modal-url">Callback URL:</label>
-                    <input type="textarea" name="callback-area" id="modal-url" autocomplete="off">
-                </fieldset>
+                    <fieldset>
+                        <label for="modal-url">Callback URL:</label>
+                        <input type="textarea" name="callback-area" id="modal-url" autocomplete="off">
+                    </fieldset>
 
-                <input type="submit" value="Update" id="modal-webhooks-submit">
-                <input type="submit" value="Remove" id="modal-webhooks-rmv">
-                <input type="hidden" name="submitted" value="true">
-            </form>
+                    <input type="submit" value="Update" id="modal-webhooks-submit">
+                    <input type="submit" value="Remove" id="modal-webhooks-rmv">
+                    <input type="hidden" name="submitted" value="true">
+                    <div class="small-space"></div>
+                </form>
+            </div>
         </div>
     </div>
 
     <header>
-        <h1>Trello-train</h1>
+        <h1>Trello-Train</h1>
     </header>
 
     <!-- Submit divs with error/success -->
@@ -124,7 +140,7 @@
             <select id="myBoards">
                 <option value="none">None chosen</option>
             </select>
-                <fieldset id="new-radio-btn" style="display: none">
+                <fieldset id="new-check-btn" style="display: none">
                     <div id="lists">
                     </div>
                 </fieldset>
