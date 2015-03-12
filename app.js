@@ -96,37 +96,44 @@ app.use(bodyParser.json());
 
 app.use(express.static('./client'));
 
-app.post("/php/post.php", function (req, res){
+app.post("/mongies/post", function (req, res){
 var continueThis = true;
 
 if(req.body.project_name == ""){
-  res.status(418);
   res.send("<center><strong>Empty project name</strong></center>");
   continueThis = false;
 }
 
 if(req.body.email == false){
-  res.status(418)
   res.send("<center><strong>Empty email</strong></center>");
   continueThis = false;
 }
 
-res.send(req.body.lists);
+//res.send(req);
 
-if(!continueThis){
-Notifier.create(
-  {
-    project: req.body.project_name, 
-    email: req.body.email, 
-    board: req.body.board,
-    lists: req.body.lists
-  }, 
-  function(err, todo){
-    if(err) console.log(err);
-    else res.send(todo);
-  }
-);
+if(continueThis){
+  console.log(req.body);
+  console.log(req.body.hasOwnProperty("lists[]"));
+  req.body.lists.forEach(function(entry){
+    console.log(entry);
+  });
+  res.send("Hello");
+// Notifier.create(
+//   {
+//     project: req.body.project_name, 
+//     email: req.body.email, 
+//     board: req.body.board,
+//     lists: req.body.lists
+//   }, 
+//   function(err, todo){
+//     if(err) console.log(err);
+//     else res.send(todo);
+//   }
+// );
+
+  //res.send(req.body.id);
 }
+//res.end();
   //res.sendfile(__dirname + '/client/index.html');
 });
 

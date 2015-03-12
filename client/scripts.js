@@ -43,7 +43,7 @@ $(document).ready(function() {
         // Ajax call to php/post.php
         $.ajax({
             type: 'POST',
-            url:'php/post.php',
+            url:'mongies/post',
             data: $('#new-custom-frm').serialize()
         }).
         success(function(res) {
@@ -150,9 +150,9 @@ $(document).ready(function() {
                 console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                        $("#radio-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
                     } else {
-                        $("#radio-btn").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                        $("#radio-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
                     }
 
                 }
@@ -207,9 +207,9 @@ $(document).ready(function() {
                 console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $("#radio-btn").append('<input name="lists[]" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
+                        $("#radio-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
                     } else {
-                        $("#radio-btn").append('<input name="lists[]" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                        $("#radio-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
                     }
 
                 }
@@ -234,7 +234,7 @@ $(document).ready(function() {
             $("#project").val($("#myBoards option:selected").text());
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $("#lists").append('<div class="checkbox"><input name="lists[]" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                $("#lists").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
             }
             $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
 
@@ -247,7 +247,7 @@ $(document).ready(function() {
         $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $("#radio-btn").append('<input name="lists[]" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                $("#radio-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
             }
         });
     });
