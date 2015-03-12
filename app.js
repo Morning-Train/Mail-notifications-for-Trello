@@ -29,7 +29,7 @@ mongoose.connect('mongodb://localhost/test3');
 
 var NotifierSchema = new mongoose.Schema({
   project: String,
-  email: Boolean,
+  email: String,
   board: String,
   lists: [{ list: 'string' }],
   updated_at: { type: Date, default: Date.now }
@@ -97,47 +97,73 @@ app.use(bodyParser.json());
 app.use(express.static('./client'));
 
 app.post("/mongies/post", function (req, res){
-var continueThis = true;
+    var continueThis = true;
+    var project_name, email, board;
+    var lists = [];
 
-if(req.body.project_name == ""){
-  res.send("<center><strong>Empty project name</strong></center>");
-  continueThis = false;
-}
+    if(req.body.project_name == "" || req.body.project_name == undefined && continueThis){
+      res.status(418);
+      res.send("<center><strong>Empty project name</strong></center>");
+      continueThis = false;
+    }
 
-if(req.body.email == false){
-  res.send("<center><strong>Empty email</strong></center>");
-  continueThis = false;
-}
+    if(req.body.email == undefined || req.body.email == "" && continueThis){
+      res.status(418);
+      res.send("<center><strong>Empty email</strong></center>");
+      continueThis = false;
+    }
 
-//res.send(req);
+    //res.send(req);
+    if(req.body.board == undefined && continueThis){
+      res.status(418);
+      res.send("<center><strong>No board selected!</strong></center>");
+      continueThis = false;
+    }
 
-if(continueThis){
-  console.log(req.body);
-  console.log(req.body.hasOwnProperty("lists[]"));
-  req.body.lists.forEach(function(entry){
-    console.log(entry);
-  });
-  res.send("Hello");
-// Notifier.create(
-//   {
-//     project: req.body.project_name, 
-//     email: req.body.email, 
-//     board: req.body.board,
-//     lists: req.body.lists
-//   }, 
-//   function(err, todo){
-//     if(err) console.log(err);
-//     else res.send(todo);
-//   }
-// );
+    if(req.body.lists == undefined && continueThis){
+      res.status(418);
+      res.send("<center><strong>No lists chosen</strong></center>");
+      continueThis = false;
+    }
 
-  //res.send(req.body.id);
-}
-//res.end();
-  //res.sendfile(__dirname + '/client/index.html');
+    if(continueThis){
+      project_name = req.body.project_name;
+      email = req.body.email;
+      board = req.body.board;
+      lists = req.body.lists;
+
+      var myNotifier = new Notifier();
+      myNotifier.project = project_name;
+      myNotifier.email = email;
+      myNotifier.board = board;
+
+
+      if( typeof req.body.lists === "string"){
+        myNotifier.lists.push(lists);
+      } else {
+        req.body.lists.forEach(function(entry){
+          myNotifier.lists.push(entry);
+          console.log(entry);
+        });
+      }
+
+      res.status(200);
+      res.send(myNotifier);
+
+      myNotifier.save();
+
+    }
 });
 
-app.get("/all/", function(req, res){
+app.post("/mongies/updateOne/", function(req, res){
+
+  Notifier.find({_id : req.body.notifier_id}, function(err, notifier){
+    res.send(notifier);
+  })
+
+});
+
+app.get("/mongies/all/", function(req, res){
   Notifier.find({}, function(err, notifiers){
     var notifierMap = {}
 
@@ -146,6 +172,12 @@ app.get("/all/", function(req, res){
     })
 
     res.send(notifierMap);
+  })
+})
+
+app.get("/mongies/findOne/:id", function(req,res){
+  Notifier.find({_id : req.params.id}, function(err, notifier){
+    res.send(notifier);
   })
 })
 

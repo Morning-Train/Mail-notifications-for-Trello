@@ -38,7 +38,7 @@ $(document).ready(function() {
     // Submit new mail notifier
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
-        console.log($('#new-custom-frm').serialize());
+        //console.log($('#new-custom-frm').serialize());
 
         // Ajax call to php/post.php
         $.ajax({
@@ -55,7 +55,7 @@ $(document).ready(function() {
 
             // Hide lists! :)
             $('#new-radio-btn').hide();
-            console.log(res);
+            //console.log(res);
 
             // Refresh current list of mail notifiers.
             getFreshData();
@@ -76,13 +76,14 @@ $(document).ready(function() {
     // Modal submit - change this to modal-update-notifier
     $('#modal-submit').click(function(e){
         e.preventDefault();
-
+        var data = $('#modal-form').serialize();
+        console.log(data);
         // Ajax call to php/update.php with the right data (all data from the single notifier).
         $.ajax({
             type: 'POST',
-            url:'php/update.php',
+            url:'mongies/updateOne',
             // Remember to change this.
-            data: $('#modal-form').serialize()
+            data: data
         }).
         success(function(res) {
             console.log(res);
@@ -98,9 +99,20 @@ $(document).ready(function() {
 
     var getFreshData = function() {
         // Get freshData just gets fresh data (notifiers) from database.
-        $.get( "php/get.php", function( data ) {
-            $( ".current_notifiers" ).remove();
-            $( "#field-info" ).after(data);
+        $.get( "mongies/all/", function( data ) {
+            $( ".current_notifiers" ).empty();
+            //console.log(data);
+            $.each(data, function(i, val){
+                var textToInsert = "";
+                textToInsert += "<fieldset class='current_notifiers' disabled>";
+                textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='"+ val._id +"'>";
+                textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "'>";
+                textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"'>";
+                textToInsert += "<input type='text' class='field-info-item board-name' value='"+ val.board +"'>";
+                textToInsert += "<div class='edit rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                $("#field-info").after(textToInsert);
+            });
+
         }).done(function(){
             $( ".board-name" ).each(function( index ) {
               // console.log( index + ": " + $( this ).val() );
@@ -116,24 +128,23 @@ $(document).ready(function() {
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
 
-        $.get( "php/getSolo.php?id=" + currentId, function( data ) {
-          $('#modal-notifier-id').val(data[0].id);
+        $.get( "mongies/findOne/" + currentId, function( data ) {
+
+        //console.log(data);
+          $('#modal-notifier-id').val(data[0]._id);
           $('#modal-project').val(data[0].project);
           $('#modal-email').val(data[0].email);
           var $options = $("#myBoards > option").clone();
           $('#mySoloBoards').append($options);
           $('#mySoloBoards').val(data[0].board);
-          console.log(data);
+          //console.log(data);
         }, "json").done(function(data){
-
-            console.log(" done of getSolo ");
 
             var myCheckedLists = [];
 
             data[0].lists.forEach(function(entry){
-                myCheckedLists.push(entry.listId);
+                myCheckedLists.push(entry._id);
             })
-            console.log("myCheckedLists");
 
             function arrayIndexOf(searchTerm){
                       for(var i = 0, len = myCheckedLists.length; i < len; i++){
@@ -146,8 +157,8 @@ $(document).ready(function() {
             $("#radio-btn").html("<h3>Listnames:</h3>");
             $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
                 arr = data;
-                console.log(" done of getSolo ");
-                console.log(data);
+                //console.log(" done of getSolo ");
+                //console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
                         $("#radio-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
