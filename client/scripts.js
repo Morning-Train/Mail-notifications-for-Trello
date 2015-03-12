@@ -257,6 +257,7 @@ $(document).ready(function() {
             $('#approve-wrap').hide();
             $('.notify').hide();
             $('.webhooks').hide();
+            $('body').removeClass('no-scroll');
 
         }).
         fail(function(err) {
