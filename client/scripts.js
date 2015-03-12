@@ -254,6 +254,7 @@ $(document).ready(function() {
             $("#fieldset-info").remove();
             // Update notifier list (on frontpage)
             getFreshData();
+            $('#approve-wrap').hide();
 
         }).
         fail(function(err) {
