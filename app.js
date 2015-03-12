@@ -8,6 +8,9 @@ var clientWebsite = "http://localhost:8888"; // Change this to the URL of the cl
 var trelloApplicationKey = "b7a8480d496fa90c36f9f2d02020e25b" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
 var trelloUserToken = "3b107cbe1593b1d66fb20d048ef8ef4ed59db83b04ced3598eab3fd4a4401cc4" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
+// SMTP settings
+
+
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
 
