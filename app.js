@@ -5,8 +5,8 @@ var daysBetweenNotifiers = 7; // Change this to the interval of notifiers.
 var clientWebsite = "http://localhost:8888"; // Change this to the URL of the client web ui.
 
 // TRELLO API ACCESS
-var trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
-var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+var trelloApplicationKey = "ef463438274bb639009b76098f83b026"; // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836"; // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 // SMTP settings
 
@@ -25,7 +25,20 @@ var nodemailer = require("nodemailer");
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test3');
 
+// Connect to the db
+
+var NotifierSchema = new mongoose.Schema({
+  project: String,
+  email: String,
+  board: String,
+  lists: [{ list: 'string' }],
+  updated_at: { type: Date, default: Date.now }
+});
+
+var Notifier = mongoose.model('Notifier', NotifierSchema);
 
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello(trelloApplicationKey, trelloUserToken);
@@ -84,6 +97,125 @@ app.use(bodyParser.json());
   }
 
 
+app.use(express.static('./client'));
+
+app.post("/mongies/post", function (req, res){
+    var continueThis = true;
+    var project_name, email, board;
+    var lists = [];
+
+    if(req.body.project_name === "" || req.body.project_name === undefined && continueThis){
+      res.status(418);
+      res.send("<center><strong>Empty project name</strong></center>");
+      continueThis = false;
+    }
+
+    if(req.body.email === undefined || req.body.email === "" && continueThis){
+      res.status(418);
+      res.send("<center><strong>Empty email</strong></center>");
+      continueThis = false;
+    }
+
+    //res.send(req);
+    if(req.body.board === undefined && continueThis){
+      res.status(418);
+      res.send("<center><strong>No board selected!</strong></center>");
+      continueThis = false;
+    }
+
+    if(req.body.lists === undefined && continueThis){
+      res.status(418);
+      res.send("<center><strong>No lists chosen</strong></center>");
+      continueThis = false;
+    }
+
+    if(continueThis){
+      project_name = req.body.project_name;
+      email = req.body.email;
+      board = req.body.board;
+      lists = req.body.lists;
+
+      var myNotifier = new Notifier();
+      myNotifier.project = project_name;
+      myNotifier.email = email;
+      myNotifier.board = board;
+
+
+      if( typeof req.body.lists === "string"){
+        myNotifier.lists.push(lists);
+      } else {
+        req.body.lists.forEach(function(entry){
+          myNotifier.lists.push(entry);
+          console.log(entry);
+        });
+      }
+
+      res.status(200);
+      res.send(myNotifier);
+
+      myNotifier.save();
+
+    }
+});
+
+app.post("/mongies/updateOne/", function(req, res){
+  console.log(req.body);
+
+  Notifier.findOne({ _id : req.body.notifier_id }, function (err, notifier){
+    notifier.board = req.body.board;
+    notifier.project = req.body.project_name;
+    notifier.email = req.body.email;
+    notifier.lists = [];
+
+    if(typeof req.body.lists === "string"){
+      notifier.lists.push(req.body.lists);
+    } else {
+      req.body.lists.forEach(function(entry){
+        notifier.lists.push(entry);
+      });
+    }
+    res.status(200);
+    res.send("Updated");
+    notifier.save();
+  });
+
+
+});
+
+app.post("/mongies/removeOne", function(req, res){
+    Notifier.findOne({ _id : req.body.notifier_id }, function (err, notifier){
+      notifier.remove();
+      notifier.save();
+      res.status(200);
+      res.send("Deleted!");
+    });
+});
+
+app.get("/mongies/all/", function(req, res){
+  Notifier.find({}, function(err, notifiers){
+    var notifierMap = {};
+
+    notifiers.forEach(function(user){
+      notifierMap[user._id] = user;
+    });
+
+    res.send(notifierMap);
+  });
+});
+
+app.get("/mongies/findOne/:id", function(req,res){
+  Notifier.find({_id : req.params.id}, function(err, notifier){
+    res.send(notifier);
+  });
+});
+
+app.get("mongies/deleteAll/", function(req, res){
+  Notifier.remove({}, function(err){
+    res.send('collection removed');
+  });
+});
+
+
 
 // This is the fun part, here is the "POST" method, that handles the email send to customers. Btw, it also includes alot of other stuff - read on.
 app.post("/sendMail/", function (req, res){
@@ -97,15 +229,13 @@ app.post("/sendMail/", function (req, res){
 
 // console.log(req.body.lists);
 
-// Just a temp "OK" back return, to the guy who handles the cronjob
-
   if(justContinue){
 
     // Is Email, BoardID and ListID defined? (['*'] = all lists) - the star hack does only work with directly sent requestes.
     if(userEmail === undefined || userBoard === undefined || wantedLists === undefined){
       errorHandling("Email, BoardID or ListID is not specificed");
-	    res.status(400);
-	    res.send("None shall pass");
+      res.status(400);
+      res.send("None shall pass");
     } else {
       // 5.semester : 54497be50bfa1518de532d19
       // BoardID + Path defined
@@ -163,7 +293,7 @@ app.post("/sendMail/", function (req, res){
 
             // Connection to trello object and trello api, and try fetch the lists inside board.
               t.get("/1/boards/" + boardId + "/lists", function(err, data){
-              	// for each list returned, make a new list object with list id and name, thereafter push into boardLists array (array of objects).
+                // for each list returned, make a new list object with list id and name, thereafter push into boardLists array (array of objects).
                     data.forEach(function(item){
                       var addMe = new List(item.id, item.name);
                       // console.log(" + List: " + item.name + " " + item.id);
@@ -175,7 +305,7 @@ app.post("/sendMail/", function (req, res){
             },
             function(callback){
               // code c
-	          // Console.log for linebreak and indicating where in the script we are.
+            // Console.log for linebreak and indicating where in the script we are.
 
               console.log();
               console.log("|abc|");
