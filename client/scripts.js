@@ -95,7 +95,29 @@ $(document).ready(function() {
         fail(function(err) {
             // Setup fail handling! (We need this someday)
         });
-    })
+    });
+
+    $('#modal-rmv').click(function(e){
+        e.preventDefault();
+        var data = $('#modal-form').serialize();
+        console.log(data);
+        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        $.ajax({
+            type: 'POST',
+            url:'mongies/removeOne',
+            // Remember to change this.
+            data: data
+        }).
+        success(function(res) {
+            console.log(res);
+            // Update notifier list (on frontpage)
+            getFreshData();
+
+        }).
+        fail(function(err) {
+            // Setup fail handling! (We need this someday)
+        });
+    });
 
     var getFreshData = function() {
         // Get freshData just gets fresh data (notifiers) from database.
