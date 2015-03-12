@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    var whereAmI = "notifiers";
+
 
     var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
         var elements = $();
@@ -25,12 +27,15 @@ $(document).ready(function() {
     $('.green').click(function() {
         $('#webhooks-content').hide();
         $('#notify-content').show();
+        whereAmI = 'notifiers';
     });
 
     $('.blue').click(function() {
         $('#notify-content').hide();
         $('#webhooks-content').show();
+        whereAmI = 'webhooks';
     });
+
 
     // Submit new mail notifier
     $('#new-custom-frm').submit(function(e) {
@@ -231,8 +236,13 @@ $(document).ready(function() {
 
     });
 
-    // Alert box on remove click
+    // Alert box on remove click in Modal box
     $('#modal-rmv').click(function(e){
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
+
+    $('#modal-webhooks-rmv').click(function(e){
         e.preventDefault();
         $('#approve-wrap').show();
     });
