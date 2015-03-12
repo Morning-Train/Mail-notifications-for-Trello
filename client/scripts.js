@@ -1,6 +1,5 @@
 $(document).ready(function() {
 
-
     var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
         var elements = $();
         arr = data;
@@ -9,9 +8,9 @@ $(document).ready(function() {
             $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
         }
 
-        // console.log(data);
     }).done(function(){
         $('#loader').fadeOut('slow');
+        $('body').removeClass('no-scroll');
     });
 
     getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
@@ -21,8 +20,6 @@ $(document).ready(function() {
         if (textStatus == 'error')
             alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
     });
-
-    // Loader
 
     // Select tab
     $('.green').click(function() {
@@ -113,6 +110,8 @@ $(document).ready(function() {
     // Edit / Save fieldsets -> Mail notify
     $( "#sub-frm" ).on( "click", ".rm-dis", function() {
         $('.notify').show();
+        $('body').addClass('no-scroll');
+
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
 
@@ -163,6 +162,7 @@ $(document).ready(function() {
     // Edit / Save fieldsets -> Webhooks
     $( "#web-sub-frm" ).on( "click", ".edit-web", function() {
         $('.webhooks').show();
+        $('body').addClass('no-scroll');
 
         // Set currentId (from the pressed notifier)
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
@@ -218,11 +218,23 @@ $(document).ready(function() {
 
     });
 
+    // Alert box on remove click
+    $('#modal-rmv').click(function(e){
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
+    // if yes
+
+    // if no
+    $('#no').click(function(){
+        $('#approve-wrap').hide();
+    });
 
     // Close modal box on close click
     $('.close-btn').click(function() {
         $('.notify').hide();
         $('.webhooks').hide();
+        $('body').removeClass('no-scroll');
     });
 
     $("#myBoards").change(function() {

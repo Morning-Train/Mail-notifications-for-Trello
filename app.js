@@ -5,8 +5,8 @@ var daysBetweenNotifiers = 7; // Change this to the interval of notifiers.
 var clientWebsite = "http://localhost:8888"; // Change this to the URL of the client web ui.
 
 // TRELLO API ACCESS
-var trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
-var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+var trelloApplicationKey = "b7a8480d496fa90c36f9f2d02020e25b" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+var trelloUserToken = "3b107cbe1593b1d66fb20d048ef8ef4ed59db83b04ced3598eab3fd4a4401cc4" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
