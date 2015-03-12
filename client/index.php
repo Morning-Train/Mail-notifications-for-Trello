@@ -11,6 +11,7 @@
     <div id="loader">
     </div>
     
+    <!-- Approve remove -->
     <div id="approve-wrap">
         <div class="approve-alert">
             <p>Are you sure you want to remove this record?</p>
