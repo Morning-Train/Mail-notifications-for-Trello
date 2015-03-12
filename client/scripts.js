@@ -51,7 +51,7 @@ $(document).ready(function() {
             $('#new-custom-frm')[0].reset();
 
             // Hide lists! :)
-            $('#new-radio-btn').hide();
+            $('#new-check-btn').hide();
             //console.log(res);
 
             // Refresh current list of mail notifiers.
@@ -94,32 +94,12 @@ $(document).ready(function() {
         });
     });
 
-    $('#modal-rmv').click(function(e){
-        e.preventDefault();
-        var data = $('#modal-form').serialize();
-        console.log(data);
-        // Ajax call to php/update.php with the right data (all data from the single notifier).
-        $.ajax({
-            type: 'POST',
-            url:'mongies/removeOne',
-            // Remember to change this.
-            data: data
-        }).
-        success(function(res) {
-            console.log(res);
-            // Update notifier list (on frontpage)
-            getFreshData();
-
-        }).
-        fail(function(err) {
-            // Setup fail handling! (We need this someday)
-        });
-    });
-
     var getFreshData = function() {
         // Get freshData just gets fresh data (notifiers) from database.
         $.get( "mongies/all/", function( data ) {
             $( ".current_notifiers" ).empty();
+            $("#fieldset-info").remove();
+
             //console.log(data);
             $.each(data, function(i, val){
                 var textToInsert = "";
@@ -175,16 +155,16 @@ $(document).ready(function() {
             }
 
 
-            $("#radio-btn").html("<h3>Listnames:</h3>");
+            $("#check-btn").html("<h3>Listnames:</h3>");
             $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
                 arr = data;
                 //console.log(" done of getSolo ");
                 //console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $("#radio-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                        $("#check-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
                     } else {
-                        $("#radio-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                        $("#check-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
                     }
 
                 }
@@ -233,16 +213,16 @@ $(document).ready(function() {
             }
 
 
-            $("#radio-btn").html("<h3>Listnames:</h3>");
+            $("#check-btn").html("<h3>Listnames:</h3>");
             $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
                 arr = data;
                 console.log(" done of getSolo ");
                 console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $("#radio-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
+                        $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
                     } else {
-                        $("#radio-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                        $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
                     }
 
                 }
@@ -256,7 +236,30 @@ $(document).ready(function() {
         e.preventDefault();
         $('#approve-wrap').show();
     });
+
     // if yes
+    $('#yes').click(function(e){
+        e.preventDefault();
+        var data = $('#modal-form').serialize();
+        console.log(data);
+        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        $.ajax({
+            type: 'POST',
+            url:'mongies/removeOne',
+            // Remember to change this.
+            data: data
+        }).
+        success(function(res) {
+            console.log(res);
+            $("#fieldset-info").remove();
+            // Update notifier list (on frontpage)
+            getFreshData();
+
+        }).
+        fail(function(err) {
+            // Setup fail handling! (We need this someday)
+        });
+    });
 
     // if no
     $('#no').click(function(){
@@ -275,7 +278,7 @@ $(document).ready(function() {
 
         $("#lists").html("<h3>Listenavne:</h3>");
         $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
-            $("#new-radio-btn").show();
+            $("#new-check-btn").show();
             $("#project").val($("#myBoards option:selected").text());
             arr = data;
             for(i = 0; i < arr.length; i++) {
@@ -287,12 +290,12 @@ $(document).ready(function() {
     });
 
     $("#mySoloBoards").change(function() {
-        $("#radio-btn").empty();
-        $("#radio-btn").html("<h3>Listenavne:</h3>");
+        $("#check-btn").empty();
+        $("#check-btn").html("<h3>Listenavne:</h3>");
         $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $("#radio-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
             }
         });
     });
