@@ -97,7 +97,7 @@ $(document).ready(function() {
     var getFreshData = function() {
         // Get freshData just gets fresh data (notifiers) from database.
         $.get( "mongies/all/", function( data ) {
-            $( ".current_notifiers" ).empty();
+            $( ".current_notifiers" ).remove();
             $("#fieldset-info").remove();
 
             //console.log(data);
