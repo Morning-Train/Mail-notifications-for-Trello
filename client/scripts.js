@@ -255,6 +255,9 @@ $(document).ready(function() {
             // Update notifier list (on frontpage)
             getFreshData();
             $('#approve-wrap').hide();
+            $('.notify').hide();
+            $('.webhooks').hide();
+            $('body').removeClass('no-scroll');
 
         }).
         fail(function(err) {
