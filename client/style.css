@@ -89,6 +89,10 @@ input:focus {
     overflow:hidden;
 }
 
+input, select {
+    background: #fff;
+}
+
 /*===================================
 =            Page Loader            =
 ===================================*/
@@ -105,6 +109,7 @@ input:focus {
 =            Header            =
 ==============================*/
 header {
+    display: block;
     width: 100%;
     height: 50px;
     text-align: center;
@@ -150,10 +155,9 @@ header h1 {
     float: left;
 }
 
-.tab-img img {
-    display: block;
-    width: 40%;
-    margin: 18px auto;
+.tab-img p {
+    font-size: 1.3em;
+    font-weight: 700;
 }
 
 .green {
@@ -313,7 +317,6 @@ header h1 {
     width: 90%;
     height: 50px;
     margin-bottom: 20px;
-    background: #fff;
     margin-left: 0;
     box-sizing: border-box;
     border: none;
@@ -375,7 +378,7 @@ input#modal-webhooks-submit:hover, input#modal-webhooks-rmv:hover {
 
 fieldset#check-btn {
     width: 100%;
-    float: none;
+    float: left;
     padding: 5px 0 50px 0px;
 }
 
@@ -583,7 +586,6 @@ fieldset#check-btn label {
     width: 100%;
     height: 50px;
     margin-bottom: 20px;
-    background: #fff;
     box-sizing: border-box;
     border: none;
     text-indent: 10px;
@@ -714,7 +716,7 @@ input#sub-frm-submit:hover {
     width: 8.8%;
 }
 
-.edit img {
+.edit img, .edit-web img {
     display: block;
     margin: 10px auto;
     cursor: pointer;

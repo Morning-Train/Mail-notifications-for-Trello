@@ -1,30 +1,14 @@
 $(document).ready(function() {
+
+    //
+    //
+    // ******* Global changes ********
+    //
+    //
+
+
+    // Set variable 'whereAmI' for later user
     var whereAmI = "notifiers";
-
-
-    var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
-        var elements = $();
-        $("#myBoards").empty();
-        arr = data;
-
-        for(i = 0; i < arr.length; i++) {
-            $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-        }
-
-    }).done(function(){
-        $('#loader').fadeOut('slow');
-        $('body').removeClass('no-scroll');
-    });
-
-
-
-    getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
-        if (textStatus == 'timeout')
-            console.log('The server is not responding');
-
-        if (textStatus == 'error')
-            alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
-    });
 
     // Select tab
     $('.green').click(function() {
@@ -42,75 +26,107 @@ $(document).ready(function() {
         whereAmI = 'webhooks';
     });
 
+    // Get all boards from Trello
+    var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
+    var elements = $();
+    arr = data;
 
+    for(i = 0; i < arr.length; i++) {
+        $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
+    }
 
-
-/*==========  Webhooks API Calls  ==========*/
-/**
-
-    TODO:
-    - /mongies/webhooks/post
-    - /mongies/webhooks/get
-    - /mongies/webhooks/update
-    - /mongies/webhooks/delete
-
-**/
-
-
-
-/* Webhooks API POST */
-$('#web-submit').click(function(e){
-    e.preventDefault();
-    $.ajax({
-        type: 'POST',
-        url:'mongies/webhooks/post',
-        data: $('#web-custom-frm').serialize()
-    }).
-    success(function(res) {
-        $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-        $('#submit-answer').html(res);
-
-        // Reset form on submit
-        $('#web-custom-frm')[0].reset();
-        console.log(res);
-        // Refresh current list of mail notifiers.
-        getAllWebHooks();
-
-    }).
-    fail(function(err) {
-        $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-        //$('#submit-answer').html(err.responseText);
-        console.log(err.responseText);
+    }).done(function(){
+        $('#loader').fadeOut('slow');
+        $('body').removeClass('no-scroll');
     });
-})
 
+    getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
+        if (textStatus == 'timeout')
+            console.log('The server is not responding');
 
-var getAllWebHooks = function(){
-    $.get( "mongies/webhooks/all", function( data ) {
-            //$( ".current_webhooks" ).remove();
-            //$("#web-field-info").remove();
-
-            console.log(data);
-            $.each(data, function(i, val){
-                var textToInsert = "";
-                textToInsert += "<fieldset class='current_webhooks' disabled>";
-                textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
-                textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
-                textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
-                textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"'>";
-                textToInsert += "<div class='edit-web rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
-                $("#web-field-info").after(textToInsert);
-            });
-
-        }).done(function(){
-            $( ".board-name" ).each(function( index ) {
-              // console.log( index + ": " + $( this ).val() );
-            });
+        if (textStatus == 'error')
+            alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
     });
-}
 
-getAllWebHooks();
+    // Alert box on remove click in Email Notifiers Modal box
+    $('#modal-rmv').click(function(e){
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
 
+    // Alert box on remove click in Webhooks Modal box
+    $('#modal-webhooks-rmv').click(function(e){
+        // Add blue bg to remove btn's
+        $('#yes').addClass('blue-bg');
+        $('#no').addClass('blue-bg');
+
+        // Show remove approval
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
+
+
+    // if yes
+    $('#yes').click(function(e){
+        e.preventDefault();
+        var data = $('#modal-form').serialize();
+        console.log(data);
+        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        $.ajax({
+            type: 'POST',
+            url:'mongies/removeOne',
+            // Remember to change this.
+            data: data
+        }).
+        success(function(res) {
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Record deleted!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+
+            // Remove blue bg from remove btn's
+            $('#yes').removeClass('blue-bg');
+            $('#no').removeClass('blue-bg');
+
+            console.log(res);
+            $("#fieldset-info").remove();
+            // Update notifier list (on frontpage)
+            getFreshData();
+            $('#approve-wrap').hide();
+            $('.notify').hide();
+            $('.webhooks').hide();
+            $('body').removeClass('no-scroll');
+
+        }).
+        fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+        });
+    });
+
+    // if no
+    $('#no').click(function(){
+        $('#approve-wrap').hide();
+
+        // Remove blue bg from remove btn's
+        $(this).removeClass('blue-bg');
+        $('#yes').removeClass('blue-bg');
+    });
+
+    // Close modal box on close click
+    $('.close-btn').click(function() {
+        $('.notify').hide();
+        $('.webhooks').hide();
+        $('body').removeClass('no-scroll');
+    });
+
+    //
+    //
+    // ******* Email Notifiers code starts ********
+    //
+    //
 
     // Submit new mail notifier
     $('#new-custom-frm').submit(function(e) {
@@ -200,7 +216,7 @@ getAllWebHooks();
                 textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "'>";
                 textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"'>";
                 textToInsert += "<input type='text' class='field-info-item board-name' value='"+ val.board +"'>";
-                textToInsert += "<div class='edit rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                textToInsert += "<div class='edit'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
                 $("#field-info").after(textToInsert);
             });
 
@@ -211,10 +227,14 @@ getAllWebHooks();
         });
     };
 
+    $('.edit').on('click', function() {
+        console.log('hey');
+    });
+
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $( "#sub-frm" ).on( "click", ".rm-dis", function() {
+    $("#sub-frm").on( "click", ".edit", function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
@@ -264,8 +284,110 @@ getAllWebHooks();
         });
     });
 
-    // Edit / Save fieldsets -> Webhooks
-    $( "#web-sub-frm" ).on( "click", ".edit-web", function() {
+    // Fetching the list items inside the selected board on change
+    $("#myBoards").change(function() {
+        $("#boardIdInForm").remove();
+
+        $("#lists").html("<h3>Listenavne:</h3>");
+        $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
+            $("#new-check-btn").show();
+            $("#project").val($("#myBoards option:selected").text());
+            arr = data;
+            for(i = 0; i < arr.length; i++) {
+                $("#lists").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+            }
+            $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+
+        });
+    });
+
+    // Append the fetched list items to html
+    $("#mySoloBoards").change(function() {
+        $("#check-btn").empty();
+        $("#check-btn").html("<h3>Listenavne:</h3>");
+        $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
+            arr = data;
+            for(i = 0; i < arr.length; i++) {
+                $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+            }
+        });
+    });
+
+
+    //
+    //
+    // ******* Webhooks code starts ********
+    //
+    //
+
+    /*==========  Webhooks API Calls  ==========*/
+    /**
+
+        TODO:
+        - /mongies/webhooks/post
+        - /mongies/webhooks/get
+        - /mongies/webhooks/update
+        - /mongies/webhooks/delete
+
+    **/
+
+
+
+    /* Webhooks API POST */
+    $('#web-submit').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url:'mongies/webhooks/post',
+            data: $('#web-custom-frm').serialize()
+        }).
+        success(function(res) {
+            $('#web-success').fadeIn(400).delay(800).fadeOut(800);
+            $('#web-answer').html(res);
+
+            // Reset form on submit
+            $('#web-custom-frm')[0].reset();
+            console.log(res);
+            // Refresh current list of mail notifiers.
+            getAllWebHooks();
+
+        }).
+        fail(function(err) {
+            $('#web-error').fadeIn(400).delay(800).fadeOut(800);
+            $('#web-answer').html(err.responseText);
+        });
+    })
+
+
+
+    var getAllWebHooks = function(){
+        $.get( "mongies/webhooks/all", function( data ) {
+                //$( ".current_webhooks" ).remove();
+                //$("#web-field-info").remove();
+
+                console.log(data);
+                $.each(data, function(i, val){
+                    var textToInsert = "";
+                    textToInsert += "<fieldset class='current_webhooks' disabled>";
+                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
+                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"'>";
+                    textToInsert += "<div class='edit-web rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                    $("#web-field-info").after(textToInsert);
+                });
+
+            }).done(function(){
+                $( ".board-name" ).each(function( index ) {
+                  // console.log( index + ": " + $( this ).val() );
+                });
+        });
+    }
+
+    getAllWebHooks();
+
+    // Edit / Save fieldsets
+    $( "#web-sub-frm" ).on( "click", ".edit-web", function(e) {
         $('.webhooks').show();
         $('body').addClass('no-scroll');
 
@@ -290,104 +412,5 @@ getAllWebHooks();
 
         });
 
-    });
-
-    // Alert box on remove click in Modal box
-    $('#modal-rmv').click(function(e){
-        e.preventDefault();
-        $('#approve-wrap').show();
-    });
-
-    $('#modal-webhooks-rmv').click(function(e){
-        // Add blue bg to remove btn's
-        $('#yes').addClass('blue-bg');
-        $('#no').addClass('blue-bg');
-
-        // Show remove approval
-        e.preventDefault();
-        $('#approve-wrap').show();
-    });
-
-    // if yes
-    $('#yes').click(function(e){
-        e.preventDefault();
-        var data = $('#modal-form').serialize();
-        console.log(data);
-        // Ajax call to php/update.php with the right data (all data from the single notifier).
-        $.ajax({
-            type: 'POST',
-            url:'mongies/removeOne',
-            // Remember to change this.
-            data: data
-        }).
-        success(function(res) {
-            // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Record deleted!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-
-            // Remove blue bg from remove btn's
-            $('#yes').removeClass('blue-bg');
-            $('#no').removeClass('blue-bg');
-
-            console.log(res);
-            $("#fieldset-info").remove();
-            // Update notifier list (on frontpage)
-            getFreshData();
-            $('#approve-wrap').hide();
-            $('.notify').hide();
-            $('.webhooks').hide();
-            $('body').removeClass('no-scroll');
-
-        }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-        });
-    });
-
-    // if no
-    $('#no').click(function(){
-        $('#approve-wrap').hide();
-
-        // Remove blue bg from remove btn's
-        $(this).removeClass('blue-bg');
-        $('#yes').removeClass('blue-bg');
-    });
-
-    // Close modal box on close click
-    $('.close-btn').click(function() {
-        $('.notify').hide();
-        $('.webhooks').hide();
-        $('body').removeClass('no-scroll');
-    });
-
-    $("#myBoards").change(function() {
-        $("#boardIdInForm").remove();
-
-        $("#lists").html("<h3>Listenavne:</h3>");
-        $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
-            $("#new-check-btn").show();
-            $("#project").val($("#myBoards option:selected").text());
-            arr = data;
-            for(i = 0; i < arr.length; i++) {
-                $("#lists").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
-            }
-            $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
-
-        });
-    });
-
-    $("#mySoloBoards").change(function() {
-        $("#check-btn").empty();
-        $("#check-btn").html("<h3>Listenavne:</h3>");
-        $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
-            arr = data;
-            for(i = 0; i < arr.length; i++) {
-                $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
-            }
-        });
     });
 });
