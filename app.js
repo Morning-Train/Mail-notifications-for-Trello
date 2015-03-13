@@ -631,6 +631,7 @@ app.post("/mongies/webhooks/post", function (req, res){
             if(webHookState.active === true){
               myWebHook._id = webHookState.id;
               myWebHook.save();
+              console.log(myWebHook);
               res.sendStatus(200);
             } else {
               res.status(400).send("Status: Something went wrong....");
@@ -669,6 +670,7 @@ app.get("/mongies/webhooks/findOne/:id", function(req,res){
     res.send(webhook);
   });
 });
+
 
 
 
