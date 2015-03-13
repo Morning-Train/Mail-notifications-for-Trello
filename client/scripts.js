@@ -225,14 +225,10 @@ $(document).ready(function() {
         });
     };
 
-    $('.edit').on('click', function() {
-        console.log('hey');
-    });
-
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $("#sub-frm").on( "click", ".edit", function(e) {
+    $(".edit").live("click", function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
@@ -329,8 +325,6 @@ $(document).ready(function() {
 
     **/
 
-
-
     /* Webhooks API POST */
     $('#web-submit').click(function(e){
         e.preventDefault();
@@ -356,8 +350,11 @@ $(document).ready(function() {
         });
     })
 
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> ddfee304290d702bf060cb81777fa4e032eb14c3
     var getAllWebHooks = function(){
         $.get( "mongies/webhooks/all", function( data ) {
                 //$( ".current_webhooks" ).remove();
@@ -408,6 +405,39 @@ $(document).ready(function() {
           $('#mySoloBoards').val(data[0].idModel);
         }, "json").done(function(data){
 
+<<<<<<< HEAD
+            console.log(" done of getSolo ");
+
+            var myCheckedLists = [];
+
+            data[0].lists.forEach(function(entry){
+                myCheckedLists.push(entry.listId);
+            })
+            console.log("myCheckedLists");
+
+            function arrayIndexOf(searchTerm){
+                      for(var i = 0, len = myCheckedLists.length; i < len; i++){
+                        if(myCheckedLists[i] === searchTerm) return true;
+                      }
+                      return false;
+            }
+
+            $("#check-btn").html("<h3>Listnames:</h3>");
+            $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
+                arr = data;
+                console.log(" done of getSolo ");
+                console.log(data);
+                for(i = 0; i < arr.length; i++) {
+                    if(arrayIndexOf(arr[i].id)){
+                        $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
+                    } else {
+                        $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                    }
+
+                }
+            });
+=======
+>>>>>>> ddfee304290d702bf060cb81777fa4e032eb14c3
         });
 
     });
