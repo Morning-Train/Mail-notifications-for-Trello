@@ -68,14 +68,13 @@ will be setting up the configurations.
 var daysBetweenNotifiers = 7; // Default is 7
 
 /* Trello API Access */
-var trelloApplicationKey = "b7a8480d496fa90c36f9f2d02020e25b" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
-var trelloUserToken = "3b107cbe1593b1d66fb20d048ef8ef4ed59db83b04ced3598eab3fd4a4401cc4" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+var trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+
+/* SMTP Settings (For outgoing mail)*/
 
 
 /*-----  End of Configuration of Trello-Train  ------*/
-
-// SMTP settings
-
 
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
@@ -612,17 +611,44 @@ app.post("/mongies/webhooks/post", function (req, res){
     myWebHook.callbackURL = req.body.callback_area;
     myWebHook.description = req.body.desc_area;
 
-    t.post("/1/webhooks/", { description: myWebHook.description, callbackURL: myWebHook.callbackURL, idModel: myWebHook.idModel }, function (req, res) {
-      console.log(res);
-    });
+    var webHookState = "";
 
-    myWebHook.save();
-
-    res.status(200);
-    res.send(myWebHook);
+    async.series([
+      function(callback){
+        t.post("/1/webhooks/", { description: myWebHook.description, callbackURL: myWebHook.callbackURL, idModel: myWebHook.idModel }, function (req, res) {
+            webHookState = res;
+            callback(null, "a");
+        });
+      },
+      function(callback){
+          console.log(webHookState);
+          callback(null, "b");
+      },
+      function(callback){
+          if(typeof webHookState === 'object'){
+            console.log("is an object");
+            console.log(webHookState);
+            if(webHookState.active === true){
+              myWebHook._id = webHookState.id;
+              myWebHook.save();
+              res.sendStatus(200);
+            } else {
+              res.status(400).send("Status: Something went wrong....");
+            }
+          } else if(typeof webHookState === 'string'){
+            res.status(400).send("Status: " + webHookState);
+          }
+      }
+    ]);
   }
 
 
+});
+
+app.get("/mongies/webhooks/deleteAll", function (req, res){
+  WebHook.remove({}, function(err){
+    res.send('Ok!');
+  });
 });
 
 
@@ -635,6 +661,12 @@ app.get("/mongies/webhooks/all", function (req, res){
     });
 
     res.send(webHookMap);
+  });
+});
+
+app.get("/mongies/webhooks/findOne/:id", function(req,res){
+  WebHook.find({_id : req.params.id}, function(err, webhook){
+    res.send(webhook);
   });
 });
 

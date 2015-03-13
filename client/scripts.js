@@ -4,6 +4,7 @@ $(document).ready(function() {
 
     var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
         var elements = $();
+        $("#myBoards").empty();
         arr = data;
 
         for(i = 0; i < arr.length; i++) {
@@ -43,6 +44,7 @@ $(document).ready(function() {
 
 
 
+
 /*==========  Webhooks API Calls  ==========*/
 /**
 
@@ -77,16 +79,37 @@ $('#web-submit').click(function(e){
     }).
     fail(function(err) {
         $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-        $('#submit-answer').html(err.responseText);
+        //$('#submit-answer').html(err.responseText);
+        console.log(err.responseText);
     });
 })
 
 
 var getAllWebHooks = function(){
-    console.log("getAllWebHooks called");
+    $.get( "mongies/webhooks/all", function( data ) {
+            //$( ".current_webhooks" ).remove();
+            //$("#web-field-info").remove();
+
+            console.log(data);
+            $.each(data, function(i, val){
+                var textToInsert = "";
+                textToInsert += "<fieldset class='current_webhooks' disabled>";
+                textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
+                textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
+                textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
+                textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"'>";
+                textToInsert += "<div class='edit-web rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                $("#web-field-info").after(textToInsert);
+            });
+
+        }).done(function(){
+            $( ".board-name" ).each(function( index ) {
+              // console.log( index + ": " + $( this ).val() );
+            });
+    });
 }
 
-
+getAllWebHooks();
 
 
     // Submit new mail notifier
@@ -247,55 +270,24 @@ var getAllWebHooks = function(){
         $('body').addClass('no-scroll');
 
         // Set currentId (from the pressed notifier)
-        var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        var currentId = $(this).parent('fieldset').find('.webhook-id').val();
         var boardId = "";
         // Empty the Edit->Modal->Board Selection
         $('#mySoloBoards').empty();
 
         // Get information about the notifier you want to edit
-        $.get( "php/getSolo.php?id=" + currentId, function( data ) {
+        $.get( "mongies/webhooks/findOne/" + currentId, function( data ) {
+            console.log(data);
         // Set the values for id + project name + email + board (we are still)
-          $('#modal-notifier-id').val(data[0].id);
+          $('#webhooks_id').val(data[0]._id);
           console.log(data[0].id);
-          $('#modal-project').val(data[0].project);
-          $('#modal-email').val(data[0].email);
+          $('#modal-desc').val(data[0].description);
+          $('#modal-url').val(data[0].callbackURL);
           var $options = $("#myBoards > option").clone();
           $('#mySoloBoards').append($options);
-          $('#mySoloBoards').val(data[0].board);
-          console.log("Boar ID: " + data[0].board);
+          $('#mySoloBoards').val(data[0].idModel);
         }, "json").done(function(data){
 
-            console.log(" done of getSolo ");
-
-            var myCheckedLists = [];
-
-            data[0].lists.forEach(function(entry){
-                myCheckedLists.push(entry.listId);
-            })
-            console.log("myCheckedLists");
-
-            function arrayIndexOf(searchTerm){
-                      for(var i = 0, len = myCheckedLists.length; i < len; i++){
-                        if(myCheckedLists[i] === searchTerm) return true;
-                      }
-                      return false;
-            }
-
-
-            $("#check-btn").html("<h3>Listnames:</h3>");
-            $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
-                arr = data;
-                console.log(" done of getSolo ");
-                console.log(data);
-                for(i = 0; i < arr.length; i++) {
-                    if(arrayIndexOf(arr[i].id)){
-                        $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'" checked> <label>'+arr[i].name+'</label>');
-                    } else {
-                        $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
-                    }
-
-                }
-            });
         });
 
     });
