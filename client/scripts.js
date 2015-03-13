@@ -40,8 +40,6 @@ $(document).ready(function() {
         $('body').removeClass('no-scroll');
     });
 
-
-
     getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
         if (textStatus == 'timeout')
             console.log('The server is not responding');
@@ -66,6 +64,7 @@ $(document).ready(function() {
         e.preventDefault();
         $('#approve-wrap').show();
     });
+
 
     // if yes
     $('#yes').click(function(e){
@@ -122,7 +121,6 @@ $(document).ready(function() {
         $('.webhooks').hide();
         $('body').removeClass('no-scroll');
     });
-
 
     //
     //
@@ -338,8 +336,8 @@ $(document).ready(function() {
             data: $('#web-custom-frm').serialize()
         }).
         success(function(res) {
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-            $('#submit-answer').html(res);
+            $('#web-success').fadeIn(400).delay(800).fadeOut(800);
+            $('#web-answer').html(res);
 
             // Reset form on submit
             $('#web-custom-frm')[0].reset();
@@ -349,14 +347,41 @@ $(document).ready(function() {
 
         }).
         fail(function(err) {
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#submit-answer').html(err.responseText);
+            $('#web-error').fadeIn(400).delay(800).fadeOut(800);
+            $('#web-answer').html(err.responseText);
         });
     })
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> ddfee304290d702bf060cb81777fa4e032eb14c3
     var getAllWebHooks = function(){
-        console.log("getAllWebHooks called");
+        $.get( "mongies/webhooks/all", function( data ) {
+                //$( ".current_webhooks" ).remove();
+                //$("#web-field-info").remove();
+
+                console.log(data);
+                $.each(data, function(i, val){
+                    var textToInsert = "";
+                    textToInsert += "<fieldset class='current_webhooks' disabled>";
+                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
+                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"'>";
+                    textToInsert += "<div class='edit-web rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                    $("#web-field-info").after(textToInsert);
+                });
+
+            }).done(function(){
+                $( ".board-name" ).each(function( index ) {
+                  // console.log( index + ": " + $( this ).val() );
+                });
+        });
     }
+
+    getAllWebHooks();
 
     // Edit / Save fieldsets
     $( "#web-sub-frm" ).on( "click", ".edit-web", function(e) {
@@ -364,24 +389,25 @@ $(document).ready(function() {
         $('body').addClass('no-scroll');
 
         // Set currentId (from the pressed notifier)
-        var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        var currentId = $(this).parent('fieldset').find('.webhook-id').val();
         var boardId = "";
         // Empty the Edit->Modal->Board Selection
         $('#mySoloBoards').empty();
 
         // Get information about the notifier you want to edit
-        $.get( "php/getSolo.php?id=" + currentId, function( data ) {
+        $.get( "mongies/webhooks/findOne/" + currentId, function( data ) {
+            console.log(data);
         // Set the values for id + project name + email + board (we are still)
-          $('#modal-notifier-id').val(data[0].id);
+          $('#webhooks_id').val(data[0]._id);
           console.log(data[0].id);
-          $('#modal-project').val(data[0].project);
-          $('#modal-email').val(data[0].email);
+          $('#modal-desc').val(data[0].description);
+          $('#modal-url').val(data[0].callbackURL);
           var $options = $("#myBoards > option").clone();
           $('#mySoloBoards').append($options);
-          $('#mySoloBoards').val(data[0].board);
-          console.log("Boar ID: " + data[0].board);
+          $('#mySoloBoards').val(data[0].idModel);
         }, "json").done(function(data){
 
+<<<<<<< HEAD
             console.log(" done of getSolo ");
 
             var myCheckedLists = [];
@@ -412,6 +438,8 @@ $(document).ready(function() {
 
                 }
             });
+=======
+>>>>>>> ddfee304290d702bf060cb81777fa4e032eb14c3
         });
 
     });
