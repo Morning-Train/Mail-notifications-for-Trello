@@ -20,9 +20,6 @@ $(document).ready(function() {
     $('.blue').click(function() {
         $('#notify-content').hide();
         $('#webhooks-content').show();
-        var $options = $("#myBoards > option").clone();
-        console.log($("#myBoards > option"));
-        $('.mySoloBoards').append($options);
         whereAmI = 'webhooks';
     });
 
@@ -33,6 +30,7 @@ $(document).ready(function() {
 
     for(i = 0; i < arr.length; i++) {
         $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
+        $(".mySoloBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
     }
 
     }).done(function(){
