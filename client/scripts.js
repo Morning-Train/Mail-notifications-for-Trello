@@ -125,7 +125,7 @@ $(document).ready(function() {
                 textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "'>";
                 textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"'>";
                 textToInsert += "<input type='text' class='field-info-item board-name' value='"+ val.board +"'>";
-                textToInsert += "<div class='edit rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                textToInsert += "<div class='edit'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
                 $("#field-info").after(textToInsert);
             });
 
@@ -139,7 +139,7 @@ $(document).ready(function() {
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $( "#sub-frm" ).on( "click", ".rm-dis", function() {
+    $("#sub-frm").on( "click", ".edit", function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
