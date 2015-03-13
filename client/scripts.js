@@ -233,7 +233,6 @@ $(document).ready(function() {
         $('body').addClass('no-scroll');
 
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
-        $('#mySoloBoards').empty();
 
         $.get( "mongies/findOne/" + currentId, function( data ) {
 
@@ -241,9 +240,7 @@ $(document).ready(function() {
           $('#modal-notifier-id').val(data[0]._id);
           $('#modal-project').val(data[0].project);
           $('#modal-email').val(data[0].email);
-          var $options = $("#myBoards > option").clone();
-          $('#mySoloBoards').append($options);
-          $('#mySoloBoards').val(data[0].board);
+          $('.mySoloBoards').val(data[0].board);
           //console.log(data);
         }, "json").done(function(data){
 
@@ -348,11 +345,13 @@ $(document).ready(function() {
             $('#web-error').fadeIn(400).delay(800).fadeOut(800);
             $('#web-answer').html(err.responseText);
         });
-    })
+    });
+
+    /* Webhooks API update */
 
     var getAllWebHooks = function(){
         $.get( "mongies/webhooks/all", function( data ) {
-                //$( ".current_webhooks" ).remove();
+                $( ".current_webhooks" ).remove();
                 //$("#web-field-info").remove();
 
                 console.log(data);
