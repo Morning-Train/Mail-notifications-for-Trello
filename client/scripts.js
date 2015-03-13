@@ -126,7 +126,7 @@ $(document).ready(function() {
     //
     //
 
-    // Submit new mail notifier
+    // Add new mail notifier
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
         //console.log($('#new-custom-frm').serialize());
@@ -228,7 +228,7 @@ $(document).ready(function() {
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $(".edit").live("click", function(e) {
+    $("#sub-frm").on("click", '.edit', function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
@@ -325,7 +325,7 @@ $(document).ready(function() {
 
     **/
 
-    /* Webhooks API POST */
+    // Add new record
     $('#web-submit').click(function(e){
         e.preventDefault();
         $.ajax({
@@ -334,7 +334,10 @@ $(document).ready(function() {
             data: $('#web-custom-frm').serialize()
         }).
         success(function(res) {
-            $('#web-success').fadeIn(400).delay(800).fadeOut(800);
+            // Success Feedback
+            $('#submit-succes').empty();
+            $('#submit-success').append('<h3>Created new record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
 
             // Reset form on submit
             $('#web-custom-frm')[0].reset();
@@ -344,13 +347,17 @@ $(document).ready(function() {
 
         }).
         fail(function(err) {
-            $('#web-error').fadeIn(400).delay(800).fadeOut(800);
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
             $('#web-answer').html("<center><strong>"+err.responseText+"</strong></center>");
         });
     });
 
     /* Webhooks API update */
 
+    // Get all records
     var getAllWebHooks = function(){
         $.get( "mongies/webhooks/all", function( data ) {
                 $( ".current_webhooks" ).remove();
