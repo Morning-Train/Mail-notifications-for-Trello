@@ -1,12 +1,78 @@
 "use strict";
 
-// Configuration for using Trello-Train (MUST BE FILLED WITH PROPER INFORMATION :))
-var daysBetweenNotifiers = 7; // Change this to the interval of notifiers.
-var clientWebsite = "http://localhost:8888"; // Change this to the URL of the client web ui.
+/*==================================================================
+=            Trello-Tran NodeJs Application Description            =
+====================================================================
 
-// TRELLO API ACCESS
+1. Purpose of Trello Train.
+The purpose of this application is to "notice" changes on a Trello
+board and send a email to a customer with the changes (only card name).
+How this application notices changes is by checking out when there
+have been activity on a single card. If the activity is within a
+certain amount of days (default: 7), it will be a stored in a list and
+at last sent to a specified email (often a client email-address).
+
+As an requirement we also included an interface for Trello webhooks,
+this is for having an easy way to see what kind of webhooks you have,
+more for updating/deleting and maintaing the trello webhooks.
+
+We started out with having a user-interface (presentation) handled by
+php. PHP was sending GET requests to a NodeJS server, and the NodeJS
+server was talking with Trello API, and sending was doing the logic
+for sending the emails out, this became a bit messy and we realised
+soon that it would be more performance wise and easy to handle to
+just keep everything into one language: JavaScript.
+
+Please keep in mind, that we are not experts at NodeJS and Trello-Train
+was not made with security in mind, but made with the perspective of
+"ease of use" - anything that is an issue or unwisely handled for an
+example: functions, methods, datastructures, etc. Please report them
+to us or make a pull request. (Suggestions are always welcome!).
+
+2. Front-end description and informations.
+For getting information about how the presentation part works, please
+read the "Front-End" documentation at /client/XXXXX.
+
+3. Everything beyond this point....
+We tried documenting as much as possible, if there is something that
+does not fit your eyes or use - then contact us or make a pull-request
+and we can figure something out :)
+
+4. Setting up Trello-Train.
+4.1. You need to have NodeJS installed, you can read how to here:
+XXXXXXXXXXX
+4.2. You need to have MongoDB installed, you can read how to here:
+XXXXXXXXXXX
+4.3. You need the following modules:
+- Node Trello,
+- Async,
+- NodeMailer,
+- Express,
+- Body Parser,
+- Mongoose.
+
+Read how to install modules here:
+XXXXXXXX
+
+
+You are always welcome to give us feedback, suggestions and information.
+Beyond this point (so you have installed the neccessary things?), you
+will be setting up the configurations.
+
+-------  End of Trello-Tran NodeJs Application Description  -------*/
+
+/*=====================================================
+=            Configuration of Trello-Train            =
+=====================================================*/
+/* Numbers between days of changes (in Trello Lists) */
+var daysBetweenNotifiers = 7; // Default is 7
+
+/* Trello API Access */
 var trelloApplicationKey = "b7a8480d496fa90c36f9f2d02020e25b" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
 var trelloUserToken = "3b107cbe1593b1d66fb20d048ef8ef4ed59db83b04ced3598eab3fd4a4401cc4" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+
+
+/*-----  End of Configuration of Trello-Train  ------*/
 
 // SMTP settings
 
@@ -40,28 +106,18 @@ var NotifierSchema = new mongoose.Schema({
 
 var Notifier = mongoose.model('Notifier', NotifierSchema);
 
+var WebHooksSchema = new mongoose.Schema({
+  idModel: String,
+  description: String,
+  callbackURL: String,
+  updated_at: { type: Date, default: Date.now }
+});
+
+var WebHook = mongoose.model("WebHook", WebHooksSchema);
+
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello(trelloApplicationKey, trelloUserToken);
 
-// This is used for letting another one into your system (from example from another ip and port)
-app.use(function (req, res, next) {
-
-    // Website you wish to allow to connect
-    res.setHeader("Access-Control-Allow-Origin", clientWebsite);
-
-    // Request methods you wish to allow - Remember to remove delete put patch options. Pls remember that. Rubas
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST");
-
-    // Request headers you wish to allow
-    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type");
-
-    // Set to true if you need the website to include cookies in the requests sent
-    // to the API (e.g. in case you use sessions)
-    res.setHeader("Access-Control-Allow-Credentials", true);
-
-    // Pass to next layer of middleware
-    next();
-});
 
 // This is for understanding aliens when they try to communicate with you.
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -83,7 +139,7 @@ app.use(bodyParser.json());
           return -1;
   }
 
-  // Search for needle in an array
+  // Search for needle in an hay-array
   function arrayIndexOf(myArray, searchTerm){
           for(var i = 0, len = myArray.length; i < len; i++){
             if(myArray[i] === searchTerm) return i;
@@ -525,6 +581,65 @@ app.get("/getLists/:boardId", function (req, res){
       res.send(data);
   });
 });
+
+// WebHooks API
+
+app.post("/mongies/webhooks/post", function (req, res){
+  console.log(req.body);
+  var continueThis = true;
+
+  if(req.body.board == "none"){
+    res.status(418);
+    res.send("Pick a board");
+    continueThis = false;
+  }
+
+  else if(req.body.desc_area === undefined || req.body.desc_area == ""){
+    res.status(418);
+    res.send("Please write a description");
+    continueThis = false;
+  }
+
+  else if(req.body.callback_area === undefined || req.body.callback_area == ""){
+    res.status(418);
+    res.send("Please write a callback URL");
+    continueThis = false;
+  }
+
+  if(continueThis){
+    var myWebHook = new WebHook();
+    myWebHook.idModel = req.body.board;
+    myWebHook.callbackURL = req.body.callback_area;
+    myWebHook.description = req.body.desc_area;
+
+    t.post("/1/webhooks/", { description: myWebHook.description, callbackURL: myWebHook.callbackURL, idModel: myWebHook.idModel }, function (req, res) {
+      console.log(res);
+    });
+
+    myWebHook.save();
+
+    res.status(200);
+    res.send(myWebHook);
+  }
+
+
+});
+
+
+app.get("/mongies/webhooks/all", function (req, res){
+  WebHook.find({}, function(err, webhooks){
+    var webHookMap = {};
+
+    webhooks.forEach(function(webhook){
+      webHookMap[webhook._id] = webhook;
+    });
+
+    res.send(webHookMap);
+  });
+});
+
+
+
 
 var server = app.listen(3000, function () {
 
