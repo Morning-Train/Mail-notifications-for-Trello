@@ -228,7 +228,7 @@ $(document).ready(function() {
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $(".edit").live("click", function(e) {
+    $("#sub-frm").on("click", '.edit', function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
