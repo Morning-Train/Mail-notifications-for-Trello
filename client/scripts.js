@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    var whereAmI = "notifiers";
+
 
     var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
         var elements = $();
@@ -27,6 +29,7 @@ $(document).ready(function() {
     $('.green').click(function() {
         $('#webhooks-content').hide();
         $('#notify-content').show();
+        whereAmI = 'notifiers';
     });
 
     $('.blue').click(function() {
@@ -35,6 +38,7 @@ $(document).ready(function() {
         var $options = $("#myBoards > option").clone();
         console.log($("#myBoards > option"));
         $('.mySoloBoards').append($options);
+        whereAmI = 'webhooks';
     });
 
 
@@ -85,7 +89,6 @@ var getAllWebHooks = function(){
 
 
 
-
     // Submit new mail notifier
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
@@ -98,8 +101,10 @@ var getAllWebHooks = function(){
             data: $('#new-custom-frm').serialize()
         }).
         success(function(res) {
+            // Success Feedback
+            $('#submit-succes').empty();
+            $('#submit-success').append('<h3>Created new record!</h3>');
             $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-            $('#submit-answer').html(res);
 
             // Reset form on submit
             $('#new-custom-frm')[0].reset();
@@ -113,6 +118,9 @@ var getAllWebHooks = function(){
 
         }).
         fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
             $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
             $('#submit-answer').html(err.responseText);
         });
@@ -138,13 +146,20 @@ var getAllWebHooks = function(){
         }).
         success(function(res) {
             console.log(res);
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Updated record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
 
             // Update notifier list (on frontpage)
             getFreshData();
 
         }).
         fail(function(err) {
-            // Setup fail handling! (We need this someday)
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in updating the record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
         });
     });
 
@@ -285,8 +300,18 @@ var getAllWebHooks = function(){
 
     });
 
-    // Alert box on remove click
+    // Alert box on remove click in Modal box
     $('#modal-rmv').click(function(e){
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
+
+    $('#modal-webhooks-rmv').click(function(e){
+        // Add blue bg to remove btn's
+        $('#yes').addClass('blue-bg');
+        $('#no').addClass('blue-bg');
+
+        // Show remove approval
         e.preventDefault();
         $('#approve-wrap').show();
     });
@@ -304,6 +329,15 @@ var getAllWebHooks = function(){
             data: data
         }).
         success(function(res) {
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Record deleted!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+
+            // Remove blue bg from remove btn's
+            $('#yes').removeClass('blue-bg');
+            $('#no').removeClass('blue-bg');
+
             console.log(res);
             $("#fieldset-info").remove();
             // Update notifier list (on frontpage)
@@ -315,13 +349,20 @@ var getAllWebHooks = function(){
 
         }).
         fail(function(err) {
-            // Setup fail handling! (We need this someday)
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
         });
     });
 
     // if no
     $('#no').click(function(){
         $('#approve-wrap').hide();
+
+        // Remove blue bg from remove btn's
+        $(this).removeClass('blue-bg');
+        $('#yes').removeClass('blue-bg');
     });
 
     // Close modal box on close click

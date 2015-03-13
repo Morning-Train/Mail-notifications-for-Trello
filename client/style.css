@@ -385,34 +385,26 @@ h3 {
 }
 
 fieldset#check-btn input {
-    width: 3%;
+    width: 20px;
     height: 15px;
     display: inline-block;
 }
 
-@media screen and (min-width: 1036px) {
-    fieldset#check-btn label {
-        width: 28.9%;
-        min-width: 160px;
-    }
-}
-
-
 fieldset#check-btn label {
-    width: 21%;
+    width: 21.4%;
     margin-left: 5px;
     display: inline-block;
 }
 
-@media screen and (max-width: 1035px) {
+@media screen and (max-width: 1077px) {
     fieldset#check-btn label {
         width: 29%;
     }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 900px) {
     fieldset#check-btn label {
-        width: 45%;
+        width: 44.2%;
         margin-left: 5px;
     }
 
@@ -449,10 +441,22 @@ fieldset#check-btn label {
         width: 100%;
     }
 }
-
-@media screen and (max-width: 466px) {
+@media screen and (max-width: 674px) {
     fieldset#check-btn label {
         width: 43%;
+    }
+}
+
+@media screen and (max-width: 565px) {
+    fieldset#check-btn label {
+        width: 41%;
+    }
+}
+
+
+@media screen and (max-width: 495px) {
+    fieldset#check-btn label {
+        width: 87%;
         margin-left: 5px;
     }
 
@@ -471,6 +475,7 @@ fieldset#check-btn label {
     width: 250px;
     height: 120px;
     text-align: center;
+    z-index: 9999999;
 }
 
 #submit-success h3, #submit-error h3 {
@@ -478,7 +483,7 @@ fieldset#check-btn label {
     font-weight: 700;
     font-size: 1em;
     margin: 0;
-    padding: 40px 15px 0 15px;
+    line-height: 120px;
 }
 
 #submit-success {
@@ -532,6 +537,14 @@ fieldset#check-btn label {
 
 .approve-alert button:hover {
     background: #34ec82;
+}
+
+.approve-alert button.blue-bg {
+    background: #3498db;
+}
+
+.approve-alert button.blue-bg:hover {
+    background: #6ec7fa;
 }
 
 /*=======================================
