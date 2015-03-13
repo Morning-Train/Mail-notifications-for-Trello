@@ -335,7 +335,6 @@ $(document).ready(function() {
         }).
         success(function(res) {
             $('#web-success').fadeIn(400).delay(800).fadeOut(800);
-            $('#web-answer').html(res);
 
             // Reset form on submit
             $('#web-custom-frm')[0].reset();
@@ -346,7 +345,7 @@ $(document).ready(function() {
         }).
         fail(function(err) {
             $('#web-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#web-answer').html(err.responseText);
+            $('#web-answer').html("<center><strong>"+err.responseText+"</strong></center>");
         });
     });
 
