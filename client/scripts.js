@@ -233,6 +233,7 @@ $(document).ready(function() {
         $('body').addClass('no-scroll');
 
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        $('#mySoloBoards').empty();
 
         $.get( "mongies/findOne/" + currentId, function( data ) {
 
@@ -240,7 +241,9 @@ $(document).ready(function() {
           $('#modal-notifier-id').val(data[0]._id);
           $('#modal-project').val(data[0].project);
           $('#modal-email').val(data[0].email);
-          $('.mySoloBoards').val(data[0].board);
+          var $options = $("#myBoards > option").clone();
+          $('#mySoloBoards').append($options);
+          $('#mySoloBoards').val(data[0].board);
           //console.log(data);
         }, "json").done(function(data){
 
