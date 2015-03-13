@@ -179,14 +179,14 @@
         <!-- Add new webhook -->
         <form id="web-custom-frm" action="#web-answer" method="POST">
             <label for="board">Board:</label>
-            <select class="mySoloBoards">
+            <select name="board" class="mySoloBoards">
             </select>
 
             <label for="web-desc res-hide">Description:</label>
-            <textarea name="desc-area" id="web-desc" autocomplete="off" placeholder="The purpose of this awesome webhook"></textarea>
+            <textarea name="desc_area" id="web-desc" autocomplete="off" placeholder="The purpose of this awesome webhook"></textarea>
 
             <label for="callback-url">Callback URL:</label>
-            <input type="textarea" name="callback-area" id="callback-url" autocomplete="off" placeholder="http://morningtrain.dk/script-with-superpower">
+            <input type="textarea" name="callback_area" id="callback-url" autocomplete="off" placeholder="http://morningtrain.dk/script-with-superpower">
 
             <input type="submit" value="Submit" id="web-submit">
             <input type="hidden" name="submitted" value="true">

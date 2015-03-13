@@ -13,6 +13,8 @@ $(document).ready(function() {
         $('body').removeClass('no-scroll');
     });
 
+
+
     getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
         if (textStatus == 'timeout')
             console.log('The server is not responding');
@@ -30,7 +32,59 @@ $(document).ready(function() {
     $('.blue').click(function() {
         $('#notify-content').hide();
         $('#webhooks-content').show();
+        var $options = $("#myBoards > option").clone();
+        console.log($("#myBoards > option"));
+        $('.mySoloBoards').append($options);
     });
+
+
+
+/*==========  Webhooks API Calls  ==========*/
+/**
+
+    TODO:
+    - /mongies/webhooks/post
+    - /mongies/webhooks/get
+    - /mongies/webhooks/update
+    - /mongies/webhooks/delete
+
+**/
+
+
+
+/* Webhooks API POST */
+$('#web-submit').click(function(e){
+    e.preventDefault();
+    $.ajax({
+        type: 'POST',
+        url:'mongies/webhooks/post',
+        data: $('#web-custom-frm').serialize()
+    }).
+    success(function(res) {
+        $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+        $('#submit-answer').html(res);
+
+        // Reset form on submit
+        $('#web-custom-frm')[0].reset();
+        console.log(res);
+        // Refresh current list of mail notifiers.
+        getAllWebHooks();
+
+    }).
+    fail(function(err) {
+        $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+        $('#submit-answer').html(err.responseText);
+    });
+})
+
+
+var getAllWebHooks = function(){
+    console.log("getAllWebHooks called");
+}
+
+
+
+
 
     // Submit new mail notifier
     $('#new-custom-frm').submit(function(e) {
