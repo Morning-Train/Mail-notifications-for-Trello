@@ -1,4 +1,12 @@
 $(document).ready(function() {
+
+    //
+    //
+    // ******* Global changes ********
+    //
+    //
+
+
     // Set variable 'whereAmI' for later user
     var whereAmI = "notifiers";
 
@@ -35,6 +43,79 @@ $(document).ready(function() {
 
         if (textStatus == 'error')
             alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
+    });
+
+    // Alert box on remove click in Email Notifiers Modal box
+    $('#modal-rmv').click(function(e){
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
+
+    // Alert box on remove click in Webhooks Modal box
+    $('#modal-webhooks-rmv').click(function(e){
+        // Add blue bg to remove btn's
+        $('#yes').addClass('blue-bg');
+        $('#no').addClass('blue-bg');
+
+        // Show remove approval
+        e.preventDefault();
+        $('#approve-wrap').show();
+    });
+
+    // if yes
+    $('#yes').click(function(e){
+        e.preventDefault();
+        var data = $('#modal-form').serialize();
+        console.log(data);
+        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        $.ajax({
+            type: 'POST',
+            url:'mongies/removeOne',
+            // Remember to change this.
+            data: data
+        }).
+        success(function(res) {
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Record deleted!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+
+            // Remove blue bg from remove btn's
+            $('#yes').removeClass('blue-bg');
+            $('#no').removeClass('blue-bg');
+
+            console.log(res);
+            $("#fieldset-info").remove();
+            // Update notifier list (on frontpage)
+            getFreshData();
+            $('#approve-wrap').hide();
+            $('.notify').hide();
+            $('.webhooks').hide();
+            $('body').removeClass('no-scroll');
+
+        }).
+        fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+        });
+    });
+
+    // if no
+    $('#no').click(function(){
+        $('#approve-wrap').hide();
+
+        // Remove blue bg from remove btn's
+        $(this).removeClass('blue-bg');
+        $('#yes').removeClass('blue-bg');
+    });
+
+    // Close modal box on close click
+    $('.close-btn').click(function() {
+        $('.notify').hide();
+        $('.webhooks').hide();
+        $('body').removeClass('no-scroll');
     });
 
 
@@ -238,7 +319,7 @@ $(document).ready(function() {
     //
 
 
-    // Edit / Save fieldsets -> Webhooks
+    // Edit / Save fieldsets
     $( "#web-sub-frm" ).on( "click", ".edit-web", function(e) {
         $('.webhooks').show();
         $('body').addClass('no-scroll');
@@ -295,85 +376,5 @@ $(document).ready(function() {
             });
         });
 
-    });
-
-    //
-    //
-    // ******* Global changes ********
-    //
-    //
-
-
-    // Alert box on remove click in Email Notifiers Modal box
-    $('#modal-rmv').click(function(e){
-        e.preventDefault();
-        $('#approve-wrap').show();
-    });
-
-    // Alert box on remove click in Webhooks Modal box
-    $('#modal-webhooks-rmv').click(function(e){
-        // Add blue bg to remove btn's
-        $('#yes').addClass('blue-bg');
-        $('#no').addClass('blue-bg');
-
-        // Show remove approval
-        e.preventDefault();
-        $('#approve-wrap').show();
-    });
-
-    // if yes
-    $('#yes').click(function(e){
-        e.preventDefault();
-        var data = $('#modal-form').serialize();
-        console.log(data);
-        // Ajax call to php/update.php with the right data (all data from the single notifier).
-        $.ajax({
-            type: 'POST',
-            url:'mongies/removeOne',
-            // Remember to change this.
-            data: data
-        }).
-        success(function(res) {
-            // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Record deleted!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-
-            // Remove blue bg from remove btn's
-            $('#yes').removeClass('blue-bg');
-            $('#no').removeClass('blue-bg');
-
-            console.log(res);
-            $("#fieldset-info").remove();
-            // Update notifier list (on frontpage)
-            getFreshData();
-            $('#approve-wrap').hide();
-            $('.notify').hide();
-            $('.webhooks').hide();
-            $('body').removeClass('no-scroll');
-
-        }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-        });
-    });
-
-    // if no
-    $('#no').click(function(){
-        $('#approve-wrap').hide();
-
-        // Remove blue bg from remove btn's
-        $(this).removeClass('blue-bg');
-        $('#yes').removeClass('blue-bg');
-    });
-
-    // Close modal box on close click
-    $('.close-btn').click(function() {
-        $('.notify').hide();
-        $('.webhooks').hide();
-        $('body').removeClass('no-scroll');
     });
 });
