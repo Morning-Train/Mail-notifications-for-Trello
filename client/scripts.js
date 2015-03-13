@@ -229,14 +229,10 @@ $(document).ready(function() {
         });
     };
 
-    $('.edit').on('click', function() {
-        console.log('hey');
-    });
-
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $("#sub-frm").on( "click", ".edit", function(e) {
+    $(".edit").live("click", function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
@@ -333,8 +329,6 @@ $(document).ready(function() {
 
     **/
 
-
-
     /* Webhooks API POST */
     $('#web-submit').click(function(e){
         e.preventDefault();
@@ -359,7 +353,6 @@ $(document).ready(function() {
             $('#submit-answer').html(err.responseText);
         });
     })
-
 
     var getAllWebHooks = function(){
         console.log("getAllWebHooks called");
@@ -404,7 +397,6 @@ $(document).ready(function() {
                       }
                       return false;
             }
-
 
             $("#check-btn").html("<h3>Listnames:</h3>");
             $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
