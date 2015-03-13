@@ -396,8 +396,6 @@ $(document).ready(function() {
           $('#modal-url').val(data[0].callbackURL);
           $('.mySoloBoards').val(data[0].idModel);
         }, "json").done(function(data){
-
         });
-
     });
 });
