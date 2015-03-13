@@ -352,11 +352,6 @@ $(document).ready(function() {
         });
     })
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> ddfee304290d702bf060cb81777fa4e032eb14c3
     var getAllWebHooks = function(){
         $.get( "mongies/webhooks/all", function( data ) {
                 //$( ".current_webhooks" ).remove();
@@ -407,7 +402,6 @@ $(document).ready(function() {
           $('#mySoloBoards').val(data[0].idModel);
         }, "json").done(function(data){
 
-<<<<<<< HEAD
             console.log(" done of getSolo ");
 
             var myCheckedLists = [];
@@ -438,8 +432,6 @@ $(document).ready(function() {
 
                 }
             });
-=======
->>>>>>> ddfee304290d702bf060cb81777fa4e032eb14c3
         });
 
     });
