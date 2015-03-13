@@ -716,7 +716,7 @@ input#sub-frm-submit:hover {
     width: 8.8%;
 }
 
-.edit img {
+.edit img, .edit-web img {
     display: block;
     margin: 10px auto;
     cursor: pointer;

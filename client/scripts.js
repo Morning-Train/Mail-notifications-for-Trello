@@ -1,14 +1,28 @@
 $(document).ready(function() {
+    // Set variable 'whereAmI' for later user
     var whereAmI = "notifiers";
 
+    // Select tab
+    $('.green').click(function() {
+        $('#webhooks-content').hide();
+        $('#notify-content').show();
+        whereAmI = 'notifiers';
+    });
 
+    $('.blue').click(function() {
+        $('#notify-content').hide();
+        $('#webhooks-content').show();
+        whereAmI = 'webhooks';
+    });
+
+    // Get all boards from Trello
     var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
-        var elements = $();
-        arr = data;
+    var elements = $();
+    arr = data;
 
-        for(i = 0; i < arr.length; i++) {
-            $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-        }
+    for(i = 0; i < arr.length; i++) {
+        $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
+    }
 
     }).done(function(){
         $('#loader').fadeOut('slow');
@@ -23,18 +37,12 @@ $(document).ready(function() {
             alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
     });
 
-    // Select tab
-    $('.green').click(function() {
-        $('#webhooks-content').hide();
-        $('#notify-content').show();
-        whereAmI = 'notifiers';
-    });
 
-    $('.blue').click(function() {
-        $('#notify-content').hide();
-        $('#webhooks-content').show();
-        whereAmI = 'webhooks';
-    });
+    //
+    //
+    // ******* Email Notifiers code starts ********
+    //
+    //
 
 
     // Submit new mail notifier
@@ -136,6 +144,10 @@ $(document).ready(function() {
         });
     };
 
+    $('.edit').on('click', function() {
+        console.log('hey');
+    });
+
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
@@ -189,8 +201,45 @@ $(document).ready(function() {
         });
     });
 
+    // Fetching the list items inside the selected board on change
+    $("#myBoards").change(function() {
+        $("#boardIdInForm").remove();
+
+        $("#lists").html("<h3>Listenavne:</h3>");
+        $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
+            $("#new-check-btn").show();
+            $("#project").val($("#myBoards option:selected").text());
+            arr = data;
+            for(i = 0; i < arr.length; i++) {
+                $("#lists").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+            }
+            $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+
+        });
+    });
+
+    // Append the fetched list items to html
+    $("#mySoloBoards").change(function() {
+        $("#check-btn").empty();
+        $("#check-btn").html("<h3>Listenavne:</h3>");
+        $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
+            arr = data;
+            for(i = 0; i < arr.length; i++) {
+                $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+            }
+        });
+    });
+
+
+    //
+    //
+    // ******* Webhooks code starts ********
+    //
+    //
+
+
     // Edit / Save fieldsets -> Webhooks
-    $( "#web-sub-frm" ).on( "click", ".edit-web", function() {
+    $( "#web-sub-frm" ).on( "click", ".edit-web", function(e) {
         $('.webhooks').show();
         $('body').addClass('no-scroll');
 
@@ -248,12 +297,20 @@ $(document).ready(function() {
 
     });
 
-    // Alert box on remove click in Modal box
+    //
+    //
+    // ******* Global changes ********
+    //
+    //
+
+
+    // Alert box on remove click in Email Notifiers Modal box
     $('#modal-rmv').click(function(e){
         e.preventDefault();
         $('#approve-wrap').show();
     });
 
+    // Alert box on remove click in Webhooks Modal box
     $('#modal-webhooks-rmv').click(function(e){
         // Add blue bg to remove btn's
         $('#yes').addClass('blue-bg');
@@ -318,32 +375,5 @@ $(document).ready(function() {
         $('.notify').hide();
         $('.webhooks').hide();
         $('body').removeClass('no-scroll');
-    });
-
-    $("#myBoards").change(function() {
-        $("#boardIdInForm").remove();
-
-        $("#lists").html("<h3>Listenavne:</h3>");
-        $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
-            $("#new-check-btn").show();
-            $("#project").val($("#myBoards option:selected").text());
-            arr = data;
-            for(i = 0; i < arr.length; i++) {
-                $("#lists").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
-            }
-            $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
-
-        });
-    });
-
-    $("#mySoloBoards").change(function() {
-        $("#check-btn").empty();
-        $("#check-btn").html("<h3>Listenavne:</h3>");
-        $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
-            arr = data;
-            for(i = 0; i < arr.length; i++) {
-                $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
-            }
-        });
     });
 });
