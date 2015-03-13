@@ -391,7 +391,6 @@ $(document).ready(function() {
         var currentId = $(this).parent('fieldset').find('.webhook-id').val();
         var boardId = "";
         // Empty the Edit->Modal->Board Selection
-        $('#mySoloBoards').empty();
 
         // Get information about the notifier you want to edit
         $.get( "mongies/webhooks/findOne/" + currentId, function( data ) {
@@ -401,9 +400,7 @@ $(document).ready(function() {
           console.log(data[0].id);
           $('#modal-desc').val(data[0].description);
           $('#modal-url').val(data[0].callbackURL);
-          var $options = $("#myBoards > option").clone();
-          $('#mySoloBoards').append($options);
-          $('#mySoloBoards').val(data[0].idModel);
+          $('.mySoloBoards').val(data[0].idModel);
         }, "json").done(function(data){
         });
     });
