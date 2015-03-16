@@ -447,8 +447,6 @@ $(document).ready(function() {
           $('#modal-desc').val(data[0].description);
           $('#modal-url').val(data[0].callbackURL);
           $('.mySoloBoards').val(data[0].idModel);
-<<<<<<< HEAD
-
 
           if(data[0].active === false){
             $('#modal-webhooks-submit').hide();
@@ -457,9 +455,6 @@ $(document).ready(function() {
           }
 
         }, "json").done(function(data){
-=======
-        }, 'json').done(function(data){
->>>>>>> 643f3797573022e9f9fa7c3c9828c339cd46a0bc
         });
     });
 });
