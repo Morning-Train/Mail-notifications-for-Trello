@@ -67,12 +67,24 @@ $(document).ready(function() {
     // if yes
     $('#yes').click(function(e){
         e.preventDefault();
-        var data = $('#modal-form').serialize();
+        var data = "";
+        var theURL = "";
+        if(whereAmI === "notifiers"){
+            data = $('#modal-form').serialize();
+            theURL = 'mongies/removeOne';
+        }
+
+        if(whereAmI === "webhooks"){
+            data = $('#webhooks-modal-form').serialize();
+            theURL = 'mongies/webhooks/removeOne';
+        }
+
         console.log(data);
-        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        console.log(theURL);
+
         $.ajax({
             type: 'POST',
-            url:'mongies/removeOne',
+            url: theURL,
             // Remember to change this.
             data: data
         }).
@@ -86,10 +98,17 @@ $(document).ready(function() {
             $('#yes').removeClass('blue-bg');
             $('#no').removeClass('blue-bg');
 
+            if(whereAmI === "notifiers"){
+                getFreshData();
+            }
+
+            if(whereAmI === "webhooks"){
+                getAllWebHooks();
+            }
+
             console.log(res);
             $("#fieldset-info").remove();
             // Update notifier list (on frontpage)
-            getFreshData();
             $('#approve-wrap').hide();
             $('.notify').hide();
             $('.webhooks').hide();
@@ -150,6 +169,8 @@ $(document).ready(function() {
             $('#new-check-btn').hide();
             //console.log(res);
 
+            // Response from submit answer will be emptified.
+             $('#submit-answer').empty();
             // Refresh current list of mail notifiers.
             getFreshData();
 
@@ -338,12 +359,11 @@ $(document).ready(function() {
             $('#submit-succes').empty();
             $('#submit-success').append('<h3>Created new record!</h3>');
             $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-
+            getAllWebHooks();
+            // Get all Webhooks
             // Reset form on submit
             $('#web-custom-frm')[0].reset();
             console.log(res);
-            // Refresh current list of mail notifiers.
-            getAllWebHooks();
 
         }).
         fail(function(err) {
@@ -357,16 +377,52 @@ $(document).ready(function() {
 
     /* Webhooks API update */
 
+    $("#modal-webhooks-submit").click(function(e){
+        e.preventDefault();
+        var data = $('#webhooks-modal-form').serialize();
+        console.log(data);
+        // Ajax call to php/update.php with the right data (all data from the single notifier).
+        $.ajax({
+            type: 'POST',
+            url:'mongies/webhooks/updateOne',
+            // Remember to change this.
+            data: data
+        }).
+        success(function(res) {
+            console.log(res);
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Updated record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            getAllWebHooks();
+
+            // Update notifier list (on frontpage)
+
+        }).
+        fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in updating the record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+        });
+    });
+
     // Get all records
     var getAllWebHooks = function(){
         $.get( "mongies/webhooks/all", function( data ) {
                 $( ".current_webhooks" ).remove();
                 //$("#web-field-info").remove();
-
                 console.log(data);
+                var doesNotExistClass = "";
                 $.each(data, function(i, val){
+                    if(val.active === false){
+                        doesNotExistClass = "doesNotExistAtTrello";
+                    } else {
+                        doesNotExistClass = "doesExistAtTrello";
+                    }
+                    console.log(val);
                     var textToInsert = "";
-                    textToInsert += "<fieldset class='current_webhooks' disabled>";
+                    textToInsert += "<fieldset class='current_webhooks " + doesNotExistClass + " clearfix' disabled>";
                     textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
                     textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
                     textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
@@ -403,6 +459,14 @@ $(document).ready(function() {
           $('#modal-desc').val(data[0].description);
           $('#modal-url').val(data[0].callbackURL);
           $('.mySoloBoards').val(data[0].idModel);
+
+
+          if(data[0].active === false){
+            $('#modal-webhooks-submit').hide();
+          } else {
+            $('#modal-webhooks-submit').show();
+          }
+
         }, "json").done(function(data){
         });
     });

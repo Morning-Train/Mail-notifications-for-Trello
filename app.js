@@ -54,6 +54,14 @@ XXXXXXXXXXX
 Read how to install modules here:
 XXXXXXXX
 
+Need to do this before initial release!
+// SMTP Settings
+// Cronjob settings
+// Check if WebHook exists.
+
+Can do whenever we got time
+// Sort Webhooks by updated_at.
+
 
 You are always welcome to give us feedback, suggestions and information.
 Beyond this point (so you have installed the neccessary things?), you
@@ -109,7 +117,8 @@ var WebHooksSchema = new mongoose.Schema({
   idModel: String,
   description: String,
   callbackURL: String,
-  updated_at: { type: Date, default: Date.now }
+  updated_at: { type: Date, default: Date.now },
+  active: Boolean
 });
 
 var WebHook = mongoose.model("WebHook", WebHooksSchema);
@@ -527,13 +536,14 @@ app.post("/sendMail/", function (req, res){
           );
     }
   } else {
-    res.send("Sorry, we are closed today");
     res.status(418);
+    res.send("Sorry, we are closed today");
     console.log("Sorry, we are closed today");
   }
 
 });
 
+// We don't use this in the client part anylongere
 app.get("/getBoards", function (req, res) {
   var Board = function(id, name){
     this.id = id;
@@ -584,7 +594,7 @@ app.get("/getLists/:boardId", function (req, res){
 // WebHooks API
 
 app.post("/mongies/webhooks/post", function (req, res){
-  console.log(req.body);
+  // console.log(req.body);
   var continueThis = true;
 
   if(req.body.board == "none"){
@@ -621,17 +631,18 @@ app.post("/mongies/webhooks/post", function (req, res){
         });
       },
       function(callback){
-          console.log(webHookState);
+          // console.log(webHookState);
           callback(null, "b");
       },
       function(callback){
           if(typeof webHookState === 'object'){
-            console.log("is an object");
-            console.log(webHookState);
+            // console.log("is an object");
+            // console.log(webHookState);
             if(webHookState.active === true){
               myWebHook._id = webHookState.id;
+              myWebHook.active = webHookState.active;
               myWebHook.save();
-              console.log(myWebHook);
+              // console.log(myWebHook);
               res.sendStatus(200);
             } else {
               res.status(400).send("Status: Something went wrong....");
@@ -654,21 +665,145 @@ app.get("/mongies/webhooks/deleteAll", function (req, res){
 
 
 app.get("/mongies/webhooks/all", function (req, res){
+var counter = 0;
+
   WebHook.find({}, function(err, webhooks){
     var webHookMap = {};
+  async.series([
+    function(callback){
+      webhooks.forEach(function(webhook){
+        t.get("/1/webhooks/" + webhook.id, function (req, res) {
+          counter++;
+          console.log(res);
+          if(res.active === true){
+              webHookMap[webhook._id] = webhook;
+          } else {
+              webhook.active = false;
+              webHookMap[webhook._id] = webhook;
+              setWebHookToFalse(webhook);
+          }
+          if(counter === webhooks.length){
+              console.log("Continuing");
+              callback(null, "a");
+          }
+        });
+      });
+      console.log(webhooks.length);
+    },
+    function(callback){
+      res.send(webHookMap);
+      callback(null, "b");
+    }
+    ]);
 
-    webhooks.forEach(function(webhook){
-      webHookMap[webhook._id] = webhook;
-    });
-
-    res.send(webHookMap);
+    //checkIfWebHookExistsAtTrello(webHookMap);
   });
 });
 
+
+var setWebHookToTrue = function(webHookId){
+  WebHook.findOne({_id : webHookId}, function(err, webhook){
+            //console.log("The WebHook from Local (unmodified):");
+            // console.log(webhook);
+            webhook.active = true;
+            webhook.save();
+            //console.log(webhook);
+  });
+}
+
+var setWebHookToFalse = function(webhookId){
+  WebHook.findOne({_id : webhookId}, function(err, webhook){
+            //console.log("The WebHook from Local (unmodified):");
+            // console.log(webhook);
+            webhook.active = false;
+            webhook.save();
+            //console.log(webhook);
+  });
+}
+
 app.get("/mongies/webhooks/findOne/:id", function(req,res){
+  // Check if the WebHook exists at Trello! (Todo)
   WebHook.find({_id : req.params.id}, function(err, webhook){
     res.send(webhook);
   });
+});
+
+app.post("/mongies/webhooks/updateOne/", function (req, res){
+  //console.log(req.body);
+  var responseFromTrello = "";
+
+
+  async.series([
+      function(callback){
+          // t.get("/1/webhooks/" + req.body.webhooks_id, function (req, res) {
+          //   console.log(res);
+          //   callback(null, "a");
+          // });
+
+          t.put("/1/webhooks/" + req.body.webhooks_id, { description: req.body.desc_area, callbackURL: req.body.callback_area, idModel: req.body.idModel }, function (req, res) {
+            responseFromTrello = res;
+            callback(null, "a");
+          });
+      },
+
+      function(callback){
+        if(typeof responseFromTrello === 'object'){
+          var theWebHook;
+          WebHook.findOne({_id : req.body.webhooks_id}, function(err, webhook){
+            //console.log("The WebHook from Local (unmodified):");
+            // console.log(webhook);
+            webhook.callbackURL = responseFromTrello.callbackURL;
+            webhook.idModel = responseFromTrello.idModel;
+            webhook.description = responseFromTrello.description;
+            webhook.save();
+          });
+          res.status(200).send("it worked!");
+        } else if(typeof responseFromTrello === 'string'){
+          res.status(418).send(responseFromTrello);
+        }
+      }
+    ])
+});
+
+app.post("/mongies/webhooks/removeOne", function(req, res){
+  var responseFromTrello = "";
+  // console.log(req.body);
+  async.series([
+      function(callback){
+          // t.get("/1/webhooks/" + req.body.webhooks_id, function (req, res) {
+          //   console.log(res);
+          //   callback(null, "a");
+          // });
+
+          t.del("/1/webhooks/" + req.body.webhooks_id, function (req, res) {
+            responseFromTrello = res;
+            callback(null, "a");
+          });
+      },
+
+      function(callback){
+        if(typeof responseFromTrello === 'object'){
+          // console.log(responseFromTrello);
+            WebHook.findOne({ _id : req.body.webhooks_id }, function (err, webhook){
+              webhook.remove();
+              webhook.save();
+              res.status(200);
+              res.send("Deleted!");
+            });
+        } else if(typeof responseFromTrello === 'string'){
+          // console.log(responseFromTrello);
+          res.status(418).send(responseFromTrello);
+        }
+      }
+    ]);
+
+
+    // WebHook.findOne({ _id : req.body.notifier_id }, function (err, notifier){
+    //   notifier.remove();
+    //   notifier.save();
+    //   res.status(200);
+    //   res.send("Deleted!");
+    // });
 });
 
 

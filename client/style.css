@@ -550,6 +550,19 @@ fieldset#check-btn label {
     background: #6ec7fa;
 }
 
+/* Does the webhook exist at Trello */
+.doesNotExistAtTrello {
+    border: 0;
+    border-left: 3px solid red !important;
+}
+
+.doesExistAtTrello {
+    border: 0;
+    border-left: 3px solid #2ECC71 !important;
+}
+
+
+
 /*=======================================
 =            Add New Record             =
 =======================================*/
