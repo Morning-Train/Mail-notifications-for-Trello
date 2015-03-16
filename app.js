@@ -153,15 +153,6 @@ var t = new Trello(trelloApplicationKey, trelloUserToken);
     console.error(err);
   }
 
-
-var updateNotifier = function(){
-	console.log("Update Notifier");
-};
-
-var removeNotifier = function(){
-	console.log("Remove Notifier");
-}
-
 // This is for understanding aliens when they try to communicate with you.
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -170,67 +161,11 @@ app.use(bodyParser.json());
 
 app.use(express.static('./client'));
 
-app.post("/mongies/post", function (req, res){
-    var continueThis = true;
-    var project_name, email, board;
-    var lists = [];
-
-    if(req.body.project_name === "" || req.body.project_name === undefined && continueThis){
-      res.status(418);
-      res.send("<center><strong>Empty project name</strong></center>");
-      continueThis = false;
-    }
-
-    if(req.body.email === undefined || req.body.email === "" && continueThis){
-      res.status(418);
-      res.send("<center><strong>Empty email</strong></center>");
-      continueThis = false;
-    }
-
-    //res.send(req);
-    if(req.body.board === undefined && continueThis){
-      res.status(418);
-      res.send("<center><strong>No board selected!</strong></center>");
-      continueThis = false;
-    }
-
-    if(req.body.lists === undefined && continueThis){
-      res.status(418);
-      res.send("<center><strong>No lists chosen</strong></center>");
-      continueThis = false;
-    }
-
-    if(continueThis){
-      project_name = req.body.project_name;
-      email = req.body.email;
-      board = req.body.board;
-      lists = req.body.lists;
-
-      var myNotifier = new Notifier();
-      myNotifier.project = project_name;
-      myNotifier.email = email;
-      myNotifier.board = board;
-
-
-      if( typeof req.body.lists === "string"){
-        myNotifier.lists.push(lists);
-      } else {
-        req.body.lists.forEach(function(entry){
-          myNotifier.lists.push(entry);
-          console.log(entry);
-        });
-      }
-
-      res.status(200);
-      res.send(myNotifier);
-
-      myNotifier.save();
-
-    }
-});
+require('./controller/notifier')(app, null, Notifier);
 
 app.post("/mongies/updateOne/", function(req, res){
   console.log(req.body);
+  var justContinue = true;
 
   Notifier.findOne({ _id : req.body.notifier_id }, function (err, notifier){
     notifier.board = req.body.board;
@@ -238,16 +173,24 @@ app.post("/mongies/updateOne/", function(req, res){
     notifier.email = req.body.email;
     notifier.lists = [];
 
-    if(typeof req.body.lists === "string"){
+    if(req.body.lists === undefined){
+      res.status(418).send("You have not marked any lists..");
+      justContinue = false;
+    }
+    else if(typeof req.body.lists === "string"){
       notifier.lists.push(req.body.lists);
-    } else {
+    } 
+    else {
       req.body.lists.forEach(function(entry){
         notifier.lists.push(entry);
       });
     }
-    res.status(200);
-    res.send("Updated");
-    notifier.save();
+
+    if(justContinue){
+      res.status(200);
+      res.send("Updated");
+      notifier.save();
+    }
   });
 
 
@@ -854,5 +797,4 @@ var server = app.listen(3000, function () {
   var port = server.address().port;
 
   console.log("Example app listening at http://%s:%s", host, port);
-
 });

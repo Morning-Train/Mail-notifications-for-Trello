@@ -70,7 +70,7 @@ $(document).ready(function() {
         var theURL = "";
         if(whereAmI === "notifiers"){
             data = $('#modal-form').serialize();
-            theURL = 'mongies/removeOne';
+            theURL = 'mongies/notifiers/remove';
         }
 
         if(whereAmI === "webhooks"){
@@ -153,7 +153,7 @@ $(document).ready(function() {
         // Ajax call to php/post.php
         $.ajax({
             type: 'POST',
-            url:'mongies/post',
+            url:'mongies/notifiers/post',
             data: $('#new-custom-frm').serialize()
         }).
         success(function(res) {
