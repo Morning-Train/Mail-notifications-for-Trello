@@ -597,7 +597,9 @@ app.post("/mongies/webhooks/post", function (req, res){
   // console.log(req.body);
   var continueThis = true;
 
-  if(req.body.board == "none"){
+  console.log(req.body);
+
+  if(req.body.idModel == "none" || req.body.idModel == undefined){
     res.status(418);
     res.send("Pick a board");
     continueThis = false;
@@ -617,7 +619,13 @@ app.post("/mongies/webhooks/post", function (req, res){
 
   if(continueThis){
     var myWebHook = new WebHook();
-    myWebHook.idModel = req.body.board;
+
+    if(typeof req.body.idModel != undefined){
+      myWebHook.idModel = req.body.idModel;
+    } else {
+      myWebHook.idModel = req.body.board;
+    }
+
     myWebHook.callbackURL = req.body.callback_area;
     myWebHook.description = req.body.desc_area;
 
@@ -691,7 +699,19 @@ var counter = 0;
       console.log(webhooks.length);
     },
     function(callback){
-      res.send(webHookMap);
+
+      var output = [];
+
+      for (var key in webHookMap) {
+          webHookMap[key].key = key;   // save key so you can access it from the array (will modify original data)
+          output.push(webHookMap[key]);
+      }
+
+      output.sort(function(a,b) {
+          return(a.updated_at - b.updated_at);
+      });
+
+      res.send(output);
       callback(null, "b");
     }
     ]);
@@ -700,6 +720,17 @@ var counter = 0;
   });
 });
 
+var dynamicSort = function(property) {
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a,b) {
+        var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+        return result * sortOrder;
+    }
+}
 
 var setWebHookToTrue = function(webHookId){
   WebHook.findOne({_id : webHookId}, function(err, webhook){

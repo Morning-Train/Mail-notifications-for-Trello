@@ -394,6 +394,36 @@ $(document).ready(function() {
         });
     });
 
+    // Recreate WebHook
+    $('#modal-webhooks-recreate').click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url:'mongies/webhooks/post',
+            data: $('#webhooks-modal-form').serialize()
+        }).
+        success(function(res) {
+            // Success Feedback
+            $('#submit-succes').empty();
+            $('#submit-success').append('<h3>Created new record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            getAllWebHooks();
+            $('.webhooks').hide();
+            $('body').removeClass('no-scroll');
+            // Get all Webhooks
+            // Reset form on submit
+            console.log(res);
+
+        }).
+        fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+            $('#web-answer').html('<center><strong>'+err.responseText+'</strong></center>');
+        });
+    });
+
     // Get all records
     var getAllWebHooks = function(){
 
@@ -450,8 +480,10 @@ $(document).ready(function() {
 
           if(data[0].active === false){
             $('#modal-webhooks-submit').hide();
+            $('#modal-webhooks-recreate').show();
           } else {
             $('#modal-webhooks-submit').show();
+            $('#modal-webhooks-recreate').hide();
           }
 
         }, "json").done(function(data){

@@ -91,6 +91,7 @@
                     </fieldset>
 
                     <input type="submit" value="Update" id="modal-webhooks-submit">
+                    <input type="submit" value="Re-create" id="modal-webhooks-recreate">
                     <input type="submit" value="Remove" id="modal-webhooks-rmv">
                     <input type="hidden" name="submitted" value="true">
                     <div class="small-space"></div>
@@ -177,7 +178,7 @@
         <!-- Add new webhook -->
         <form id="web-custom-frm" action="#web-answer" method="POST">
             <label for="board">Board:</label>
-            <select name="board" class="mySoloBoards">
+            <select name="idModel" class="mySoloBoards">
             </select>
 
             <label for="web-desc res-hide">Description:</label>

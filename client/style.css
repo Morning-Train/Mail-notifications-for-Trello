@@ -331,7 +331,7 @@ header h1 {
     width: 100%;
 }
 
-input#modal-submit, input#modal-webhooks-submit, input#modal-rmv, input#modal-webhooks-rmv {
+input#modal-submit, input#modal-webhooks-recreate, input#modal-webhooks-submit, input#modal-rmv, input#modal-webhooks-rmv {
     color: #fff;
     border: none;
     -webkit-transition: background .5s; /* For Safari 3.1 to 6.0 */
@@ -359,7 +359,7 @@ input#modal-submit:hover, input#modal-rmv:hover {
     background: #34ec82;
 }
 
-input#modal-webhooks-submit, input#modal-webhooks-rmv {
+input#modal-webhooks-submit, input#modal-webhooks-rmv, input#modal-webhooks-recreate {
     background: #3498db;
     width: 100%;
     max-width: 630px;
@@ -367,7 +367,7 @@ input#modal-webhooks-submit, input#modal-webhooks-rmv {
     margin: 10px auto;
 }
 
-input#modal-webhooks-submit:hover, input#modal-webhooks-rmv:hover {
+input#modal-webhooks-submit:hover, input#modal-webhooks-rmv:hover, input#modal-webhooks-recreate:hover {
     background: #6ec7fa;
 }
 
