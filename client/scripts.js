@@ -303,9 +303,10 @@ $(document).ready(function() {
     // Fetching the list items inside the selected board on change
     $('#myBoards').change(function() {
         $('#boardIdInForm').remove();
+        $('#lists').empty();
 
-        $('#lists').html('<h3>Listenavne:</h3>');
         $.get( 'http://localhost:3000/getLists/' + $('#myBoards').val(), function( data ) {
+            $('#lists').html('<h3>Listenavne:</h3>');
             $('#new-check-btn').show();
             $('#project').val($('#myBoards option:selected').text());
             arr = data;

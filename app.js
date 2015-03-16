@@ -535,10 +535,18 @@ app.get("/getBoards", function (req, res) {
 
 app.get("/getLists/:boardId", function (req, res){
   var boardId = req.params.boardId;
-
-  t.get("/1/boards/" + boardId + "/lists", function(err, data){
-      res.send(data);
-  });
+  if(boardId !== "none" || boardId === undefined){
+    t.get("/1/boards/" + boardId + "/lists", function(err, data){
+      if(data === undefined){
+        res.status(400).send("No lists was found!");
+      } else {
+        res.send(data);
+      }
+    });
+  }
+  else {
+    res.status(400).send("No board id was specified");
+  }
 });
 
 // WebHooks API
