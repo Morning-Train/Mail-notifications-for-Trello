@@ -6,9 +6,8 @@ $(document).ready(function() {
     //
     //
 
-
     // Set variable 'whereAmI' for later user
-    var whereAmI = "notifiers";
+    var whereAmI = 'notifiers';
 
     // Select tab
     $('.green').click(function() {
@@ -24,13 +23,13 @@ $(document).ready(function() {
     });
 
     // Get all boards from Trello
-    var getAllBoards = $.get( "http://localhost:3000/getBoards", function( data ) {
+    var getAllBoards = $.get( 'http://localhost:3000/getBoards', function( data ) {
     var elements = $();
     arr = data;
 
     for(i = 0; i < arr.length; i++) {
-        $("#myBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-        $(".mySoloBoards").append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
+        $('#myBoards').append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
+        $('.mySoloBoards').append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
     }
 
     }).done(function(){
@@ -43,7 +42,7 @@ $(document).ready(function() {
             console.log('The server is not responding');
 
         if (textStatus == 'error')
-            alert("NodeJS server not responding.... Please refresh the page (we should make a reconnect function)");
+            alert('NodeJS server not responding.... Please refresh the page (we should make a reconnect function)');
     });
 
     // Alert box on remove click in Email Notifiers Modal box
@@ -107,7 +106,7 @@ $(document).ready(function() {
             }
 
             console.log(res);
-            $("#fieldset-info").remove();
+            $('#fieldset-info').remove();
             // Update notifier list (on frontpage)
             $('#approve-wrap').hide();
             $('.notify').hide();
@@ -223,24 +222,24 @@ $(document).ready(function() {
 
     var getFreshData = function() {
         // Get freshData just gets fresh data (notifiers) from database.
-        $.get( "mongies/all/", function( data ) {
-            $( ".current_notifiers" ).remove();
-            $("#fieldset-info").remove();
+        $.get( 'mongies/all/', function( data ) {
+            $('.current_notifiers').remove();
+            $('#fieldset-info').remove();
 
             //console.log(data);
             $.each(data, function(i, val){
-                var textToInsert = "";
-                textToInsert += "<fieldset class='current_notifiers' disabled>";
-                textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='"+ val._id +"'>";
-                textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "'>";
-                textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"'>";
-                textToInsert += "<input type='text' class='field-info-item board-name' value='"+ val.board +"'>";
-                textToInsert += "<div class='edit'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
-                $("#field-info").after(textToInsert);
+                var textToInsert = '';
+                textToInsert += "<fieldset class='current_notifiers'>";
+                textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='"+ val._id +"' disabled>";
+                textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "' disabled>";
+                textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"' disabled>";
+                textToInsert += "<input type='text' class='field-info-item board-name' value='"+ val.board +"' disabled>";
+                textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                $('#field-info').after(textToInsert);
             });
 
         }).done(function(){
-            $( ".board-name" ).each(function( index ) {
+            $('.board-name').each(function( index ) {
               // console.log( index + ": " + $( this ).val() );
             });
         });
@@ -249,7 +248,7 @@ $(document).ready(function() {
     getFreshData();
 
     // Edit / Save fieldsets -> Mail notify
-    $("#sub-frm").on("click", '.edit', function(e) {
+    $('#sub-frm').on('click', 'div.edit-this', function(e) {
         $('.notify').show();
         $('body').addClass('no-scroll');
 
@@ -266,7 +265,7 @@ $(document).ready(function() {
           $('#mySoloBoards').append($options);
           $('#mySoloBoards').val(data[0].board);
           //console.log(data);
-        }, "json").done(function(data){
+        }, 'json').done(function(data){
 
             var myCheckedLists = [];
 
@@ -282,16 +281,16 @@ $(document).ready(function() {
             }
 
 
-            $("#check-btn").html("<h3>Listnames:</h3>");
-            $.get( "http://localhost:3000/getLists/" + data[0].board, function( data ) {
+            $('#check-btn').html('<h3>Listnames:</h3>');
+            $.get( 'http://localhost:3000/getLists/' + data[0].board, function( data ) {
                 arr = data;
                 //console.log(" done of getSolo ");
                 //console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $("#check-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                        $('#check-btn').append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
                     } else {
-                        $("#check-btn").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                        $('#check-btn').append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
                     }
 
                 }
@@ -300,51 +299,39 @@ $(document).ready(function() {
     });
 
     // Fetching the list items inside the selected board on change
-    $("#myBoards").change(function() {
-        $("#boardIdInForm").remove();
+    $('#myBoards').change(function() {
+        $('#boardIdInForm').remove();
 
-        $("#lists").html("<h3>Listenavne:</h3>");
-        $.get( "http://localhost:3000/getLists/" + $("#myBoards").val(), function( data ) {
-            $("#new-check-btn").show();
-            $("#project").val($("#myBoards option:selected").text());
+        $('#lists').html('<h3>Listenavne:</h3>');
+        $.get( 'http://localhost:3000/getLists/' + $('#myBoards').val(), function( data ) {
+            $('#new-check-btn').show();
+            $('#project').val($('#myBoards option:selected').text());
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $("#lists").append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                $('#lists').append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
             }
-            $("#new-custom-frm").append('<input id="boardIdInForm" type="hidden" name="board" value="'+$("#myBoards").val()+'">');
+            $('#new-custom-frm').append('<input id="boardIdInForm" type="hidden" name="board" value="'+$('#myBoards').val()+'">');
 
         });
     });
 
     // Append the fetched list items to html
-    $("#mySoloBoards").change(function() {
-        $("#check-btn").empty();
-        $("#check-btn").html("<h3>Listenavne:</h3>");
-        $.get( "http://localhost:3000/getLists/" + $("#mySoloBoards").val(), function( data ) {
+    $('#mySoloBoards').change(function() {
+        $('#check-btn').empty();
+        $('#check-btn').html('<h3>Listenavne:</h3>');
+        $.get( 'http://localhost:3000/getLists/' + $('#mySoloBoards').val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $("#check-btn").append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                $('#check-btn').append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
             }
         });
     });
-
 
     //
     //
     // ******* Webhooks code starts ********
     //
     //
-
-    /*==========  Webhooks API Calls  ==========*/
-    /**
-
-        TODO:
-        - /mongies/webhooks/post
-        - /mongies/webhooks/get
-        - /mongies/webhooks/update
-        - /mongies/webhooks/delete
-
-    **/
 
     // Add new record
     $('#web-submit').click(function(e){
@@ -371,7 +358,7 @@ $(document).ready(function() {
             $('#submit-error').empty();
             $('#submit-error').append('<h3>Error in creating a new record!</h3>');
             $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#web-answer').html("<center><strong>"+err.responseText+"</strong></center>");
+            $('#web-answer').html('<center><strong>'+err.responseText+'</strong></center>');
         });
     });
 
@@ -409,31 +396,32 @@ $(document).ready(function() {
 
     // Get all records
     var getAllWebHooks = function(){
-        $.get( "mongies/webhooks/all", function( data ) {
-                $( ".current_webhooks" ).remove();
-                //$("#web-field-info").remove();
+
+        $.get('mongies/webhooks/all', function( data ) {
+                $( '.current_webhooks' ).remove();
+
                 console.log(data);
                 var doesNotExistClass = "";
                 $.each(data, function(i, val){
+
                     if(val.active === false){
                         doesNotExistClass = "doesNotExistAtTrello";
                     } else {
                         doesNotExistClass = "doesExistAtTrello";
                     }
-                    console.log(val);
-                    var textToInsert = "";
-                    textToInsert += "<fieldset class='current_webhooks " + doesNotExistClass + " clearfix' disabled>";
-                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
-                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"'>";
-                    textToInsert += "<div class='edit-web rm-dis'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
-                    $("#web-field-info").after(textToInsert);
+
+                    var textToInsert = '';
+                    textToInsert += "<fieldset class='current_webhooks " + doesNotExistClass + " clearfix'>";
+                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"' disabled>";
+                    textToInsert += "<div class='edit-web edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                    $('#web-field-info').after(textToInsert);
                 });
 
             }).done(function(){
-                $( ".board-name" ).each(function( index ) {
-                  // console.log( index + ": " + $( this ).val() );
+                $('.board-name').each(function( index ) {
                 });
         });
     }
@@ -441,17 +429,17 @@ $(document).ready(function() {
     getAllWebHooks();
 
     // Edit / Save fieldsets
-    $( "#web-sub-frm" ).on( "click", ".edit-web", function(e) {
+    $( '#web-sub-frm' ).on( 'click', 'div.edit-this', function(e) {
         $('.webhooks').show();
         $('body').addClass('no-scroll');
 
         // Set currentId (from the pressed notifier)
         var currentId = $(this).parent('fieldset').find('.webhook-id').val();
-        var boardId = "";
+        var boardId = '';
         // Empty the Edit->Modal->Board Selection
 
         // Get information about the notifier you want to edit
-        $.get( "mongies/webhooks/findOne/" + currentId, function( data ) {
+        $.get( 'mongies/webhooks/findOne/' + currentId, function( data ) {
             console.log(data);
         // Set the values for id + project name + email + board (we are still)
           $('#webhooks_id').val(data[0]._id);
@@ -459,6 +447,7 @@ $(document).ready(function() {
           $('#modal-desc').val(data[0].description);
           $('#modal-url').val(data[0].callbackURL);
           $('.mySoloBoards').val(data[0].idModel);
+<<<<<<< HEAD
 
 
           if(data[0].active === false){
@@ -468,6 +457,9 @@ $(document).ready(function() {
           }
 
         }, "json").done(function(data){
+=======
+        }, 'json').done(function(data){
+>>>>>>> 643f3797573022e9f9fa7c3c9828c339cd46a0bc
         });
     });
 });
