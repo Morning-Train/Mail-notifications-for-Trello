@@ -1,5 +1,5 @@
 # Trello-Train
-###### Notify your customers, or use webhooks to perform specific actions when changes happen in your Trello boards.
+###### Notify your customers, or use webhooks to perform specific actions, when changes happen in your Trello boards.
 
 ![image of dashboard]
 (http://i62.tinypic.com/30idj87.jpg)
