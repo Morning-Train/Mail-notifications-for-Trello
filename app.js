@@ -126,13 +126,6 @@ var WebHook = mongoose.model("WebHook", WebHooksSchema);
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello(trelloApplicationKey, trelloUserToken);
 
-
-// This is for understanding aliens when they try to communicate with you.
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// Same goes for the JSON aliens
-app.use(bodyParser.json());
-
   // Get week number. (Remember to move this away or outside this post request)
   Date.prototype.getWeek = function() {
         var onejan = new Date(this.getFullYear(),0,1);
@@ -160,6 +153,20 @@ app.use(bodyParser.json());
     console.error(err);
   }
 
+
+var updateNotifier = function(){
+	console.log("Update Notifier");
+};
+
+var removeNotifier = function(){
+	console.log("Remove Notifier");
+}
+
+// This is for understanding aliens when they try to communicate with you.
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Same goes for the JSON aliens
+app.use(bodyParser.json());
 
 app.use(express.static('./client'));
 
