@@ -352,11 +352,11 @@ $(document).ready(function() {
                 console.log(data);
                 $.each(data, function(i, val){
                     var textToInsert = '';
-                    textToInsert += "<fieldset class='current_webhooks' disabled>";
-                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"'>";
-                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "'>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"'>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"'>";
+                    textToInsert += "<fieldset class='current_webhooks'>";
+                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"' disabled>";
                     textToInsert += "<div class='edit-web edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
                     $('#web-field-info').after(textToInsert);
                 });
