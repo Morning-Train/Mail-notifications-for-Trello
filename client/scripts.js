@@ -70,7 +70,7 @@ $(document).ready(function() {
         var theURL = "";
         if(whereAmI === "notifiers"){
             data = $('#modal-form').serialize();
-            theURL = 'mongies/notifiers/remove';
+            theURL = 'mongies/notifiers/removeOne';
         }
 
         if(whereAmI === "webhooks"){
@@ -199,7 +199,7 @@ $(document).ready(function() {
         // Ajax call to php/update.php with the right data (all data from the single notifier).
         $.ajax({
             type: 'POST',
-            url:'mongies/updateOne',
+            url:'mongies/notifiers/updateOne',
             // Remember to change this.
             data: data
         }).
@@ -224,7 +224,7 @@ $(document).ready(function() {
 
     var getFreshData = function() {
         // Get freshData just gets fresh data (notifiers) from database.
-        $.get( 'mongies/all/', function( data ) {
+        $.get( 'mongies/notifiers/all/', function( data ) {
             $('.current_notifiers').remove();
             $('#fieldset-info').remove();
 
@@ -257,21 +257,21 @@ $(document).ready(function() {
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
 
-        $.get( "mongies/findOne/" + currentId, function( data ) {
+        $.get( "mongies/notifiers/" + currentId, function( data ) {
 
         //console.log(data);
-          $('#modal-notifier-id').val(data[0]._id);
-          $('#modal-project').val(data[0].project);
-          $('#modal-email').val(data[0].email);
+          $('#modal-notifier-id').val(data._id);
+          $('#modal-project').val(data.project);
+          $('#modal-email').val(data.email);
           var $options = $("#myBoards > option").clone();
           $('#mySoloBoards').append($options);
-          $('#mySoloBoards').val(data[0].board);
+          $('#mySoloBoards').val(data.board);
           //console.log(data);
         }, 'json').done(function(data){
 
             var myCheckedLists = [];
 
-            data[0].lists.forEach(function(entry){
+            data.lists.forEach(function(entry){
                 myCheckedLists.push(entry._id);
             })
 
@@ -284,7 +284,7 @@ $(document).ready(function() {
 
 
             $('#check-btn').html('<h3>Listnames:</h3>');
-            $.get( 'http://localhost:3000/getLists/' + data[0].board, function( data ) {
+            $.get( 'http://localhost:3000/getLists/' + data.board, function( data ) {
                 arr = data;
                 //console.log(" done of getSolo ");
                 //console.log(data);
