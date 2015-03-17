@@ -550,19 +550,6 @@ fieldset#check-btn label {
     background: #6ec7fa;
 }
 
-/* Does the webhook exist at Trello */
-.doesNotExistAtTrello {
-    border: 0;
-    border-left: 3px solid red !important;
-}
-
-.doesExistAtTrello {
-    border: 0;
-    border-left: 3px solid #2ECC71 !important;
-}
-
-
-
 /*=======================================
 =            Add New Record             =
 =======================================*/
@@ -674,7 +661,7 @@ fieldset#new-check-btn label {
 }
 
 #sub-frm h2, #web-sub-frm h2 {
-    margin: 30px 0px 0px 5%;
+    margin: 30px auto;
     font-weight: 700;
     font-size: 2em;
 }
@@ -810,4 +797,44 @@ textarea#modal-desc {
 
 .web-btn:hover {
     background: #3498db;
+}
+
+/* Webhooks status bar */
+
+#status-bar {
+    width: 300px;
+    margin: 0 auto;
+}
+
+.status-color {
+    width: 50%;
+    float: left;
+    text-align: center;
+}
+
+.status-color p {
+    line-height: 38px;
+}
+
+.red-bar, .green-bar {
+    width: 59%;
+    margin: 0 auto;
+    height: 5px;
+}
+
+.red-bar {
+    background: #e74c3c;
+}
+
+.green-bar {
+    background: #2ECC71;
+}
+
+/* Does the webhook exist at Trello */
+fieldset.doesNotExistAtTrello {
+    border-left: 3px solid #e74c3c;
+}
+
+fieldset.doesExistAtTrello {
+    border-left: 3px solid #2ECC71;
 }
