@@ -1,5 +1,5 @@
   // This is the fun part, here is the "POST" method, that handles the email send to customers. Btw, it also includes alot of other stuff - read on.
-  exports.sendMail = function(pEmail, pBoard, pLists, async, t, daysBetweenNotifiers, transporter){
+  exports.sendMail = function(pEmail, pBoard, pLists, async, t, daysBetweenNotifiers, transporter, myName, myEmail){
      // Get week number. (Remember to move this away or outside this post request)
   Date.prototype.getWeek = function() {
         var onejan = new Date(this.getFullYear(),0,1);
@@ -246,10 +246,9 @@
 
                 // setup e-mail data with unicode symbols
                 var mailOptions = {
-                    from: "Fred Foo ✔ <fireflexy@gmail.com>", // sender address
-                    to: "rubatharisan thirumathyam, " + userEmail, // list of receivers
-                    subject: "Statusrapport  U" + weekno + " - " + year, // Subject line
-                    text: "Hello world ✔", // plaintext body
+                    from: "" + myName + " <" + myEmail + ">", // sender address
+                    to: "" + userEmail, // list of receivers
+                    subject: "Changes in week: " + weekno + " - " + year, // Subject line
                     html: emailContent // html body
                 };
 
