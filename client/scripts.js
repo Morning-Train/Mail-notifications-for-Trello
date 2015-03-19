@@ -68,6 +68,7 @@ $(document).ready(function() {
         e.preventDefault();
         var data = "";
         var theURL = "";
+
         if(whereAmI === "notifiers"){
             data = $('#modal-form').serialize();
             theURL = 'mongies/notifiers/removeOne';
@@ -104,7 +105,13 @@ $(document).ready(function() {
             $('.notify').hide();
             $('.webhooks').hide();
             $('body').removeClass('no-scroll');
+            if(whereAmI === "notifiers"){
+                getAllNotifiers();
+            }
 
+            if(whereAmI === "webhooks"){
+                getAllWebHooks();
+            }
         }).
         fail(function(err) {
             // Error feedback
@@ -114,7 +121,7 @@ $(document).ready(function() {
         }).
         done(function(err) {
             if(whereAmI === "notifiers"){
-                getFreshData();
+                getAllNotifiers();
             }
 
             if(whereAmI === "webhooks"){
@@ -171,6 +178,8 @@ $(document).ready(function() {
 
             // Response from submit answer will be emptified.
              $('#submit-answer').empty();
+
+             getAllNotifiers();
         }).
         fail(function(err) {
             // Error feedback
@@ -181,7 +190,7 @@ $(document).ready(function() {
         }).
         done(function(err) {
             // Refresh current list of mail notifiers.
-            getFreshData();
+            getAllNotifiers();
         });
     });
 
@@ -211,7 +220,7 @@ $(document).ready(function() {
             $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
 
             // Update notifier list (on frontpage)
-            getFreshData();
+            getAllNotifiers();
 
         }).
         fail(function(err) {
@@ -219,10 +228,13 @@ $(document).ready(function() {
             $('#submit-error').empty();
             $('#submit-error').append('<h3>Error in updating the record!</h3>');
             $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+        }).
+        done(function(){
+            getAllNotifiers();
         });
     });
 
-    var getFreshData = function() {
+    var getAllNotifiers = function() {
         // Get freshData just gets fresh data (notifiers) from database.
         $.get( 'mongies/notifiers/all/', function( data ) {
             $('.current_notifiers').remove();
@@ -247,7 +259,7 @@ $(document).ready(function() {
         });
     };
 
-    getFreshData();
+    getAllNotifiers();
 
     // Edit / Save fieldsets -> Mail notify
     $('#sub-frm').on('click', 'div.edit-this', function(e) {
@@ -354,6 +366,10 @@ $(document).ready(function() {
             $('#web-custom-frm')[0].reset();
             console.log(res);
 
+            // get all webhooks
+            getAllWebHooks();
+
+
         }).
         fail(function(err) {
             // Error feedback
@@ -387,6 +403,7 @@ $(document).ready(function() {
             $('#submit-success').empty();
             $('#submit-success').append('<h3>Updated record!</h3>');
             $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            getAllWebHooks();
         }).
         fail(function(err) {
             // Error feedback
@@ -417,6 +434,7 @@ $(document).ready(function() {
             $('body').removeClass('no-scroll');
             // Reset form on submit
             console.log(res);
+            getAllWebHooks();
 
         }).
         fail(function(err) {
