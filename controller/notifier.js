@@ -55,7 +55,7 @@ module.exports = function (app, db, Notifier) {
 	      res.status(418);
 	      res.send("<center><strong>Empty project name</strong></center>");
 	      return false;
-	    } 
+	    }
 
 	    else if(req.body.email === undefined || req.body.email === ""){
 	      res.status(418);

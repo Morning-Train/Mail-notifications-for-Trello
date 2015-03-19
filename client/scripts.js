@@ -453,7 +453,7 @@ $(document).ready(function() {
                     textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"' disabled>";
                     textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "' disabled>";
                     textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"' disabled>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at +"' disabled>";
+                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at.substr(0, 10) +"' disabled>";
                     textToInsert += "<div class='edit-web edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
                     $('#web-field-info').after(textToInsert);
                 });
