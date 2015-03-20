@@ -80,8 +80,8 @@ var trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://tr
 var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 /* Email settings */
-var myEmail = "fireflexy@gmail.com";
-var myName = "Fire Flexy";
+var myEmail = "mail@morningtrain.dk";
+var myName = "Morning Train";
 
 
 /* SMTP Settings (For outgoing mail)*/
@@ -132,10 +132,10 @@ var WebHook = mongoose.model("WebHook", WebHooksSchema);
 var t = new Trello(trelloApplicationKey, trelloUserToken);
 
 var transporter = nodemailer.createTransport({
-  service: "Gmail",
+  service: "Mandrill",
   auth: {
-      user: "fireflexy@gmail.com",
-      pass: "bluetime2a"
+      user: "mail@morningtrain.dk",
+      pass: "neRUPd59dMEp4CxwaVgfeA"
   }
 });
 

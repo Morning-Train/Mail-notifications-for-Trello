@@ -89,6 +89,14 @@ $(document).ready(function() {
             data: data
         }).
         success(function(res) {
+        }).
+        fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+        }).
+        done(function(err) {
             // Success feedback
             $('#submit-success').empty();
             $('#submit-success').append('<h3>Record deleted!</h3>');
@@ -105,21 +113,8 @@ $(document).ready(function() {
             $('.notify').hide();
             $('.webhooks').hide();
             $('body').removeClass('no-scroll');
-            if(whereAmI === "notifiers"){
-                getAllNotifiers();
-            }
-
-            if(whereAmI === "webhooks"){
-                getAllWebHooks();
-            }
         }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-        }).
-        done(function(err) {
+        always(function(){
             if(whereAmI === "notifiers"){
                 getAllNotifiers();
             }
@@ -164,6 +159,15 @@ $(document).ready(function() {
             data: $('#new-custom-frm').serialize()
         }).
         success(function(res) {
+        }).
+        fail(function(err) {
+            // Error feedback
+            $('#submit-error').empty();
+            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
+            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+            $('#submit-answer').html(err.responseText);
+        }).
+        done(function(err) {
             // Success Feedback
             $('#submit-succes').empty();
             $('#submit-success').append('<h3>Created new record!</h3>');
@@ -178,18 +182,9 @@ $(document).ready(function() {
 
             // Response from submit answer will be emptified.
              $('#submit-answer').empty();
-
-             getAllNotifiers();
         }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#submit-answer').html(err.responseText);
-        }).
-        done(function(err) {
-            // Refresh current list of mail notifiers.
+        always(function(){
+            // Update notifier list (on frontpage)
             getAllNotifiers();
         });
     });
@@ -212,16 +207,7 @@ $(document).ready(function() {
             // Remember to change this.
             data: data
         }).
-        success(function(res) {
-            console.log(res);
-            // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Updated record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-
-            // Update notifier list (on frontpage)
-            getAllNotifiers();
-
+        success(function() {
         }).
         fail(function(err) {
             // Error feedback
@@ -230,6 +216,13 @@ $(document).ready(function() {
             $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
         }).
         done(function(){
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Updated record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+        }).
+        always(function(){
+            // Update notifier list (on frontpage)
             getAllNotifiers();
         });
     });
@@ -239,7 +232,7 @@ $(document).ready(function() {
         $.get( 'mongies/notifiers/all/', function( data ) {
             $('.current_notifiers').remove();
             $('#fieldset-info').remove();
-
+            console.log(data);
             //console.log(data);
             $.each(data, function(i, val){
                 var textToInsert = '';
@@ -258,6 +251,8 @@ $(document).ready(function() {
             });
         });
     };
+    // Success + Failure skal også laves!
+
 
     getAllNotifiers();
 
@@ -357,19 +352,6 @@ $(document).ready(function() {
             data: $('#web-custom-frm').serialize()
         }).
         success(function(res) {
-            // Success Feedback
-            $('#submit-succes').empty();
-            $('#submit-success').append('<h3>Created new record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-
-            // Reset form on submit
-            $('#web-custom-frm')[0].reset();
-            console.log(res);
-
-            // get all webhooks
-            getAllWebHooks();
-
-
         }).
         fail(function(err) {
             // Error feedback
@@ -379,8 +361,17 @@ $(document).ready(function() {
             $('#web-answer').html('<center><strong>'+err.responseText+'</strong></center>');
         }).
         done(function(err) {
+            // Success Feedback
+            $('#submit-succes').empty();
+            $('#submit-success').append('<h3>Created new record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+
+            // Reset form on submit
+            $('#web-custom-frm')[0].reset();
+        }).
+        always(function(err){
+            // get all webhooks
             getAllWebHooks();
-            // Get all Webhooks
         });
     });
 
@@ -398,12 +389,6 @@ $(document).ready(function() {
             data: data
         }).
         success(function(res) {
-            console.log(res);
-            // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Updated record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-            getAllWebHooks();
         }).
         fail(function(err) {
             // Error feedback
@@ -412,8 +397,14 @@ $(document).ready(function() {
             $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
         }).
         done(function(err) {
+            // Success feedback
+            $('#submit-success').empty();
+            $('#submit-success').append('<h3>Updated record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+        }).
+        always(function(err){
+            // get all webhooks
             getAllWebHooks();
-            // Update notifier list (on frontpage)
         });
     });
 
@@ -426,16 +417,6 @@ $(document).ready(function() {
             data: $('#webhooks-modal-form').serialize()
         }).
         success(function(res) {
-            // Success Feedback
-            $('#submit-succes').empty();
-            $('#submit-success').append('<h3>Created new record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-            $('.webhooks').hide();
-            $('body').removeClass('no-scroll');
-            // Reset form on submit
-            console.log(res);
-            getAllWebHooks();
-
         }).
         fail(function(err) {
             // Error feedback
@@ -445,6 +426,15 @@ $(document).ready(function() {
             $('#web-answer').html('<center><strong>'+err.responseText+'</strong></center>');
         }).
         done(function(err) {
+            // Success Feedback
+            $('#submit-succes').empty();
+            $('#submit-success').append('<h3>Created new record!</h3>');
+            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            $('.webhooks').hide();
+            $('body').removeClass('no-scroll');
+            // Reset form on submit
+        }).
+        always(function(){
             // Get all Webhooks
             getAllWebHooks();
         });
