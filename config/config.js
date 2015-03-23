@@ -12,6 +12,10 @@ config.daysBetweenNotifiers = 7; // Default is 7
 config.trelloApplicationKey = "<<INSERT YOUR APPLICATION KEY>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
 config.trelloUserToken = "<<INSERT YOUR TRELLO USER TOKEN>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
+// 					S M H D M Y
+config.crontime = '10 * * * * *';
+
+
 /* Email settings */
 config.myEmail = "<<INSERT YOUR EMAIL>>";
 config.myName = "<<INSERT YOUR NAME>>";
