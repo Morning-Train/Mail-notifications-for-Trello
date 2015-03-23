@@ -197,7 +197,7 @@ var CronJob = require('cron').CronJob;
 
 new CronJob(config.crontime, function(){
     runCronJob();
-}, null, true, "America/Los_Angeles");
+}, null, true, config.crontimezone);
 
 
 var runCronJob = function(){

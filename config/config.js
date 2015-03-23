@@ -14,6 +14,7 @@ config.trelloUserToken = "<<INSERT YOUR TRELLO USER TOKEN>>" // Read https://tre
 
 // Secs & Mins & Hours & Day of Month & Months & Day of Week (Read more here: https://github.com/ncb000gt/node-cron)
 config.crontime = '10 * * * * *';
+config.crontimezone = "America/Los_Angeles";
 
 
 /* Email settings */
