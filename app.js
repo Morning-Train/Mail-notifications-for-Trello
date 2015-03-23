@@ -68,27 +68,6 @@ Beyond this point (so you have installed the neccessary things?), you
 will be setting up the configurations.
 
 -------  End of Trello-Tran NodeJs Application Description  -------*/
-
-/*=====================================================
-=            Configuration of Trello-Train            =
-=====================================================*/
-/* Numbers between days of changes (in Trello Lists) */
-var daysBetweenNotifiers = 7; // Default is 7
-
-/* Trello API Access */
-var trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
-var trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
-
-/* Email settings */
-var myEmail = "mail@morningtrain.dk";
-var myName = "Morning Train";
-
-
-/* SMTP Settings (For outgoing mail)*/
-
-
-/*-----  End of Configuration of Trello-Train  ------*/
-
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
 
@@ -106,7 +85,8 @@ var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test3');
 
-// Connect to the db
+// Loading config
+var config = require('./config/config');
 
 var NotifierSchema = new mongoose.Schema({
   project: String,
@@ -129,15 +109,17 @@ var WebHooksSchema = new mongoose.Schema({
 var WebHook = mongoose.model("WebHook", WebHooksSchema);
 
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
-var t = new Trello(trelloApplicationKey, trelloUserToken);
+var t = new Trello(config.trelloApplicationKey, config.trelloUserToken);
 
-var transporter = nodemailer.createTransport({
-  service: "Mandrill",
-  auth: {
-      user: "mail@morningtrain.dk",
-      pass: "neRUPd59dMEp4CxwaVgfeA"
-  }
-});
+var transporter = nodemailer.createTransport(config.settingsForTransporter); 
+
+// var transporter = nodemailer.createTransport({
+//   service: "Mandrill",
+//   auth: {
+//       user: "mail@morningtrain.dk",
+//       pass: "neRUPd59dMEp4CxwaVgfeA"
+//   }
+// });
 
 // This is for understanding aliens when they try to communicate with you.
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -229,7 +211,7 @@ var runCronJob = function(){
           myLists.push(""+list._id+"");
         })
         console.log(myLists);
-        mailer.sendMail(user.email, user.board, myLists, async, t, daysBetweenNotifiers, transporter, myName, myEmail);
+        mailer.sendMail(user.email, user.board, myLists, async, t, config.daysBetweenNotifiers, transporter, config.myName, config.myEmail);
       });
 
     });
