@@ -113,14 +113,6 @@ var t = new Trello(config.trelloApplicationKey, config.trelloUserToken);
 
 var transporter = nodemailer.createTransport(config.settingsForTransporter); 
 
-// var transporter = nodemailer.createTransport({
-//   service: "Mandrill",
-//   auth: {
-//       user: "mail@morningtrain.dk",
-//       pass: "neRUPd59dMEp4CxwaVgfeA"
-//   }
-// });
-
 // This is for understanding aliens when they try to communicate with you.
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -222,7 +214,7 @@ var runCronJob = function(){
 
 // mailer.sendMail("Rubatharisan@gmail.com", "5336dfadbcd0bb19728f230d", myListToSend, async, t, daysBetweenNotifiers, nodemailer);
 
-var server = app.listen(3000, function () {
+var server = app.listen(config.serverport, function () {
 
   var host = server.address().address;
   var port = server.address().port;

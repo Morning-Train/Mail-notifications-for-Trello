@@ -30,5 +30,7 @@ config.settingsForTransporter = {
   }
 }
 
+config.serverport = 3000;
+
 /*-----  End of Configuration of Trello-Train  ------*/
 module.exports = config;
