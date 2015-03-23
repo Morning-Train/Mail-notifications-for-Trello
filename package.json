@@ -11,12 +11,8 @@
     "express": "^4.12.2",
     "mongodb": "^1.4.34",
     "mongoose": "^3.8.25",
-    "monk": "^1.0.0",
     "node-trello": "^1.0.1",
-    "nodemailer": "^1.3.1",
-    "promise": "^6.1.0",
-    "q": "^1.2.0",
-    "rsvp": "^3.0.17"
+    "nodemailer": "^1.3.1"
   },
   "devDependencies": {},
   "scripts": {
