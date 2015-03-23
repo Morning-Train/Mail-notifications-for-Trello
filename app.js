@@ -195,7 +195,7 @@ app.get("/getLists/:boardId", function (req, res){
 // CRONJOB
 var CronJob = require('cron').CronJob;
 
-new CronJob('10 * * * * *', function(){
+new CronJob(config.crontime, function(){
     runCronJob();
 }, null, true, "America/Los_Angeles");
 
