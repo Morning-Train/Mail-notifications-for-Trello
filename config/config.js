@@ -9,7 +9,7 @@ var config = {};
 config.daysBetweenNotifiers = 7; // Default is 7
 
 /* Trello API Access */
-config.trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+config.trelloApplicationKey = "ef463438274bb639009bX76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
 config.trelloUserToken = "d0deb23a479200f4274823ca7e9432fcb00306278c4fb1b59bb2d4ad9bbce836" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 /* Email settings */
