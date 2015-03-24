@@ -88,6 +88,7 @@ mongoose.connect('mongodb://localhost/test3');
 // Loading config
 var config = require('./config/config');
 
+// Notifier Schema for mails
 var NotifierSchema = new mongoose.Schema({
   project: String,
   email: String,
@@ -96,8 +97,10 @@ var NotifierSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now }
 });
 
+// Setting the Schema as a Model in Mongoose
 var Notifier = mongoose.model('Notifier', NotifierSchema);
 
+// Webhooks Schema for webhooks
 var WebHooksSchema = new mongoose.Schema({
   idModel: String,
   description: String,
@@ -106,12 +109,14 @@ var WebHooksSchema = new mongoose.Schema({
   active: Boolean
 });
 
+// Setting the Schema as a Model in Mongoose
 var WebHook = mongoose.model("WebHook", WebHooksSchema);
 
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello(config.trelloApplicationKey, config.trelloUserToken);
 
-var transporter = nodemailer.createTransport(config.settingsForTransporter); 
+// Creating a transporter for sending mails through nodemailer
+var transporter = nodemailer.createTransport(config.settingsForTransporter);
 
 // This is for understanding aliens when they try to communicate with you.
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -119,23 +124,30 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Same goes for the JSON aliens
 app.use(bodyParser.json());
 
+// Using our static client front-end system (look at index.html and scripts.js for more info about this)
 app.use(express.static('./client'));
 
+// Requiring the controller of notifier and including the app and Notifier model.
 require('./controller/notifier')(app, null, Notifier);
 
+// Requiring the controller of webhooks and including the app, async, WebHook model and t (trello object)
 require('./controller/webhooks')(app, async, WebHook, t);
 
+// Requiring the controller of mailer.
 var mailer = require('./controller/mailer');
 
-// We don't use this in the client part anylongere
+// Get request of getting all boards owned by user at trello.
 app.get("/getBoards", function (req, res) {
+  // Creating a Board class.
   var Board = function(id, name){
     this.id = id;
     this.name = name;
   };
 
+  // Array of Boards
   var boardArray = [];
 
+  // init counter and boardSize
   var counter = 0;
   var boardSize = 0;
 
@@ -144,21 +156,24 @@ app.get("/getBoards", function (req, res) {
     if (err) {
        throw err;
     }
-  //console.log("============REQUEST FOR BOARDLISTS===========")
 
+    // Setting the boardSize to the length of all boards
     boardSize = data.idBoards.length;
-    data.idBoards.forEach(function (datax){
-      var boardPath = "/1/boards/" + datax;
-        t.get(boardPath, function(err, data) {
+
+    // forEach on each board of all boards accessable by user
+    data.idBoards.forEach(function (aBoard){
+
+      // Setting the boardPath to /1/boards/aBoard (aBoard is a id of one of all boards)
+      // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
+      // to the client end
+      var boardPath = "/1/boards/" + aBoard;
+        t.get(boardPath, function(err, theBoard) {
           counter++;
               if (err) throw err;
-              //console.log("+ Board name: " + data.name + " ID: " + data.id);
-              var currentBoard = new Board(data.id, data.name);
+              var currentBoard = new Board(theBoard.id, theBoard.name);
               boardArray.push(currentBoard);
-
               if(counter === boardSize){
                 res.send(boardArray);
-                //console.log("============REQUEST END==============")
               }
         });
       }
@@ -166,7 +181,7 @@ app.get("/getBoards", function (req, res) {
   });
 });
 
-
+// Getting all lists appointed to a board and sending all the lists back to client-end
 app.get("/getLists/:boardId", function (req, res){
   var boardId = req.params.boardId;
   if(boardId !== "none" || boardId === undefined){
@@ -184,40 +199,35 @@ app.get("/getLists/:boardId", function (req, res){
 });
 
 
-// CRONJOB
+// CRONJOB for sending mails (please define how often this should happend in the config file)
 var CronJob = require('cron').CronJob;
 
+// running the cronjob, at a specificed time (config.crontime)
 new CronJob(config.crontime, function(){
     runCronJob();
 }, null, true, config.crontimezone);
 
-
+// for all notifiers in our mongodb database, we run sendMail method from mailer.
 var runCronJob = function(){
   Notifier.find({}, function(err, notifiers){
 
       notifiers.forEach(function(user){
         var myLists = [];
-        console.log(user.email);
-        console.log(user.board);
+
         user.lists.forEach(function(list){
           myLists.push(""+list._id+"");
         })
-        console.log(myLists);
+
         mailer.sendMail(user.email, user.board, myLists, async, t, config.daysBetweenNotifiers, transporter, config.myName, config.myEmail);
       });
 
     });
 }
 
-
-// var myListToSend = ['5336dfadbcd0bb19728f2310'];
-
-// mailer.sendMail("Rubatharisan@gmail.com", "5336dfadbcd0bb19728f230d", myListToSend, async, t, daysBetweenNotifiers, nodemailer);
-
 var server = app.listen(config.serverport, function () {
 
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log("Example app listening at http://%s:%s", host, port);
+  console.log("Server is running at http://%s:%s", host, port);
 });
