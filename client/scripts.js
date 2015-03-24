@@ -23,7 +23,7 @@ $(document).ready(function() {
     });
 
     // Get all boards from Trello
-    var getAllBoards = $.get( 'http://localhost:3000/getBoards', function( data ) {
+    var getAllBoards = $.get( '/getBoards', function( data ) {
     var elements = $();
     arr = data;
 
@@ -291,7 +291,7 @@ $(document).ready(function() {
 
 
             $('#check-btn').html('<h3>Listnames:</h3>');
-            $.get( 'http://localhost:3000/getLists/' + data.board, function( data ) {
+            $.get( '/getLists/' + data.board, function( data ) {
                 arr = data;
                 //console.log(" done of getSolo ");
                 //console.log(data);
@@ -312,7 +312,7 @@ $(document).ready(function() {
         $('#boardIdInForm').remove();
         $('#lists').empty();
 
-        $.get( 'http://localhost:3000/getLists/' + $('#myBoards').val(), function( data ) {
+        $.get( '/getLists/' + $('#myBoards').val(), function( data ) {
             $('#lists').html('<h3>Listenavne:</h3>');
             $('#new-check-btn').show();
             $('#project').val($('#myBoards option:selected').text());
@@ -329,7 +329,7 @@ $(document).ready(function() {
     $('#mySoloBoards').change(function() {
         $('#check-btn').empty();
         $('#check-btn').html('<h3>Listenavne:</h3>');
-        $.get( 'http://localhost:3000/getLists/' + $('#mySoloBoards').val(), function( data ) {
+        $.get( '/getLists/' + $('#mySoloBoards').val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
                 $('#check-btn').append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
