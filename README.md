@@ -33,7 +33,7 @@ In your terminal write:
 
 
     $ git clone https://github.com/Morning-Train/Mail-notifications-for-Trello.git
-    $ cd mail-notifications-for-trello
+    $ cd Mail-notifications-for-Trello
     $ npm install
 
 
