@@ -35,15 +35,25 @@ In your terminal write:
 
 
 The following modules will be installed:
+
 - async, 0.9.0
+
 - body-parser, 1.12.0
+
 - bson, 0.2.21
+
 - cron, 1.0.9
+
 - express, 4.12.2
+
 - mongodb, 1.4.34
+
 - mongoose, 3.8.25
+
 - node-trello, 1.0.1
+
 - nodemailer, 1.3.1
+
 
 ### Browser support
 
