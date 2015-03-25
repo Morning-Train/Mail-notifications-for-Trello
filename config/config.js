@@ -9,8 +9,8 @@ var config = {};
 config.daysBetweenNotifiers = 7; // Default is 7
 
 /* Trello API Access */
-config.trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
-config.trelloUserToken = "555e85a99d6528985a682d42d5efa992b9e3e1b447ffc69f06893377f633adfb" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+config.trelloApplicationKey = "<<Insert your application key>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+config.trelloUserToken = "<<Insert your user token>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 // Secs & Mins & Hours & Day of Month & Months & Day of Week (Read more here: https://github.com/ncb000gt/node-cron)
 config.crontime = '* * 08 * * 1';
