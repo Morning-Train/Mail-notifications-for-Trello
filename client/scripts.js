@@ -6,35 +6,26 @@ $(document).ready(function() {
     //
     //
 
-    // Set variable 'whereAmI' for later user
-    var whereAmI = 'notifiers';
+    function getNameOfBoard(myArray, searchTerm){
+          for(var i = 0, len = myArray.length; i < len; i++){
+            if(myArray[i].id === searchTerm) return myArray[i].name;
+          }
+          return -1;
+    }
 
-    // Select tab
-    $('.green').click(function() {
-        $('#webhooks-content').hide();
-        $('#notify-content').show();
-        whereAmI = 'notifiers';
-    });
-
-    $('.blue').click(function() {
-        $('#notify-content').hide();
-        $('#webhooks-content').show();
-        whereAmI = 'webhooks';
-    });
+    var boards = {};
 
     // Get all boards from Trello
     var getAllBoards = $.get( '/getBoards', function( data ) {
-    var elements = $();
-    arr = data;
-
-    for(i = 0; i < arr.length; i++) {
-        $('#myBoards').append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-        $('.mySoloBoards').append('<option value="'+arr[i].id+'">'+arr[i].name+'</option>');
-    }
-
+        boards = data;
+        for(i = 0; i < boards.length; i++) {
+            $('#myBoards').append('<option value="'+boards[i].id+'">'+boards[i].name+'</option>');
+            $('.mySoloBoards').append('<option value="'+boards[i].id+'">'+boards[i].name+'</option>');
+        }
     }).done(function(){
         $('#loader').fadeOut('slow');
         $('body').removeClass('no-scroll');
+        getAllNotifiers();
     });
 
     getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
@@ -51,36 +42,12 @@ $(document).ready(function() {
         $('#approve-wrap').show();
     });
 
-    // Alert box on remove click in Webhooks Modal box
-    $('#modal-webhooks-rmv').click(function(e){
-        // Add blue bg to remove btn's
-        $('#yes').addClass('blue-bg');
-        $('#no').addClass('blue-bg');
-
-        // Show remove approval
-        e.preventDefault();
-        $('#approve-wrap').show();
-    });
-
-
     // if yes
     $('#yes').click(function(e){
         e.preventDefault();
-        var data = "";
-        var theURL = "";
 
-        if(whereAmI === "notifiers"){
-            data = $('#modal-form').serialize();
-            theURL = 'mongies/notifiers/removeOne';
-        }
-
-        if(whereAmI === "webhooks"){
-            data = $('#webhooks-modal-form').serialize();
-            theURL = 'mongies/webhooks/removeOne';
-        }
-
-        console.log(data);
-        console.log(theURL);
+        var data = $('#modal-form').serialize();
+        var theURL = 'mongies/notifiers/removeOne';
 
         $.ajax({
             type: 'POST',
@@ -106,22 +73,14 @@ $(document).ready(function() {
             $('#yes').removeClass('blue-bg');
             $('#no').removeClass('blue-bg');
 
-            console.log(res);
             $('#fieldset-info').remove();
             // Update notifier list (on frontpage)
             $('#approve-wrap').hide();
             $('.notify').hide();
-            $('.webhooks').hide();
             $('body').removeClass('no-scroll');
         }).
         always(function(){
-            if(whereAmI === "notifiers"){
-                getAllNotifiers();
-            }
-
-            if(whereAmI === "webhooks"){
-                getAllWebHooks();
-            }
+            getAllNotifiers();
         });
     });
 
@@ -137,7 +96,6 @@ $(document).ready(function() {
     // Close modal box on close click
     $('.close-btn').click(function() {
         $('.notify').hide();
-        $('.webhooks').hide();
         $('body').removeClass('no-scroll');
     });
 
@@ -189,17 +147,10 @@ $(document).ready(function() {
         });
     });
 
-    // update mail notifier
-    $('#update-mail-notifier').submit(function(e) {
-        e.preventDefault();
-        console.log($('#update-mail-notifier').serialize());
-    });
-
     // Modal submit - change this to modal-update-notifier
     $('#modal-submit').click(function(e){
         e.preventDefault();
         var data = $('#modal-form').serialize();
-        console.log(data);
         // Ajax call to php/update.php with the right data (all data from the single notifier).
         $.ajax({
             type: 'POST',
@@ -232,7 +183,6 @@ $(document).ready(function() {
         $.get( 'mongies/notifiers/all/', function( data ) {
             $('.current_notifiers').remove();
             $('#fieldset-info').remove();
-            console.log(data);
             //console.log(data);
             $.each(data, function(i, val){
                 var textToInsert = '';
@@ -240,7 +190,7 @@ $(document).ready(function() {
                 textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='"+ val._id +"' disabled>";
                 textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "' disabled>";
                 textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"' disabled>";
-                textToInsert += "<input type='text' class='field-info-item board-name' value='"+ val.board +"' disabled>";
+                textToInsert += "<input type='text' class='field-info-item board-name' value='"+ getNameOfBoard(boards, val.board) +"' disabled>";
                 textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
                 $('#field-info').after(textToInsert);
             });
@@ -253,9 +203,6 @@ $(document).ready(function() {
     };
     // Success + Failure skal også laves!
 
-
-    getAllNotifiers();
-
     // Edit / Save fieldsets -> Mail notify
     $('#sub-frm').on('click', 'div.edit-this', function(e) {
         $('.notify').show();
@@ -264,13 +211,13 @@ $(document).ready(function() {
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
 
-        $.get( "mongies/notifiers/" + currentId, function( data ) {
+        $.get( 'mongies/notifiers/' + currentId, function( data ) {
 
         //console.log(data);
           $('#modal-notifier-id').val(data._id);
           $('#modal-project').val(data.project);
           $('#modal-email').val(data.email);
-          var $options = $("#myBoards > option").clone();
+          var $options = $('#myBoards > option').clone();
           $('#mySoloBoards').append($options);
           $('#mySoloBoards').val(data.board);
           //console.log(data);
@@ -313,7 +260,7 @@ $(document).ready(function() {
         $('#lists').empty();
 
         $.get( '/getLists/' + $('#myBoards').val(), function( data ) {
-            $('#lists').html('<h3>Listenavne:</h3>');
+            $('#lists').html('<h3>Listnames:</h3>');
             $('#new-check-btn').show();
             $('#project').val($('#myBoards option:selected').text());
             arr = data;
@@ -328,181 +275,12 @@ $(document).ready(function() {
     // Append the fetched list items to html
     $('#mySoloBoards').change(function() {
         $('#check-btn').empty();
-        $('#check-btn').html('<h3>Listenavne:</h3>');
+        $('#check-btn').html('<h3>Listnames:</h3>');
         $.get( '/getLists/' + $('#mySoloBoards').val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
                 $('#check-btn').append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
             }
-        });
-    });
-
-    //
-    //
-    // ******* Webhooks code starts ********
-    //
-    //
-
-    // Add new record
-    $('#web-submit').click(function(e){
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url:'mongies/webhooks/post',
-            data: $('#web-custom-frm').serialize()
-        }).
-        success(function(res) {
-        }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#web-answer').html('<center><strong>'+err.responseText+'</strong></center>');
-        }).
-        done(function(err) {
-            // Success Feedback
-            $('#submit-succes').empty();
-            $('#submit-success').append('<h3>Created new record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-
-            // Reset form on submit
-            $('#web-custom-frm')[0].reset();
-        }).
-        always(function(err){
-            // get all webhooks
-            getAllWebHooks();
-        });
-    });
-
-    /* Webhooks API update */
-
-    $("#modal-webhooks-submit").click(function(e){
-        e.preventDefault();
-        var data = $('#webhooks-modal-form').serialize();
-        console.log(data);
-        // Ajax call to php/update.php with the right data (all data from the single notifier).
-        $.ajax({
-            type: 'POST',
-            url:'mongies/webhooks/updateOne',
-            // Remember to change this.
-            data: data
-        }).
-        success(function(res) {
-        }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in updating the record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-        }).
-        done(function(err) {
-            // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Updated record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-        }).
-        always(function(err){
-            // get all webhooks
-            getAllWebHooks();
-        });
-    });
-
-    // Recreate WebHook
-    $('#modal-webhooks-recreate').click(function(e){
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url:'mongies/webhooks/post',
-            data: $('#webhooks-modal-form').serialize()
-        }).
-        success(function(res) {
-        }).
-        fail(function(err) {
-            // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#web-answer').html('<center><strong>'+err.responseText+'</strong></center>');
-        }).
-        done(function(err) {
-            // Success Feedback
-            $('#submit-succes').empty();
-            $('#submit-success').append('<h3>Created new record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
-            $('.webhooks').hide();
-            $('body').removeClass('no-scroll');
-            // Reset form on submit
-        }).
-        always(function(){
-            // Get all Webhooks
-            getAllWebHooks();
-        });
-    });
-
-    // Get all records
-    var getAllWebHooks = function(){
-
-        $.get('mongies/webhooks/all', function( data ) {
-                $( '.current_webhooks' ).remove();
-
-                console.log(data);
-                var doesNotExistClass = "";
-                $.each(data, function(i, val){
-
-                    if(val.active === false){
-                        doesNotExistClass = "doesNotExistAtTrello";
-                    } else {
-                        doesNotExistClass = "doesExistAtTrello";
-                    }
-
-                    var textToInsert = '';
-                    textToInsert += "<fieldset class='current_webhooks " + doesNotExistClass + " clearfix'>";
-                    textToInsert += "<input type='hidden' class='field-info-item webhook-id' name='id' value='"+ val._id +"' disabled>";
-                    textToInsert += "<input type='text' class='field-info-item board-name' value='" + val.idModel + "' disabled>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-desc res-hide' value='"+ val.description +"' disabled>";
-                    textToInsert += "<input type='text' class='field-info-item webhook-last-updated' value='"+ val.updated_at.substr(0, 10) +"' disabled>";
-                    textToInsert += "<div class='edit-web edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
-                    $('#web-field-info').after(textToInsert);
-                });
-
-            }).done(function(){
-                $('.board-name').each(function( index ) {
-                });
-        });
-    }
-
-    getAllWebHooks();
-
-    // Edit / Save fieldsets
-    $( '#web-sub-frm' ).on( 'click', 'div.edit-this', function(e) {
-        $('.webhooks').show();
-        $('body').addClass('no-scroll');
-
-        // Set currentId (from the pressed notifier)
-        var currentId = $(this).parent('fieldset').find('.webhook-id').val();
-        var boardId = '';
-        // Empty the Edit->Modal->Board Selection
-
-        // Get information about the notifier you want to edit
-        $.get( 'mongies/webhooks/findOne/' + currentId, function( data ) {
-            console.log(data);
-        // Set the values for id + project name + email + board (we are still)
-          $('#webhooks_id').val(data[0]._id);
-          console.log(data[0].id);
-          $('#modal-desc').val(data[0].description);
-          $('#modal-url').val(data[0].callbackURL);
-          $('.mySoloBoards').val(data[0].idModel);
-
-          if(data[0].active === false){
-            $('#modal-webhooks-submit').hide();
-            $('#modal-webhooks-recreate').show();
-          } else {
-            $('#modal-webhooks-submit').show();
-            $('#modal-webhooks-recreate').hide();
-          }
-
-        }, "json").done(function(data){
         });
     });
 });

@@ -1,73 +1,5 @@
 "use strict";
 
-/*==================================================================
-=            Trello-Tran NodeJs Application Description            =
-====================================================================
-
-1. Purpose of Trello Train.
-The purpose of this application is to "notice" changes on a Trello
-board and send a email to a customer with the changes (only card name).
-How this application notices changes is by checking out when there
-have been activity on a single card. If the activity is within a
-certain amount of days (default: 7), it will be a stored in a list and
-at last sent to a specified email (often a client email-address).
-
-As an requirement we also included an interface for Trello webhooks,
-this is for having an easy way to see what kind of webhooks you have,
-more for updating/deleting and maintaing the trello webhooks.
-
-We started out with having a user-interface (presentation) handled by
-php. PHP was sending GET requests to a NodeJS server, and the NodeJS
-server was talking with Trello API, and sending was doing the logic
-for sending the emails out, this became a bit messy and we realised
-soon that it would be more performance wise and easy to handle to
-just keep everything into one language: JavaScript.
-
-Please keep in mind, that we are not experts at NodeJS and Trello-Train
-was not made with security in mind, but made with the perspective of
-"ease of use" - anything that is an issue or unwisely handled for an
-example: functions, methods, datastructures, etc. Please report them
-to us or make a pull request. (Suggestions are always welcome!).
-
-2. Front-end description and informations.
-For getting information about how the presentation part works, please
-read the "Front-End" documentation at /client/XXXXX.
-
-3. Everything beyond this point....
-We tried documenting as much as possible, if there is something that
-does not fit your eyes or use - then contact us or make a pull-request
-and we can figure something out :)
-
-4. Setting up Trello-Train.
-4.1. You need to have NodeJS installed, you can read how to here:
-XXXXXXXXXXX
-4.2. You need to have MongoDB installed, you can read how to here:
-XXXXXXXXXXX
-4.3. You need the following modules:
-- Node Trello,
-- Async,
-- NodeMailer,
-- Express,
-- Body Parser,
-- Mongoose.
-
-Read how to install modules here:
-XXXXXXXX
-
-Need to do this before initial release!
-// SMTP Settings
-// Cronjob settings
-// Check if WebHook exists.
-
-Can do whenever we got time
-// Sort Webhooks by updated_at.
-
-
-You are always welcome to give us feedback, suggestions and information.
-Beyond this point (so you have installed the neccessary things?), you
-will be setting up the configurations.
-
--------  End of Trello-Tran NodeJs Application Description  -------*/
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
 
@@ -83,7 +15,7 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test3');
+mongoose.connect('mongodb://localhost/mailnotifiersForTrello');
 
 // Loading config
 var config = require('./config/config');
@@ -99,18 +31,6 @@ var NotifierSchema = new mongoose.Schema({
 
 // Setting the Schema as a Model in Mongoose
 var Notifier = mongoose.model('Notifier', NotifierSchema);
-
-// Webhooks Schema for webhooks
-var WebHooksSchema = new mongoose.Schema({
-  idModel: String,
-  description: String,
-  callbackURL: String,
-  updated_at: { type: Date, default: Date.now },
-  active: Boolean
-});
-
-// Setting the Schema as a Model in Mongoose
-var WebHook = mongoose.model("WebHook", WebHooksSchema);
 
 //  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
 var t = new Trello(config.trelloApplicationKey, config.trelloUserToken);
@@ -129,9 +49,6 @@ app.use(express.static('./client'));
 
 // Requiring the controller of notifier and including the app and Notifier model.
 require('./controller/notifier')(app, null, Notifier);
-
-// Requiring the controller of webhooks and including the app, async, WebHook model and t (trello object)
-require('./controller/webhooks')(app, async, WebHook, t);
 
 // Requiring the controller of mailer.
 var mailer = require('./controller/mailer');

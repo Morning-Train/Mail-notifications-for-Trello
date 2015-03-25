@@ -10,7 +10,7 @@
 <body class="no-scroll">
     <div id="loader">
     </div>
-    
+
     <!-- Approve remove -->
     <div id="approve-wrap">
         <div class="approve-alert">
@@ -67,41 +67,8 @@
         </div>
     </div>
 
-    <!-- Webhooks Modal Box -->
-    <div class="modal-wrap webhooks">
-        <div class="close-btn-fix">
-            <div class="close-btn web-btn">X</div>
-            <div class="modalbox web-box">
-                <form id="webhooks-modal-form" class="modal-form modal-web" action="#submit-answer" method="POST">
-                    <input type="hidden" name="webhooks_id" id="webhooks_id">
-                    <fieldset>
-                        <label for="board">Board:</label>
-                            <select name="idModel" class="mySoloBoards">
-                            </select>
-                    </fieldset>
-
-                    <fieldset>
-                        <label for="modal-desc">Description:</label>
-                        <textarea name="desc_area" id="modal-desc" autocomplete="off"></textarea>
-                    </fieldset>
-
-                    <fieldset>
-                        <label for="modal-url">Callback URL:</label>
-                        <input type="textarea" name="callback_area" id="modal-url" autocomplete="off">
-                    </fieldset>
-
-                    <input type="submit" value="Update" id="modal-webhooks-submit">
-                    <input type="submit" value="Re-create" id="modal-webhooks-recreate">
-                    <input type="submit" value="Remove" id="modal-webhooks-rmv">
-                    <input type="hidden" name="submitted" value="true">
-                    <div class="small-space"></div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <header>
-        <h1>Trello-Train</h1>
+        <h1>Mail notifications for Trello</h1>
     </header>
 
     <!-- Submit divs with error/success -->
@@ -111,23 +78,6 @@
     <div id="submit-error">
     </div>
 
-    <!-- Content tabs -->
-    <div class="tab green">
-        <div class="tab-desc">
-        <p>Email Notify</p>
-        </div>
-        <div class="tab-img">
-            <p>@</p>
-        </div>
-    </div>
-    <div class="tab blue">
-        <div class="tab-desc">
-        <p>Webhooks</p>
-        </div>
-        <div class="tab-img">
-            <p>W</p>
-        </div>
-    </div>
     <div class="clearfix"></div>
 
     <!-- NOTIFY EMAIL CONTENT START -->
@@ -171,59 +121,6 @@
 
         <div class="space"></div>
     </div>
-
-    <!-- WEBHOOKS CONTENT START -->
-    <div id="webhooks-content">
-        <h1>Webhooks</h1>
-        <!-- Add new webhook -->
-        <form id="web-custom-frm" action="#web-answer" method="POST">
-            <label for="board">Board:</label>
-            <select name="idModel" class="mySoloBoards">
-            </select>
-
-            <label for="web-desc res-hide">Description:</label>
-            <textarea name="desc_area" id="web-desc" autocomplete="off" placeholder="The purpose of this awesome webhook"></textarea>
-
-            <label for="callback-url">Callback URL:</label>
-            <input type="textarea" name="callback_area" id="callback-url" autocomplete="off" placeholder="http://morningtrain.dk/script-with-superpower">
-
-            <input type="submit" value="Submit" id="web-submit">
-            <input type="hidden" name="submitted" value="true">
-        </form>
-
-        <div id="web-answer"></div>
-
-        <!-- Display all webhooks -->
-        <form id="web-sub-frm" class="clearfix">
-            <h2>Current Webhooks</h2>
-
-            <div id="status-bar">
-                <h4>Status colors</h4>
-                <div class="status-color">
-                    <div class="green-bar"></div>
-                    <p>Ok</p>
-                </div>
-                <div class="status-color">
-                    <div class="red-bar"></div>
-                    <p>Outdated</p>
-                </div>
-            </div>
-
-            <div class="clearfix"></div>
-
-            <div id="web-field-info" class="clearfix">
-                <div class="field-info-item"><p>Boardname</p></div>
-                <div class="field-info-item res-hide"><p>Description</p></div>
-                <div class="field-info-item"><p>Last updated</p></div>
-                <div class="edit"><p>Edit</p></div>
-            </div>
-
-            <div class="space"></div> 
-        </form>
-
-        <div class="space"></div>
-    </div>
-
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="scripts.js"></script>
 </body>
