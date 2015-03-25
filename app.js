@@ -3,6 +3,7 @@
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
 /* DO NOT EDIT ANYTHING BEYOND THIS POINT - unless you know what you are doing ;) */
+// Hello world! :)
 
 // Requirements of Modules
 //  Trello module
@@ -120,6 +121,7 @@ var CronJob = require('cron').CronJob;
 // running the cronjob, at a specificed time (config.crontime)
 new CronJob(config.crontime, function(){
     runCronJob();
+    console.log("Running cronjob");
 }, null, true, config.crontimezone);
 
 // for all notifiers in our mongodb database, we run sendMail method from mailer.
