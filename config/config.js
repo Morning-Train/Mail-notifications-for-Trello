@@ -18,8 +18,8 @@ config.crontimezone = "Europe/Copenhagen";
 
 
 /* Email settings */
-config.myEmail = "mail@morningtrain.dk";
-config.myName = "Rubatharisan Thirumathyam";
+config.myEmail = "<< Insert your email >>";
+config.myName = "<< Insert your name >>";
 
 /* SMTP Settings (For outgoing mail)*/
 config.settingsForTransporter = {
