@@ -186,47 +186,68 @@
                 console.log("|abcd|");
                 var styleColor = "";
 
-                emailContent += "Morning Train arbejder på projektet " + boardName;
-                emailContent += "<br> Dette er sket i sidste uge:";
+                // Email content starts from here
+                emailContent += "<meta charset='UTF-8'>";
+                emailContent += "<div style='width: 100%; background-color: #F3F3F3; padding-bottom: 5%; padding-top: 5%;'>";
+                emailContent += "<table align='center' style='font-family: arial,sans-serif; background-color:#fff; margin: 0 auto; max-width: 950px;width: 95%; border-radius: 10px;'>";
+                emailContent += "<tbody style='background-color: #fff; margin: 0 auto; border: 1px solid #dadada;'>";
+                emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='  margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>Email-Notifier</h1><div align='center' style='width:33%; height:1px; background-color: #fff; margin:0 auto;'></div><h2 style='   margin: 0 !important; padding-top: 7px;  color: #fff;font-size: 10px; text-transform: uppercase;'>Your notifier from your Trello boards</h2></th>";
+                emailContent += "<tr>";
+                emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Morning Train arbejder på projektet " + boardName + "</td>";
+                emailContent += "</tr>";
+                emailContent += "<tr>";
+                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Her ses et overblik over hvad der er sket i løbet af sidste uge:</td>";
+                emailContent += "</tr>";
 
                 boardLists.forEach(function(entry){
-                  switch(entry._name.toLowerCase()){
-                    case "done":
-                      styleColor = "green";
-                      break;
-                    case "to do":
-                      styleColor = "";
-                      break;
-                    case "doing":
-                      styleColor = "#FFBF00";
-                      break;
-                    default:
-                      styleColor = "";
-                      break;
-                  }
+                  emailContent += "<tr><td style='padding-top: 15px; padding-bottom: 15px; padding-left: 5%; padding-right: 5%;'>";
+                  // switch(entry._name.toLowerCase()){
+                  //   case "done":
+                  //     styleColor = "green";
+                  //     break;
+                  //   case "to do":
+                  //     styleColor = "";
+                  //     break;
+                  //   case "doing":
+                  //     styleColor = "#FFBF00";
+                  //     break;
+                  //   default:
+                  //     styleColor = "";
+                  //     break;
+                  // }
 
-                  //console.log(arrayIndexOf(wantedLists, entry._id));
-
-
-                  if(arrayIndexOf(wantedLists, entry._id) !== -1 || wantedLists[0] === "*"){
+                if(arrayIndexOf(wantedLists, entry._id) !== -1 || wantedLists[0] === "*"){
                     if(entry._cards.length !== 0){
                       boolSendMail = true;
                       // console.log(" - " + entry._name);
-                      emailContent += "<h2><font color='" + styleColor + "'>" + entry._name + "</font></h2>";
-                      emailContent += "<ul>";
+                      emailContent += "<h2 style='  letter-spacing: 1px; text-transform: uppercase;  font-size: 14px;   border-bottom: 1px solid #F0F0F0; padding-bottom: 7px;'><font color='" + styleColor + "'>" + entry._name + "</font></h2>";
+                      emailContent += "<ul style='  margin-top: 30px;'>";
                       entry._cards.forEach(function(cards){
                         // console.log(" -- " + cards[0]);
-                        emailContent += "<li><font color='" + styleColor + "'>" + cards[0] + "</font></li>";
+                        emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + cards[0] + "</font></li>";
                       });
                       emailContent += "</ul>";
 
                     }
                   }
+
+
+
+                  //console.log(arrayIndexOf(wantedLists, entry._id));
+                  // entry._name == listnavn
+                  // cards 0 = cardname
+                     emailContent += "</td></tr>";
                 });
 
-                      emailContent += "<br>";
-                      emailContent += "Med venlig hilsen <br>";
-                      emailContent += "<img src='http://morningtrain.dk/wp-content/uploads/2014/09/webbureau-odense-programmering.png' alt='Morning Train Technologies'>";
+                // emailContent += "<br>";
+                // emailContent += "Med venlig hilsen <br>";
+                // emailContent += "<img src='http://morningtrain.dk/wp-content/uploads/2014/09/webbureau-odense-programmering.png' alt='Morning Train Technologies'>";
+                emailContent += "</tbody>";
+                emailContent += "<tr align='center'><td style=' background-color: #0e74af; color: #fff; padding-bottom: 20px;padding-top: 20px;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;   font-size: 11px;'>Thank you for using our plugin</td></tr>";
+                emailContent += "</table>";
+                emailContent += "</div>";
+
+      
                 console.log(" |abcd|  OK");
                 callback(null, "d");
               }],
