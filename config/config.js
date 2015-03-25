@@ -13,7 +13,7 @@ config.trelloApplicationKey = "ef463438274bb639009b76098f83b026" // Read https:/
 config.trelloUserToken = "555e85a99d6528985a682d42d5efa992b9e3e1b447ffc69f06893377f633adfb" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 // Secs & Mins & Hours & Day of Month & Months & Day of Week (Read more here: https://github.com/ncb000gt/node-cron)
-config.crontime = '10 * * * * *';
+config.crontime = '* * 08 * * 1';
 config.crontimezone = "Europe/Copenhagen";
 
 
@@ -26,7 +26,7 @@ config.settingsForTransporter = {
   service: "Mandrill",
   auth: {
       user: "mail@morningtrain.dk",
-      pass: "f_MAeazg5Fr4nFzfmmNNVA"
+      pass: ""
   }
 }
 
