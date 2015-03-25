@@ -22,8 +22,8 @@ http://www.mongodb.org/downloads
 In your terminal write:
 
 
-    $ git clone git@github.com:Morning-Train/Trello-Train.git
-    $ cd trellotrain
+    $ git clone https://github.com/Morning-Train/Mail-notifications-for-Trello.git
+    $ cd mail-notifications-for-trello
     $ npm install
 
 
