@@ -2,8 +2,6 @@
 
 // Disable email system
 var justContinue = true; // Put to false if you want to skip sending emails at the moment.
-
-/* WARNING WARNING WARNING WARNING */
 /* DO NOT EDIT ANYTHING BEYOND THIS POINT - unless you know what you are doing ;) */
 
 // Requirements of Modules
