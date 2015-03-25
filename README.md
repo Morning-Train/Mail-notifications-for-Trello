@@ -9,16 +9,26 @@ has been activity on a single card. If the activity is within a
 certain amount of days (default: 7), it will be a stored in a list and
 at last sent to a specified email (often a client email-address). This is perfect for client projects where you can inform them of weekly changes automatically.
 
+### Images of Mail notifications for Trello
+#### Adding a notification
+![alt text](https://morningtrain.dk/img/MailNotifier3.png "Add Notifier Overview")
+#### Overview of all notification setups
+![alt text](https://morningtrain.dk/img/MailNotifier1.png "All Notifiers Overview")
+#### Edit a notification (modal box)
+![alt text](https://morningtrain.dk/img/MailNotifier2.png "Edit Notifier Modal box")
+#### Email of a notification (modal box)
+![alt text](https://morningtrain.dk/img/MailNotifier4.png "Email of Notification")
+
 ### Setting up Mail notifications for Trello
-#### 1:
+#### 1 Getting NodeJS:
 You need to have NodeJS installed, you can get it here:
 https://nodejs.org/download/
 
-#### 2:
+#### 2 Getting MongoDB:
 You need to have MongoDB installed, you can get it here:
 http://www.mongodb.org/downloads
 
-#### 3:
+#### 3 Cloning Mail notifications for Trello repository:
 In your terminal write:
 
 
@@ -47,30 +57,44 @@ The following modules will be installed:
 
 - nodemailer, 1.3.1
 
-#### 4:
+#### 4 Setting up config file:
 When your modules is installed, you need to open up config/config.js.
 Inside here you need to set:
 
     config.trelloApplicationKey = "<<Insert your application key>>";
-Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key for how to find your application key.
+
+
 
     config.trelloUserToken = "<<Insert your user token>>";
-Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user for how to get a usertoken from with your application key.
+
+
 
 	config.crontime = '* * 08 * * 1';
 Read https://github.com/ncb000gt/node-cron on how to set this (default every monday morning at 08).
 
-	config.crontimezone = "Denmark/Copenhagen";
-Read https://github.com/ncb000gt/node-cron on how to set this
+
+
+	config.crontimezone = "Europe/Copenhagen";
+Read https://github.com/ncb000gt/node-cron on how to set this.
+Visit http://momentjs.com/timezone/ for finding your timezone.
+
 
 	config.daysBetweenNotifiers = 7;
-This will be the number of days that should be looked for changes (from today and the last 7 days). This can be any number you want, but make sure to set cron time like wise.
+This will be the number of days that should be between checking for changes (default: from today and the last 7 days). This can be any number you want, but make sure to set cron time like wise.
+
+
 
 	config.myEmail = "mail@morningtrain.dk";
 Set this to your email or company email
 
+
+
 	config.myName = "Morning Train";
 Set this to your name or company name
+
+
 
 	config.settingsForTransporter = {
 	  service: "<<SMTP provider example: Gmail>>",
