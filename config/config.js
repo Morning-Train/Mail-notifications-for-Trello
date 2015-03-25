@@ -23,10 +23,10 @@ config.myName = "Morning Train";
 
 /* SMTP Settings (For outgoing mail)*/
 config.settingsForTransporter = {
-  service: "Mandrill",
+  service: "Gmail",
   auth: {
-      user: "mail@morningtrain.dk",
-      pass: "neRUPd59dMEp4CxwaVgfeA"
+      user: "fireflexy@gmail.com",
+      pass: "bluetime2a"
   }
 }
 
