@@ -78,10 +78,13 @@
 
                 // Connection to trello object and trello api, and try getout the specified boardId name.
                 t.get(boardPath, function(err, data) {
-                  if (err) throw err;
-                  boardName = data.name;
-                  // Saying continue after this point - to the next function in line
-                  callback(null, "a");
+                  if(err){
+                    console.log(err);
+                  } else {
+                    boardName = data.name;
+                    // Saying continue after this point - to the next function in line
+                    callback(null, "a");
+                  }
                 });
               },
               function(callback){
