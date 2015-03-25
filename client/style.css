@@ -4,7 +4,7 @@ Url: http://morningtrain.dk/
 Github repository: https://github.com/Morning-Train/Trello-Train
 
 
-This contains all the styles for Trello-Train. Find description and setup guide on github.
+This contains all the styles for "Mail notifications for Trello". Find description and setup guide on github.
 
 Feel free to edit in the css, so it scale your needs.
 
@@ -16,12 +16,10 @@ Feel free to edit in the css, so it scale your needs.
 - Global Styles
 - Page Loader
 - Header
-- Tabs
 - Modal Boxes
 - Error handling boxes
 - Add New Record
 - List overview of all records
-- Webhooks page specific style
 
 */
 
@@ -126,104 +124,6 @@ header h1 {
     color: #888888;
 }
 
-/*============================
-=            Tabs            =
-============================*/
-.tab {
-    width: 210px;
-    height: 60px;
-    position: fixed;
-    text-align: center;
-    cursor: pointer;
-    z-index: 99;
-}
-
-.tab-desc {
-    width: 150px;
-    float: left;
-}
-
-.tab p {
-    font-size: 1em;
-    font-weight: 700;
-    line-height: 60px;
-    color: #fff;
-}
-
-.tab-img {
-    width: 60px;
-    float: left;
-}
-
-.tab-img p {
-    font-size: 1.3em;
-    font-weight: 700;
-}
-
-.green {
-    background: #2ecc71;
-    left: -150px;
-    top: 50%;
-    margin-top: -60px;
-    -moz-transition:left .5s ease;
-    -o-transition: left .5s ease;
-    -webkit-transition: left .5s ease;
-    transition: left .5s ease;
-}
-
-.green:hover {
-    left: 0;
-}
-
-.blue {
-    background: #3498db;
-    left: -150px;
-    top: 50%;
-    -moz-transition:left .5s ease;
-    -o-transition: left .5s ease;
-    -webkit-transition: left .5s ease;
-    transition: left .5s ease;
-}
-
-.blue:hover {
-    left: 0;
-}
-
-@media screen and (max-width: 850px) {
-    .tab {
-        width: 50%;
-        height: 60px;
-        float: left;
-        position: relative;
-    }
-
-    .green, .blue {
-        left: 0px;
-        top: 0px;
-        margin-top: 0px;
-        -moz-transition: background .5s ease;
-        -o-transition: background .5s ease;
-        -webkit-transition: background .5s ease;
-        transition: background .5s ease;
-    }
-
-    .green:hover {
-        background: #34ec82;
-    }
-
-    .blue:hover {
-        background: #6ec7fa;
-    }
-
-    .tab-desc {
-        width: 100%;
-    }
-
-    .tab-img {
-        display: none;
-    }
-}
-
 /*=================================
 =            Modal box            =
 =================================*/
@@ -284,9 +184,9 @@ header h1 {
     position: absolute;
     height: 45px;
     width: 45px;
-    -webkit-border-radius: 9999px;  /* Safari 3-4, iOS 1-3.2, Android 1.6- */    
+    -webkit-border-radius: 9999px;  /* Safari 3-4, iOS 1-3.2, Android 1.6- */
     -moz-border-radius: 9999px;  /* Firefox 1-3.6 */
-    border-radius: 9999px; 
+    border-radius: 9999px;
     right: -17px;
     top: -18px;
     background-color: #000;
@@ -770,71 +670,4 @@ input[type="text"]:disabled {
         width: 35%;
         overflow: hidden;
     }
-}
-
-/*======================================
-=    Webhooks specific styles start    =
-======================================*/
-#webhooks-content {
-    display: none;
-}
-
-textarea#web-desc, textarea#modal-desc {
-    max-width: 100%;
-    min-width: 100%;
-    height: 50px;
-    box-sizing: border-box;
-    border: 1px solid #dadada;
-    margin-bottom: 20px;
-    padding: 12px 0px 0px 10px;
-}
-
-textarea#modal-desc {
-    padding: 12px 10px 10px 10px;
-    resize: none;
-    height: 150px;
-}
-
-.web-btn:hover {
-    background: #3498db;
-}
-
-/* Webhooks status bar */
-
-#status-bar {
-    width: 300px;
-    margin: 0 auto;
-}
-
-.status-color {
-    width: 50%;
-    float: left;
-    text-align: center;
-}
-
-.status-color p {
-    line-height: 38px;
-}
-
-.red-bar, .green-bar {
-    width: 59%;
-    margin: 0 auto;
-    height: 5px;
-}
-
-.red-bar {
-    background: #e74c3c;
-}
-
-.green-bar {
-    background: #2ECC71;
-}
-
-/* Does the webhook exist at Trello */
-fieldset.doesNotExistAtTrello {
-    border-left: 3px solid #e74c3c;
-}
-
-fieldset.doesExistAtTrello {
-    border-left: 3px solid #2ECC71;
 }
