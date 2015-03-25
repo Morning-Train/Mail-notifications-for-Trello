@@ -1,11 +1,21 @@
 $(document).ready(function() {
 
-    //
-    //
-    // ******* Global changes ********
-    //
-    //
+    // Global variables
+    var body = $('body');
 
+    // Notify specific variables
+    var notify = $('.notify');
+
+    // Error handling
+    var recordSuccess = $('#submit-success');
+    var recordError = $('#submit-error');
+    var submitAnswer = $('#submit-answer');
+
+    // Alert Choice
+    var yes = $('#yes');
+    var no = $('#no');
+
+    // Create new record form
     function getNameOfBoard(myArray, searchTerm){
           for(var i = 0, len = myArray.length; i < len; i++){
             if(myArray[i].id === searchTerm) return myArray[i].name;
@@ -13,6 +23,7 @@ $(document).ready(function() {
           return -1;
     }
 
+    // Empty variable for inserting object later
     var boards = {};
 
     // Get all boards from Trello
@@ -24,7 +35,7 @@ $(document).ready(function() {
         }
     }).done(function(){
         $('#loader').fadeOut('slow');
-        $('body').removeClass('no-scroll');
+        body.removeClass('no-scroll');
         getAllNotifiers();
     });
 
@@ -43,7 +54,7 @@ $(document).ready(function() {
     });
 
     // if yes
-    $('#yes').click(function(e){
+    yes.click(function(e){
         e.preventDefault();
 
         var data = $('#modal-form').serialize();
@@ -59,25 +70,25 @@ $(document).ready(function() {
         }).
         fail(function(err) {
             // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in deleting the record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+            recordError.empty();
+            recordError.append('<h3>Error in deleting the record!</h3>');
+            recordError.fadeIn(400).delay(800).fadeOut(800);
         }).
         done(function(err) {
             // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Record deleted!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            recordSuccess.empty();
+            recordSuccess.append('<h3>Record deleted!</h3>');
+            recordSuccess.fadeIn(400).delay(800).fadeOut(800);
 
             // Remove blue bg from remove btn's
-            $('#yes').removeClass('blue-bg');
-            $('#no').removeClass('blue-bg');
+            yes.removeClass('blue-bg');
+            no.removeClass('blue-bg');
 
             $('#fieldset-info').remove();
             // Update notifier list (on frontpage)
             $('#approve-wrap').hide();
-            $('.notify').hide();
-            $('body').removeClass('no-scroll');
+            notify.hide();
+            body.removeClass('no-scroll');
         }).
         always(function(){
             getAllNotifiers();
@@ -85,30 +96,23 @@ $(document).ready(function() {
     });
 
     // if no
-    $('#no').click(function(){
+    no.click(function(){
         $('#approve-wrap').hide();
 
         // Remove blue bg from remove btn's
         $(this).removeClass('blue-bg');
-        $('#yes').removeClass('blue-bg');
+        yes.removeClass('blue-bg');
     });
 
     // Close modal box on close click
     $('.close-btn').click(function() {
-        $('.notify').hide();
-        $('body').removeClass('no-scroll');
+        notify.hide();
+        body.removeClass('no-scroll');
     });
-
-    //
-    //
-    // ******* Email Notifiers code starts ********
-    //
-    //
 
     // Add new mail notifier
     $('#new-custom-frm').submit(function(e) {
         e.preventDefault();
-        //console.log($('#new-custom-frm').serialize());
 
         // Ajax call to php/post.php
         $.ajax({
@@ -120,26 +124,25 @@ $(document).ready(function() {
         }).
         fail(function(err) {
             // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in creating a new record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
-            $('#submit-answer').html(err.responseText);
+            recordError.empty();
+            recordError.append('<h3>Error in creating a new record!</h3>');
+            recordError.fadeIn(400).delay(800).fadeOut(800);
+            submitAnswer.html(err.responseText);
         }).
         done(function(err) {
             // Success Feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Created new record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            recordSuccess.empty();
+            recordSuccess.append('<h3>Created new record!</h3>');
+            recordSuccess.fadeIn(400).delay(800).fadeOut(800);
 
             // Reset form on submit
             $('#new-custom-frm')[0].reset();
 
-            // Hide lists! :)
+            // Hide lists
             $('#new-check-btn').hide();
-            //console.log(res);
 
             // Response from submit answer will be emptified.
-             $('#submit-answer').empty();
+             submitAnswer.empty();
         }).
         always(function(){
             // Update notifier list (on frontpage)
@@ -162,15 +165,15 @@ $(document).ready(function() {
         }).
         fail(function(err) {
             // Error feedback
-            $('#submit-error').empty();
-            $('#submit-error').append('<h3>Error in updating the record!</h3>');
-            $('#submit-error').fadeIn(400).delay(800).fadeOut(800);
+            recordError.empty();
+            recordError.append('<h3>Error in updating the record!</h3>');
+            recordError.fadeIn(400).delay(800).fadeOut(800);
         }).
         done(function(){
             // Success feedback
-            $('#submit-success').empty();
-            $('#submit-success').append('<h3>Updated record!</h3>');
-            $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
+            recordSuccess.empty();
+            recordSuccess.append('<h3>Updated record!</h3>');
+            recordSuccess.fadeIn(400).delay(800).fadeOut(800);
         }).
         always(function(){
             // Update notifier list (on frontpage)
@@ -205,8 +208,8 @@ $(document).ready(function() {
 
     // Edit / Save fieldsets -> Mail notify
     $('#sub-frm').on('click', 'div.edit-this', function(e) {
-        $('.notify').show();
-        $('body').addClass('no-scroll');
+        notify.show();
+        body.addClass('no-scroll');
 
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
