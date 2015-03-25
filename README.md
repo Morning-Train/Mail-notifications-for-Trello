@@ -1,7 +1,7 @@
-## Trello-Train
+## Mail notifications for Trello
 ###### Notify your customers when changes happens in your Trello boards.
 
-### The purpose of Trello Train
+### The purpose of Mail notifications for Trello
 The purpose of this application is to "notice" changes on a Trello
 board, and send a email to a customer with the changes (only card name).
 How this application notices changes is by checking out when there
@@ -9,14 +9,7 @@ has been activity on a single card. If the activity is within a
 certain amount of days (default: 7), it will be a stored in a list and
 at last sent to a specified email (often a client email-address). This is perfect for client projects where you can inform them of weekly changes automatically.
 
-Please keep in mind, that we are not experts at NodeJS and Trello-Train
-was not made with security in mind, but made with the perspective of
-"ease of use" - anything that is an issue or unwisely handled for an
-example: functions, methods, datastructures, etc. Please report them
-to us or make a pull request. (Suggestions are always welcome!).
-
-
-### Setting up Trello-Train
+### Setting up Mail notifications for Trello
 #### 1:
 You need to have NodeJS installed, you can get it here:
 https://nodejs.org/download/
@@ -55,7 +48,7 @@ The following modules will be installed:
 - nodemailer, 1.3.1
 
 #### 4:
-When your modules is installed, you need to open up config/config.js
+When your modules is installed, you need to open up config/config.js.
 Inside here you need to set:
 
     config.trelloApplicationKey = "<<Insert your application key>>";
@@ -97,7 +90,7 @@ Set this to your SMTP service provider, and SMTP user and SMTP pass. Read more h
 - Safari
 
 ### Disclaimer
-Please keep in mind, that we are not experts at NodeJS and "Webhooks for Trello"
+Please keep in mind, that we are not experts at NodeJS and "Mail notifications for Trello"
 was not made with security in mind, but made with the perspective of
 "ease of use" - anything that is an issue or unwisely handled for an
 example: functions, methods, datastructures, etc. Please report them

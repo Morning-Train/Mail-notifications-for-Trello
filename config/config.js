@@ -13,9 +13,8 @@ config.trelloApplicationKey = "<<Insert your Application Key>>" // Read https://
 config.trelloUserToken = "<<Insert your user Token>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 // Secs & Mins & Hours & Day of Month & Months & Day of Week (Read more here: https://github.com/ncb000gt/node-cron)
-config.crontime = '* * * * * *';
-config.crontimezone = "America/Los_Angeles";
-
+config.crontime = '* * 08 * * 1'; // Default is monday morning at 8
+config.crontimezone = "Denmark/Copenhagen";
 
 /* Email settings */
 config.myEmail = "<< Insert your email >>";
@@ -30,7 +29,7 @@ config.settingsForTransporter = {
   }
 }
 
-config.serverport = 3000;
+config.serverport = 3002;
 
 /*-----  End of Configuration of Trello-Train  ------*/
 module.exports = config;
