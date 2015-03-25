@@ -16,7 +16,6 @@
 
   // Search for needle in an hay-array
   function arrayIndexOf(myArray, searchTerm){
-        console.log(myArray);
           for(var i = 0, len = myArray.length; i < len; i++){
             if(myArray[i] === searchTerm) return i;
           }
@@ -70,22 +69,16 @@
 
           var boolSendMail = false;
 
-            // Simple greetings to everyone :)
-            console.log("(.*.) Greetings (.*.)");
-
             // This is the famous async calls, read up on series and waterfall - heavy shit.
             async.series([
               function(callback){
                 // code a
                 // Console.log for linebreak and indicating where in the script we are.
-                console.log();
-                console.log("|a|");
+                // console.log("|a|");
 
                 // Connection to trello object and trello api, and try getout the specified boardId name.
                 t.get(boardPath, function(err, data) {
                   if (err) throw err;
-                  //console.log("+ Board name: " +data.name);
-                  console.log(" |a| OK");
                   boardName = data.name;
                   // Saying continue after this point - to the next function in line
                   callback(null, "a");
@@ -94,18 +87,17 @@
               function(callback){
               // code b
               // Console.log for linebreak and indicating where in the script we are.
-                console.log();
-                console.log("|ab|");
+              //  console.log();
+              //  console.log("|ab|");
 
               // Connection to trello object and trello api, and try fetch the lists inside board.
                 t.get("/1/boards/" + boardId + "/lists", function(err, data){
                   // for each list returned, make a new list object with list id and name, thereafter push into boardLists array (array of objects).
                       data.forEach(function(item){
                         var addMe = new List(item.id, item.name);
-                        //console.log(" + List: " + item.name + " " + item.id);
                         boardLists.push(addMe);
                       });
-                      console.log(" |ab|  OK");
+                      //console.log(" |ab|  OK");
                       callback(null, "b");
                 });
               },
@@ -113,14 +105,13 @@
                 // code c
               // Console.log for linebreak and indicating where in the script we are.
 
-                console.log();
-                console.log("|abc|");
+                //console.log();
+                //console.log("|abc|");
 
                 // Init' counter
                 var counter = 0;
                 var doublecounter = 0;
                 var continueThis = false;
-                // console.log(" +++ " + boardLists.length);
 
                 function appendCards(position, card, cardActivity){
                   var theCard = [card, cardActivity];
@@ -159,7 +150,7 @@
                       // If days are more than "7" (default), then appendCard to array of objects of lists - append to ._cards of Lists
                       if(numDaysBetween(date, myTime) < daysBetweenNotifiers){
                         appendCards(posi, data[k].name);
-                        console.log(data[k].name);
+                        //console.log(data[k].name);
                       }
 
                       // If everything is cool, just continue (all cards have been checked).
@@ -170,9 +161,7 @@
 
                     // If all cards have been checked, and all lists have been checked - continue.
                     if(counter == boardLists.length && continueThis){
-                        //console.log("Call me Callback");
-                        //console.log(boardLists[2]);
-                        console.log(" |abc|  OK");
+                        //console.log(" |abc|  OK");
                         callback(null, "c");
                     }
                   });
@@ -182,8 +171,8 @@
               },
               function(callback){
                 // code d
-                console.log();
-                console.log("|abcd|");
+                // console.log();
+                // console.log("|abcd|");
                 var styleColor = "";
 
                 // Email content starts from here
@@ -193,28 +182,14 @@
                 emailContent += "<tbody style='background-color: #fff; margin: 0 auto; border: 1px solid #dadada;'>";
                 emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='  margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>Email-Notifier</h1><h2 style='   margin: 0 !important; padding-top: 7px;  color: #fff;font-size: 10px; text-transform: uppercase;'>Your notifier from your Trello boards</h2></th>";
                 emailContent += "<tr>";
-                emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Morning Train arbejder på projektet " + boardName + "</td>";
+                emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>"+ myName +" is working at " + boardName + "</td>";
                 emailContent += "</tr>";
                 emailContent += "<tr>";
-                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Her ses et overblik over hvad der er sket i løbet af sidste uge:</td>";
+                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is a overview of what have changed:</td>";
                 emailContent += "</tr>";
 
                 boardLists.forEach(function(entry){
                   emailContent += "<tr><td style='padding-top: 15px; padding-bottom: 15px; padding-left: 5%; padding-right: 5%;'>";
-                  // switch(entry._name.toLowerCase()){
-                  //   case "done":
-                  //     styleColor = "green";
-                  //     break;
-                  //   case "to do":
-                  //     styleColor = "";
-                  //     break;
-                  //   case "doing":
-                  //     styleColor = "#FFBF00";
-                  //     break;
-                  //   default:
-                  //     styleColor = "";
-                  //     break;
-                  // }
 
                 if(arrayIndexOf(wantedLists, entry._id) !== -1 || wantedLists[0] === "*"){
                     if(entry._cards.length !== 0){
@@ -234,7 +209,7 @@
 
 
                   //console.log(arrayIndexOf(wantedLists, entry._id));
-                  // entry._name == listnavn
+                  // entry._name == listname
                   // cards 0 = cardname
                      emailContent += "</td></tr>";
                 });
@@ -247,15 +222,15 @@
                 emailContent += "</table>";
                 emailContent += "</div>";
 
-                console.log(" |abcd|  OK");
+                // console.log(" |abcd|  OK");
                 callback(null, "d");
               }],
               // optional callback
               function (err, results){
                 // results is ['a', 'b', 'c', 'd']
                 // final callback code
-                console.log();
-                console.log("|abcd-f|");
+                // console.log();
+                // console.log("|abcd-f|");
 
                 var today = new Date();
                 var weekno = today.getWeek();
@@ -278,17 +253,16 @@
                       if(error){
                           console.log(error);
                       }else{
-                          console.log("Message sent: " + info.response);
+                          console.log("Message sent to: " + userEmail + ", " + info.response);
                       }
                   });
                 }
 
-                console.log(emailContent);
-                console.log();
-                console.log("(.*.) Farewell! Thank you for being a part of this mess.... (.*.)");
+                // console.log(emailContent);
+                // console.log();
 
-                console.log(err);
-                console.log(results);
+                // console.log(err);
+                // console.log(results);
               }
             );
       }
