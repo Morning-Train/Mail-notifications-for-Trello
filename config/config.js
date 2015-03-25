@@ -14,7 +14,7 @@ config.trelloUserToken = "<<Insert your user Token>>" // Read https://trello.com
 
 // Secs & Mins & Hours & Day of Month & Months & Day of Week (Read more here: https://github.com/ncb000gt/node-cron)
 config.crontime = '* * 08 * * 1'; // Default is monday morning at 8
-config.crontimezone = "Denmark/Copenhagen";
+config.crontimezone = "Europe/Copenhagen";
 
 /* Email settings */
 config.myEmail = "<< Insert your email >>";
