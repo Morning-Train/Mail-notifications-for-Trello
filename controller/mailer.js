@@ -74,7 +74,7 @@
               function(callback){
                 // code a
                 // Console.log for linebreak and indicating where in the script we are.
-                // console.log("|a|");
+                console.log("|a|");
 
                 // Connection to trello object and trello api, and try getout the specified boardId name.
                 t.get(boardPath, function(err, data) {
@@ -87,8 +87,8 @@
               function(callback){
               // code b
               // Console.log for linebreak and indicating where in the script we are.
-              //  console.log();
-              //  console.log("|ab|");
+               console.log();
+               console.log("|ab|");
 
               // Connection to trello object and trello api, and try fetch the lists inside board.
                 t.get("/1/boards/" + boardId + "/lists", function(err, data){
@@ -97,7 +97,7 @@
                         var addMe = new List(item.id, item.name);
                         boardLists.push(addMe);
                       });
-                      //console.log(" |ab|  OK");
+                      console.log(" |ab|  OK");
                       callback(null, "b");
                 });
               },
@@ -105,8 +105,8 @@
                 // code c
               // Console.log for linebreak and indicating where in the script we are.
 
-                //console.log();
-                //console.log("|abc|");
+                console.log();
+                console.log("|abc|");
 
                 // Init' counter
                 var counter = 0;
@@ -161,7 +161,7 @@
 
                     // If all cards have been checked, and all lists have been checked - continue.
                     if(counter == boardLists.length && continueThis){
-                        //console.log(" |abc|  OK");
+                        console.log(" |abc|  OK");
                         callback(null, "c");
                     }
                   });
