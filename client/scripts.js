@@ -127,7 +127,7 @@ $(document).ready(function() {
         }).
         done(function(err) {
             // Success Feedback
-            $('#submit-succes').empty();
+            $('#submit-success').empty();
             $('#submit-success').append('<h3>Created new record!</h3>');
             $('#submit-success').fadeIn(400).delay(800).fadeOut(800);
 
