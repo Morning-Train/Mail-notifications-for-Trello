@@ -54,6 +54,39 @@ The following modules will be installed:
 
 - nodemailer, 1.3.1
 
+#### 4:
+When your modules is installed, you need to open up config/config.js
+Inside here you need to set:
+
+    config.trelloApplicationKey = "<<Insert your application key>>";
+Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+
+    config.trelloUserToken = "<<Insert your user token>>";
+Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+
+	config.crontime = '* * 08 * * 1';
+Read https://github.com/ncb000gt/node-cron on how to set this (default every monday morning at 08).
+
+	config.crontimezone = "Denmark/Copenhagen";
+Read https://github.com/ncb000gt/node-cron on how to set this
+
+	config.daysBetweenNotifiers = 7;
+This will be the number of days that should be looked for changes (from today and the last 7 days). This can be any number you want, but make sure to set cron time like wise.
+
+	config.myEmail = "mail@morningtrain.dk";
+Set this to your email or company email
+
+	config.myName = "Morning Train";
+Set this to your name or company name
+
+	config.settingsForTransporter = {
+	  service: "<<SMTP provider example: Gmail>>",
+	  auth: {
+	      user: "<<SMTP user>>",
+	      pass: "<<SMTP password>>"
+	  }
+	}
+Set this to your SMTP service provider, and SMTP user and SMTP pass. Read more here: https://github.com/andris9/Nodemailer
 
 ### Browser support
 
