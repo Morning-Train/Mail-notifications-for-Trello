@@ -254,6 +254,7 @@
                   // send mail with defined transport object
                   transporter.sendMail(mailOptions, function(error, info){
                       if(error){
+                          console.log(userEmail);
                           console.log(error);
                       }else{
                           console.log("Message sent to: " + userEmail + ", " + info.response);

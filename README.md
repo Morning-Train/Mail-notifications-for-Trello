@@ -16,7 +16,7 @@ at last sent to a specified email (often a client email-address). This is perfec
 ![alt text](https://morningtrain.dk/img/MailNotifier1.png "All Notifiers Overview")
 #### Edit a notification (modal box)
 ![alt text](https://morningtrain.dk/img/MailNotifier2.png "Edit Notifier Modal box")
-#### Email of a notification (modal box)
+#### Email of a notification
 ![alt text](https://morningtrain.dk/img/MailNotifier4.png "Email of Notification")
 
 ### Setting up Mail notifications for Trello
