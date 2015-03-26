@@ -5,6 +5,12 @@ $(document).ready(function() {
 
     // Notify specific variables
     var notify = $('.notify');
+    var newNotifyForm = $('#new-custom-frm');
+
+    // New Checkbox selections and old ones for modal update/remove. List to display all check btns
+    var checkBtn = $('#check-btn');
+    var newCheckBtn = $('#new-check-btn');
+    var list = $('#lists');
 
     // Error handling
     var recordSuccess = $('#submit-success');
@@ -12,6 +18,7 @@ $(document).ready(function() {
     var submitAnswer = $('#submit-answer');
 
     // Alert Choice
+    var approve = $('#approve-wrap');
     var yes = $('#yes');
     var no = $('#no');
 
@@ -50,7 +57,7 @@ $(document).ready(function() {
     // Alert box on remove click in Email Notifiers Modal box
     $('#modal-rmv').click(function(e){
         e.preventDefault();
-        $('#approve-wrap').show();
+        approve.show();
     });
 
     // if yes
@@ -86,7 +93,7 @@ $(document).ready(function() {
 
             $('#fieldset-info').remove();
             // Update notifier list (on frontpage)
-            $('#approve-wrap').hide();
+            approve.hide();
             notify.hide();
             body.removeClass('no-scroll');
         }).
@@ -97,7 +104,7 @@ $(document).ready(function() {
 
     // if no
     no.click(function(){
-        $('#approve-wrap').hide();
+        approve.hide();
 
         // Remove blue bg from remove btn's
         $(this).removeClass('blue-bg');
@@ -111,14 +118,14 @@ $(document).ready(function() {
     });
 
     // Add new mail notifier
-    $('#new-custom-frm').submit(function(e) {
+    newNotifyForm.submit(function(e) {
         e.preventDefault();
 
         // Ajax call to php/post.php
         $.ajax({
             type: 'POST',
             url:'mongies/notifiers/post',
-            data: $('#new-custom-frm').serialize()
+            data: newNotifyForm.serialize()
         }).
         success(function(res) {
         }).
@@ -136,10 +143,10 @@ $(document).ready(function() {
             recordSuccess.fadeIn(400).delay(800).fadeOut(800);
 
             // Reset form on submit
-            $('#new-custom-frm')[0].reset();
+            newNotifyForm[0].reset();
 
             // Hide lists
-            $('#new-check-btn').hide();
+            newCheckBtn.hide();
 
             // Response from submit answer will be emptified.
              submitAnswer.empty();
@@ -240,16 +247,16 @@ $(document).ready(function() {
             }
 
 
-            $('#check-btn').html('<h3>Listnames:</h3>');
+            checkBtn.html('<h3>Listnames:</h3>');
             $.get( '/getLists/' + data.board, function( data ) {
                 arr = data;
                 //console.log(" done of getSolo ");
                 //console.log(data);
                 for(i = 0; i < arr.length; i++) {
                     if(arrayIndexOf(arr[i].id)){
-                        $('#check-btn').append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
                     } else {
-                        $('#check-btn').append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
                     }
 
                 }
@@ -260,29 +267,29 @@ $(document).ready(function() {
     // Fetching the list items inside the selected board on change
     $('#myBoards').change(function() {
         $('#boardIdInForm').remove();
-        $('#lists').empty();
+        list.empty();
 
         $.get( '/getLists/' + $('#myBoards').val(), function( data ) {
-            $('#lists').html('<h3>Listnames:</h3>');
-            $('#new-check-btn').show();
+            list.html('<h3>Listnames:</h3>');
+            newCheckBtn.show();
             $('#project').val($('#myBoards option:selected').text());
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $('#lists').append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                list.append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
             }
-            $('#new-custom-frm').append('<input id="boardIdInForm" type="hidden" name="board" value="'+$('#myBoards').val()+'">');
+            newNotifyForm.append('<input id="boardIdInForm" type="hidden" name="board" value="'+$('#myBoards').val()+'">');
 
         });
     });
 
     // Append the fetched list items to html
     $('#mySoloBoards').change(function() {
-        $('#check-btn').empty();
-        $('#check-btn').html('<h3>Listnames:</h3>');
+        checkBtn.empty();
+        checkBtn.html('<h3>Listnames:</h3>');
         $.get( '/getLists/' + $('#mySoloBoards').val(), function( data ) {
             arr = data;
             for(i = 0; i < arr.length; i++) {
-                $('#check-btn').append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+                checkBtn.append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
             }
         });
     });
