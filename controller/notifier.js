@@ -3,10 +3,10 @@ module.exports = function (app, db, Notifier) {
 	// Function for creating a new notifier
 	var createNewNotifier = function(req, res){
 
-		// Setting up internal vars
-		var project_name, email, board;
-	    var lists = [];
-	    var continueThis;
+	// Setting up internal vars (projectname, email, board)
+	var project_name, email, board;
+	var lists = [];
+	var continueThis;
 
 	    // letMeContinue saves the notifier to our mongodb server - this will only happend if continueThis is true.
 	    // This is my best example of a callback function
