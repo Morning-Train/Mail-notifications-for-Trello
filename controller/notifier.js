@@ -17,29 +17,34 @@ module.exports = function (app, db, Notifier) {
 		      board = req.body.board;
 		      lists = req.body.lists;
 
+			// Creating a Notifier object. Setting project, email and boardId - made from the webform
 		      var myNotifier = new Notifier();
 		      myNotifier.project = project_name;
 		      myNotifier.email = email;
 		      myNotifier.board = board;
 
-
+			// If type of req.body.lists is only one (only one list checked), then push that into a array lists in notifier object
 		      if( typeof req.body.lists === "string"){
 		        myNotifier.lists.push(lists);
 		      } else {
+		      	// If type of req.body.lists is not string, it is probably a array, so everthing in this array should be pushed into
+		      	// notifier objects array.
 		        req.body.lists.forEach(function(entry){
 		          myNotifier.lists.push(entry);
 		          console.log(entry);
 		        });
 		      }
-
+			// Send back response about everything is okay (to the client).
 		      res.status(200);
+		      	// Send also the object back.
 		      res.send(myNotifier);
-
+			
+			// Save the object internally.
 		      myNotifier.save();
 
 		    }
 		}
-
+		
 	    continueThis = checkNotifierBody(req, res, letMeContinue);
 	}
 
