@@ -44,10 +44,12 @@ module.exports = function (app, db, Notifier) {
 
 		    }
 		}
-		
+		// ContinueThis is equal to checking the notifier body (by request), there is specificed a 
+		// letMeContinue callback, if this is set to true - the above function will be run.
 	    continueThis = checkNotifierBody(req, res, letMeContinue);
 	}
 
+	// Function of removing a notifier
 	var removeNotifier = function(req, res){
 		Notifier.findOne({ _id : req.body.notifier_id }, function (err, notifier){
   			if(notifier === undefined || notifier === null){
@@ -60,9 +62,10 @@ module.exports = function (app, db, Notifier) {
 			}
 	    });
 	}
-
+	
+	// Function of checking up on the notifier body
 	var checkNotifierBody = function(req, res, callback){
-		if(req.body.project_name === "" || req.body.project_name === undefined && continueThis){
+	   if(req.body.project_name === "" || req.body.project_name === undefined && continueThis){
 	      res.status(418);
 	      res.send("<center><strong>Empty project name</strong></center>");
 	      return false;
@@ -91,7 +94,8 @@ module.exports = function (app, db, Notifier) {
 	    	callback(true);
 	    }
 	}
-
+	
+	// Function of updating a notifier (locally - no post / set or anything alike is sent to Trello)
 	var updateNotifier = function (req, res){
 	  	var continueThis;
 
@@ -126,6 +130,7 @@ module.exports = function (app, db, Notifier) {
 		continueThis = checkNotifierBody(req, res, letMeContinue);
 	}
 
+	// Function of getting all Notifiers
 	var getAllNotifiers = function(req, res){
 		Notifier.find({}, function(err, notifiers){
 			var notifierMap = {};
@@ -138,6 +143,7 @@ module.exports = function (app, db, Notifier) {
 		});
 	}
 
+	// Function of getting a single notifier (used when Modal box pops up)
 	var getOneNotifier = function (req, res){
 		console.log(req.params);
 		Notifier.findOne({_id : req.params.id}, function(err, notifier){
@@ -150,7 +156,7 @@ module.exports = function (app, db, Notifier) {
 		});
 	}
 
-
+	// The GET request of all users. - this function is deprecated (we actually don't use this anymore).
     app.get('/users', function(req, res, next) {
         myFunction();
         res.send("Hello!");
