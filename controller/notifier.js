@@ -161,28 +161,31 @@ module.exports = function (app, db, Notifier) {
         myFunction();
         res.send("Hello!");
     });
-
+	// Post request of making a notifier
     app.post("/mongies/notifiers/post", function (req, res){
 	    createNewNotifier(req, res);
 	});
-
+	// Post request of removing one notifier
 	app.post("/mongies/notifiers/removeOne", function (req, res){
 	    removeNotifier(req, res);
 	});
 
-
+	// Post request of updating one notifier
 	app.post("/mongies/notifiers/updateOne", function (req, res){
 		updateNotifier(req, res);
 	});
 
+	// Get request of all notifiers (locally)
 	app.get("/mongies/notifiers/all", function(req, res){
 		getAllNotifiers(req, res);
 	});
 
+	// Get request on a single notifier by ID
 	app.get("/mongies/notifiers/:id", function(req,res){
 		getOneNotifier(req, res);
 	});
-
+	
+	// Get request on deleting all notifiers (locally) - this request is not referred to anywhere on clientside
 	app.get("mongies/notifiers/deleteAll", function(req, res){
 		Notifier.remove({}, function(err){
 			res.send('collection removed');
