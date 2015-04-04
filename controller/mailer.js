@@ -1,65 +1,62 @@
   // This is the fun part, here is the "POST" method, that handles the email send to customers. Btw, it also includes alot of other stuff - read on.
   exports.sendMail = function(pEmail, pBoard, pLists, async, t, daysBetweenNotifiers, transporter, myName, myEmail){
-     // Get week number. (Remember to move this away or outside this post request)
-  Date.prototype.getWeek = function() {
-        var onejan = new Date(this.getFullYear(),0,1);
-        return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
-  };
+      // Get week number. (Remember to move this away or outside this post request)
+      Date.prototype.getWeek = function() {
+            var onejan = new Date(this.getFullYear(),0,1);
+            return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
+      };
+    
+      // Search for needle in an object by a property
+      function arrayObjectIndexOf(myArray, searchTerm, property) {
+              for(var i = 0, len = myArray.length; i < len; i++) {
+                  if (myArray[i][property] === searchTerm) return i;
+              }
+              return -1;
+      }
+    
+      // Search for needle in an hay-array
+      function arrayIndexOf(myArray, searchTerm){
+              for(var i = 0, len = myArray.length; i < len; i++){
+                if(myArray[i] === searchTerm) return i;
+              }
+              return -1;
+      }
+    
+      // Handling error and send it to me (we don't really use this yet)
+      function errorHandling (err) {
+        console.error(err);
+      }
 
-  // Search for needle in an object by a property
-  function arrayObjectIndexOf(myArray, searchTerm, property) {
-          for(var i = 0, len = myArray.length; i < len; i++) {
-              if (myArray[i][property] === searchTerm) return i;
-          }
-          return -1;
-  }
+      // Boolean state for continuing sending an email
+      var justContinue = true;
+      
+      // Defining userEmail, userBoard and WantedLists, from the request body. (Sent to us through JSON)
+      var userEmail = pEmail;
+      var userBoard = pBoard;
+      var wantedLists = pLists;
 
-  // Search for needle in an hay-array
-  function arrayIndexOf(myArray, searchTerm){
-          for(var i = 0, len = myArray.length; i < len; i++){
-            if(myArray[i] === searchTerm) return i;
-          }
-          return -1;
-  }
+      if(justContinue){
 
-  // Handling error and send it to me
-  function errorHandling (err) {
-    console.error(err);
-  }
-
-  // console.log(req.body);
-  var justContinue = true;
-  // Defining userEmail, userBoard and WantedLists, from the request body. (Sent to us through JSON)
-    var userEmail = pEmail;
-    var userBoard = pBoard;
-    var wantedLists = pLists;
-
-  // console.log(req.body.lists);
-
-    if(justContinue){
-
-      // Is Email, BoardID and ListID defined? (['*'] = all lists) - the star hack does only work with directly sent requestes.
-      if(userEmail === undefined || userBoard === undefined || wantedLists === undefined){
-        errorHandling("Email, BoardID or ListID is not specificed");
+            // Is Email, BoardID and ListID defined? (['*'] = all lists) - the star hack does only work with directly sent requestes.
+            if(userEmail === undefined || userBoard === undefined || wantedLists === undefined){
+            errorHandling("Email, BoardID or ListID is not specificed");
       } else {
-        // 5.semester : 54497be50bfa1518de532d19
-        // BoardID + Path defined
-        // BoardLists array init'd
-        // and ofc the boardName variable is init'd
+            // BoardID + Path defined
+            // BoardLists array init'd
+            // and ofc the boardName variable is init'd
+            var boardId = userBoard;
+            var boardPath = "/1/boards/" + boardId;
+            var boardLists = [];
+            var boardName = "";
 
-          var boardId = userBoard;
-          var boardPath = "/1/boards/" + boardId;
-          var boardLists = [];
-          var boardName = "";
+            // List class defined - makes list objects (I heard this should be big?)
+            var List = function(id, name){
+              this._id = id;
+              this._name = name;
+              this._cards = [];
+            };
 
-        // List class defined - makes list objects (I heard this should be big?)
-          var List = function(id, name){
-            this._id = id;
-            this._name = name;
-            this._cards = [];
-          };
-
-          // Init'd emailContent
+          // Init'd emailContent (this variable at final will be sent to a user ("userEmail")
           var emailContent = "";
 
           // This variable is set for checking up on if there should be sent an email or not.
