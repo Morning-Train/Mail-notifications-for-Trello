@@ -52,6 +52,13 @@ require('./controller/notifier')(app, null, Notifier);
 // Requiring the controller of mailer.
 var mailer = require('./controller/mailer');
 
+// Get today date.
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+var combinedDate = dd + "" + mm + "" + yyyy;
+
 // Get request of getting all boards owned by user at trello.
 app.get("/getBoards", function (req, res) {
   // Creating a Board class.
@@ -126,16 +133,24 @@ new CronJob(config.crontime, function(){
 
 // for all notifiers in our mongodb database, we run sendMail method from mailer.
 var runCronJob = function(){
+
   Notifier.find({}, function(err, notifiers){
 
       notifiers.forEach(function(user){
-        var myLists = [];
+        if(user.lastChecked != combinedDate){
+          var myLists = [];
 
-        user.lists.forEach(function(list){
-          myLists.push(""+list._id+"");
-        })
+          user.lists.forEach(function(list){
+           myLists.push(""+list._id+"");
+          })
 
-        mailer.sendMail(user.email, user.board, myLists, async, t, config.daysBetweenNotifiers, transporter, config.myName, config.myEmail);
+          mailer.sendMail(user.email, user.board, myLists, async, t, config.daysBetweenNotifiers, transporter, config.myName, config.myEmail);
+          user.lastChecked = combinedDate;
+          user.save();
+        } else {
+          console.log("Mail already sent today to: " + user.email);
+          console.log(user.lastChecked);
+        }
       });
 
     });
