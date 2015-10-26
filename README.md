@@ -39,13 +39,9 @@ In your terminal write:
 
 The following modules will be installed:
 
-- async, 0.9.0
-
 - body-parser, 1.12.0
 
 - bson, 0.2.21
-
-- cron, 1.0.9
 
 - express, 4.12.2
 
@@ -68,11 +64,6 @@ Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-ke
 
     config.trelloUserToken = "<<Insert your user token>>";
 Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user for how to get a usertoken from with your application key.
-
-
-
-	config.crontime = '* * 08 * * 1';
-Read https://github.com/ncb000gt/node-cron on how to set this (default every monday morning at 08).
 
 
 
