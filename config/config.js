@@ -6,16 +6,11 @@
 var config = {};
 
 /* Numbers between days of changes (in Trello Lists) */
-config.daysBetweenNotifiers = 7; // Default is 7
+config.daysBetweenNotifiers = 30; // Default is 7
 
 /* Trello API Access */
-config.trelloApplicationKey = "<<Insert your application key>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
-config.trelloUserToken = "<<Insert your user token>>" // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
-
-// Secs & Mins & Hours & Day of Month & Months & Day of Week (Read more here: https://github.com/ncb000gt/node-cron)
-config.crontime = '* * 08 * * 1';
-config.crontimezone = "Europe/Copenhagen";
-
+config.trelloApplicationKey = "<< Application Key >>"; // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
+config.trelloUserToken = "<< User Token >>"; // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
 
 /* Email settings */
 config.myEmail = "<< Your email >>";
@@ -23,12 +18,12 @@ config.myName = "<< Your name >>";
 
 /* SMTP Settings (For outgoing mail)*/
 config.settingsForTransporter = {
-  service: "<< Your service SMTP provider >>",
+  service: "<< Your service >>",
   auth: {
-      user: "<< SMTP user >>",
-      pass: "<< SMTP pass >>"
+      user: "<< Your service email >>",
+      pass: "<< Your service pass >>"
   }
-}
+};
 
 config.serverport = 3000;
 
