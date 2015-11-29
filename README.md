@@ -1,6 +1,9 @@
 ## Mail notifications for Trello
 ###### Notify your customers when changes happens in your Trello boards.
 
+This was coded on an early [morningtrain.dk](http://morningtrain.dk/)
+
+
 ### The purpose of Mail notifications for Trello
 The purpose of this application is to "notice" changes on a Trello
 board, and send a email to a customer with the changes (only card name).
