@@ -23,7 +23,7 @@ var config = require('./config/config');
 // Notifier Schema for mails
 var NotifierSchema = new mongoose.Schema({
     project: String,
-    email: String,
+    email: Array,
     board: String,
     lists: [{
         list: 'string'
