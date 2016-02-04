@@ -97,8 +97,11 @@
             <label for="project">Projectname:</label>
             <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
 
-            <label for="email">Email:</label>
-            <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
+            <div id="myEmails">
+                <label for="email">Email:</label>
+                <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off">
+            </div>
+            <button type="button" id="add-email-button">Add another email</button>
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
