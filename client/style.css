@@ -467,13 +467,13 @@ fieldset#check-btn label {
 
 @media screen and (max-width: 960px) {
     #new-custom-frm, #web-custom-frm {
-        width: 80%;
+        width: 70%;
     }
 }
 
 @media screen and (max-width: 400px) {
     #new-custom-frm, #web-custom-frm {
-        width: 95%;
+        width: 70%;
     }
 }
 
@@ -547,12 +547,24 @@ fieldset#new-check-btn label {
     float: left;
 }
 
-.remove_field {
+.email-button {
     position: absolute;
-    text-decoration: none;
+    width: 30px;
     font-weight: bold;
-    color: #000;
-    padding: 10px 0px 10px 0px;
+    background: #2ecc71;
+    color: #fff;
+    border-radius: 5px;
+    border: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+    -webkit-transition: background .5s; /* For Safari 3.1 to 6.0 */
+    -moz-transition: background .5s;
+    -o-transition: background .5s;
+    transition: background .5s;
+}
+
+.email-button:hover {
+    background: #34ec82;
 }
 
 /*=========================================

@@ -297,13 +297,13 @@ $(document).ready(function() {
     // Add another email input field
     $('#add-email-button').click(function(e){
         e.preventDefault();
-        $('#myEmails').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><a href="#" class="remove_field">&#215;</a></div>');
+        $('#myEmails').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="rem-email-button" class="email-button">&#45;</button></div>');
         $('[type=email]:last').focus();
     });
     
     // User clicks remove on email input field
-    $('#myEmails').on('click','.remove_field', function(e){
+    $('#myEmails').on('click','#rem-email-button', function(e){
         e.preventDefault();
         $(this).parent('div').remove();
-    })
+    });
 });
