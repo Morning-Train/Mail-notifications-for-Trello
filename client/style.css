@@ -620,7 +620,7 @@ input#sub-frm-submit:hover {
 }
 
 .field-info-item {
-    width: 24.9%;
+    width: 19.9%;
     height: 40px;
     padding: 0;
     border: none;
@@ -642,7 +642,7 @@ input#sub-frm-submit:hover {
     cursor: pointer;
 }
 
-.field-info-item, .edit {
+.field-info-item, .edit, .resend {
     text-align: center;
     line-height: 40px;
     color: #000;

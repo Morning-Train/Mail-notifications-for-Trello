@@ -110,8 +110,8 @@ var server = app.listen(config.serverport, function() {
 =====================================*/
 
 // Run cronjob
-app.get("/runNewCronJob", function(req, res) {
-    runNewCronJob();
+app.post("/runNewCronJob", function(req, res) {
+    runNewCronJob(req.body.id);
     // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
     res.send("Ok your request is getting processed");
 });
@@ -119,6 +119,12 @@ app.get("/runNewCronJob", function(req, res) {
 // Get request of getting all boards owned by user at trello.
 app.get("/getBoards", function(req, res) {
     getAllBoards(req, res);
+});
+
+// Run single cronjob
+app.get("/runCronJobSingle/:id", function(req, res){
+    runSingleCronJob(req, res);
+    res.send("Ok your request is getting processed");
 });
 
 // Getting all lists appointed to a board and sending all the lists back to client-end
@@ -143,13 +149,28 @@ app.get("/getLists/:boardId", function(req, res) {
 ===================================================*/
 
 // runNewCronJob
-var runNewCronJob = function() {
+var runNewCronJob = function(notifierid) {
     var Boards = [];
+    var myNotifiers = [];
     Notifier.find({}, function(err, notifiers) {
 
         notifiers.forEach(function(notify) {
-            if (!arrayContains(notify.board, Boards)) {
-                Boards.push(notify.board);
+
+            console.log(notifierid + " " + notify._id);
+            if(notify._id == notifierid) {
+                
+                    console.log("Compared yes!");
+
+                    myNotifiers.push(notify);
+                    Boards.push(notify.board);
+
+            }
+            else {
+                console.log("Not compared");
+                if (!arrayContains(notify.board, Boards) && notifierid === undefined) {
+                    myNotifiers.push(notify);
+                    Boards.push(notify.board);
+                }   
             }
         });
 
@@ -178,8 +199,8 @@ var runNewCronJob = function() {
                 counterX++;
 
                 if (counterX === Boards.length) {
-                    getAllCardsForEachUser();
                     console.log("|A| Got all boards and their cards");
+                    getAllCardsForEachUser(myNotifiers);
                 }
             });
         });
@@ -188,50 +209,43 @@ var runNewCronJob = function() {
     boardData = [];
 };
 
-
 // getAllCardsForEachUser
-var getAllCardsForEachUser = function() {
+var getAllCardsForEachUser = function(notifiers) {
     var userArray = [];
 
-    Notifier.find({}, function(err, notifiers) {
+    // console.log(notifiers.length);
+    var counter = 0;
 
-        // console.log(notifiers.length);
-        var counter = 0;
+    notifiers.forEach(function(notify) {
+        var user = {
+            usermail: notify.email,
+            boardId: notify.board,
+            lists: []
+        };
 
-        notifiers.forEach(function(notify) {
-            var user = {
-                usermail: notify.email,
-                boardId: notify.board,
-                lists: []
+        notify.lists.forEach(function(list) {
+            var myCards = getAllCardsWithListId(notify.board, list._id);
+
+            var aList = {
+                listId: list._id,
+                cards: myCards
             };
 
-            notify.lists.forEach(function(list) {
-                var myCards = getAllCardsWithListId(notify.board, list._id);
-
-                var aList = {
-                    listId: list._id,
-                    cards: myCards
-                };
-
-                if (myCards.length > 0) {
-                    user.lists.push(aList);
-                }
-
-                // console.log(list._id);
-                // console.log(myCards);
-            });
-
-            counter++;
-            userArray.push(user);
-
-            if (counter === notifiers.length) {
-                console.log("|B| Sorted all lists based on listId in each card + removed cards that is outside limit");
-                removeEmptyLists(userArray);
+            if (myCards.length > 0) {
+                user.lists.push(aList);
             }
 
+            // console.log(list._id);
+            // console.log(myCards);
         });
 
+        counter++;
+        userArray.push(user);
 
+        if (counter === notifiers.length) {
+            console.log("|B| Sorted all lists based on listId in each card + removed cards that is outside limit");
+            removeEmptyLists(userArray);
+        }
     });
 
 };
