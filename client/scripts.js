@@ -201,7 +201,8 @@ $(document).ready(function() {
                 textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "' disabled>";
                 textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"' disabled>";
                 textToInsert += "<input type='text' class='field-info-item board-name' value='"+ getNameOfBoard(boards, val.board) +"' disabled>";
-                textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div></fieldset>";
+                textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div>";
+                textToInsert += "<div class='resend resend-this'><a href='#'>Resend</a></div></fieldset>";
                 $('#field-info').after(textToInsert);
             });
 
@@ -306,4 +307,17 @@ $(document).ready(function() {
         e.preventDefault();
         $(this).parent('div').remove();
     });
+
+    // Resend individual notify
+    $('#sub-frm').on('click', 'div.resend-this', function(e) {
+        var currentId = $(this).parent('fieldset').find('.notifier-id').val();
+        
+        // $.post id : <id>
+
+        //$.get( '/runCronJobSingle/' + currentId, function( data ) {
+        //}).done(function(){
+            // Show a response
+        //});
+    });
+
 });
