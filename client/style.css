@@ -627,16 +627,22 @@ input#sub-frm-submit:hover {
     border-right: 1px solid #dadada;
 }
 
-.field-info-item p, .edit p {
+.field-info-item p, .edit p, .resend p {
     font-weight: 700;
 }
 
 .edit {
     height: 40px;
-    width: 8.8%;
+    width: 9.8%;
+    border-right: 1px solid #dadada;
 }
 
-.edit img, .edit-web img {
+.resend {
+    height: 40px;
+    width: 9.8%;
+}
+
+.edit img, .edit-web img, .resend img {
     display: block;
     margin: 10px auto;
     cursor: pointer;
@@ -679,15 +685,19 @@ input[type="text"]:disabled {
     }
 
     .field-info-item {
-        width: 35.3%;
+        width: 25%;
         padding-left: 4%;
         padding-right: 4%;
+    }
+
+    .edit, .resend {
+        width: 12.3%;
     }
 }
 
 @media screen and (max-width: 416px) {
     .field-info-item {
-        width: 35%;
+        width: 25%;
         overflow: hidden;
     }
 }

@@ -202,7 +202,7 @@ $(document).ready(function() {
                 textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"' disabled>";
                 textToInsert += "<input type='text' class='field-info-item board-name' value='"+ getNameOfBoard(boards, val.board) +"' disabled>";
                 textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div>";
-                textToInsert += "<div class='resend resend-this'><a href='#'>Resend</a></div></fieldset>";
+                textToInsert += "<div class='resend resend-this'><img class='img-swap' src='img/resend.svg' alt='resend' /></div></fieldset>";
                 $('#field-info').after(textToInsert);
             });
 
@@ -311,13 +311,19 @@ $(document).ready(function() {
     // Resend individual notify
     $('#sub-frm').on('click', 'div.resend-this', function(e) {
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
-        
-        // $.post id : <id>
-
-        //$.get( '/runCronJobSingle/' + currentId, function( data ) {
-        //}).done(function(){
-            // Show a response
-        //});
+        $.post( "/runNewCronJob", { id: currentId })
+            .done(function( data ) {
+                // Success Feedback
+                recordSuccess.empty();
+                recordSuccess.append('<h3>Succesfully re-sent mail!</h3>');
+                recordSuccess.fadeIn(400).delay(800).fadeOut(800);
+            })
+            .fail(function(data){
+                // Error feedback
+                recordError.empty();
+                recordError.append('<h3>Error in re-sending the email.</h3>');
+                recordError.fadeIn(400).delay(800).fadeOut(800);
+            });
     });
 
 });
