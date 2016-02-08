@@ -236,6 +236,9 @@ $(document).ready(function() {
                     $('#myEmailsEdit div').last().append('<button type="button" id="rem-email-button" class="email-button">&#45;</button>');
                 }
             }
+
+            $('#modal-daysBetweenNotify').val(data.daysBetweenNotify);
+
             var $options = $('#myBoards > option').clone();
             $('#mySoloBoards').append($options);
             $('#mySoloBoards').val(data.board);
@@ -262,9 +265,9 @@ $(document).ready(function() {
                 //console.log(data);
                 for (i = 0; i < arr.length; i++) {
                     if (arrayIndexOf(arr[i].id)) {
-                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="' + arr[i].id + '" checked> ' + arr[i].name + '</div>');
+                        checkBtn.append('<div class="checkbox"><label><input name="lists" type="checkbox" value="' + arr[i].id + '" checked> ' + arr[i].name + '</label></div>');
                     } else {
-                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</div>');
+                        checkBtn.append('<div class="checkbox"><label><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</label></div>');
                     }
 
                 }
@@ -296,7 +299,7 @@ $(document).ready(function() {
             $('#project').val($('#myBoards option:selected').text());
             arr = data;
             for (i = 0; i < arr.length; i++) {
-                list.append('<div class="checkbox"><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</div>');
+                list.append('<div class="checkbox"><label><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</label></div>');
             }
             newNotifyForm.append('<input id="boardIdInForm" type="hidden" name="board" value="' + $('#myBoards').val() + '">');
 
@@ -310,7 +313,7 @@ $(document).ready(function() {
         $.get('/getLists/' + $('#mySoloBoards').val(), function(data) {
             arr = data;
             for (i = 0; i < arr.length; i++) {
-                checkBtn.append('<input name="lists" type="checkbox" value="' + arr[i].id + '"> <label>' + arr[i].name + '</label>');
+                checkBtn.append('<label><input name="lists" type="checkbox" value="' + arr[i].id + '">' + arr[i].name + '</label>');
             }
         });
     });
@@ -330,6 +333,7 @@ $(document).ready(function() {
 
     // Resend individual notify
     $('#sub-frm').on('click', 'div.resend-this', function(e) {
+        // Perhaps this should have a confirm dialog?
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $.post("/runNewCronJob", {
             id: currentId
