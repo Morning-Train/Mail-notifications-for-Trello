@@ -221,17 +221,28 @@ $(document).ready(function() {
 
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
+        $('#myEmailsEdit').empty();
 
         $.get( 'mongies/notifiers/' + currentId, function( data ) {
 
-        //console.log(data);
           $('#modal-notifier-id').val(data._id);
           $('#modal-project').val(data.project);
-          $('#modal-email').val(data.email);
+
+          for(var i = 0; i < data.email.length; i++) {
+                $('#myEmailsEdit').append('<div><input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off"></div>');
+                $('div #modal-email').last().val(data.email[i]);
+                if(i === 0) {
+                    // Add another email field button
+                    $('#myEmailsEdit div').last().append('<button type="button" id="add-email-button" class="email-button">&#43;</button>');
+                }
+                else {
+                    // Remove email field button
+                    $('#myEmailsEdit div').last().append('<button type="button" id="rem-email-button" class="email-button">&#45;</button>');
+                }
+          }
           var $options = $('#myBoards > option').clone();
           $('#mySoloBoards').append($options);
           $('#mySoloBoards').val(data.board);
-          //console.log(data);
         }, 'json').done(function(data){
 
             var myCheckedLists = [];
@@ -263,6 +274,19 @@ $(document).ready(function() {
                 }
             });
         });
+    });
+
+    // Edit / Save fieldsets -> Add another email input field
+    $('#myEmailsEdit').on('click','#add-email-button', function(e){
+        e.preventDefault();
+        $('#myEmailsEdit').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="rem-email-button" class="email-button">&#45;</button></div>');
+        $('#myEmailsEdit [type=email]:last').focus();
+    });
+    
+    // Edit / Save fieldsets -> Remove extra email input field
+    $('#myEmailsEdit').on('click','#rem-email-button', function(e){
+        e.preventDefault();
+        $(this).parent('div').remove();
     });
 
     // Fetching the list items inside the selected board on change
