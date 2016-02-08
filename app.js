@@ -121,12 +121,6 @@ app.get("/getBoards", function(req, res) {
     getAllBoards(req, res);
 });
 
-// Run single cronjob
-app.get("/runCronJobSingle/:id", function(req, res){
-    runSingleCronJob(req, res);
-    res.send("Ok your request is getting processed");
-});
-
 // Getting all lists appointed to a board and sending all the lists back to client-end
 app.get("/getLists/:boardId", function(req, res) {
     var boardId = req.params.boardId;
@@ -151,26 +145,22 @@ app.get("/getLists/:boardId", function(req, res) {
 // runNewCronJob
 var runNewCronJob = function(notifierid) {
     var Boards = [];
+    // myNotifiers are the notifiers that the cronjob should handle
     var myNotifiers = [];
     Notifier.find({}, function(err, notifiers) {
 
         notifiers.forEach(function(notify) {
 
             console.log(notifierid + " " + notify._id);
-            if(notify._id == notifierid) {
-                
-                    console.log("Compared yes!");
-
-                    myNotifiers.push(notify);
-                    Boards.push(notify.board);
-
+            if (notify._id == notifierid) {
+                myNotifiers.push(notify);
+                Boards.push(notify.board);
             }
-            else {
-                console.log("Not compared");
-                if (!arrayContains(notify.board, Boards) && notifierid === undefined) {
-                    myNotifiers.push(notify);
-                    Boards.push(notify.board);
-                }   
+            else if (notifierid === undefined) {
+                //if (!arrayContains(notify.board, Boards)) {
+                myNotifiers.push(notify);
+                Boards.push(notify.board);
+                //}   
             }
         });
 
@@ -235,8 +225,6 @@ var getAllCardsForEachUser = function(notifiers) {
                 user.lists.push(aList);
             }
 
-            // console.log(list._id);
-            // console.log(myCards);
         });
 
         counter++;
