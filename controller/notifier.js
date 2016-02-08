@@ -4,7 +4,8 @@ module.exports = function (app, db, Notifier) {
 	var createNewNotifier = function(req, res){
 
 	// Setting up internal vars (projectname, email, board)
-	var project_name, email, board;
+	var project_name, board;
+	var email = [];
 	var lists = [];
 	var continueThis;
 
