@@ -28,6 +28,7 @@ var NotifierSchema = new mongoose.Schema({
     lists: [{
         list: 'string'
     }],
+    daysBetweenNotify: Number,
     updated_at: {
         type: Date,
         default: Date.now
@@ -127,7 +128,7 @@ app.get("/getLists/:boardId", function(req, res) {
     if (boardId !== "none" || boardId === undefined) {
         t.get("/1/boards/" + boardId + "/lists", function(err, data) {
             if (data === undefined) {
-                res.status(400).send("No lists was found!");
+                res.status(400).send("No lists were found!");
             } else {
                 res.send(data);
             }
@@ -230,7 +231,7 @@ var getAllCardsForEachUser = function(notifiers) {
         userArray.push(user);
 
         if (counter === notifiers.length) {
-            console.log("|B| Sorted all lists based on listId in each card + removed cards that is outside limit");
+            console.log("|B| Sorted all lists based on listId in each card + removed cards that are outside limit");
             removeEmptyLists(userArray);
         }
     });
@@ -308,7 +309,7 @@ var fetchListNames = function(userArray, listsInTotal) {
                 counter++;
 
                 if (counter == listsInTotal) {
-                    console.log("|D| Fetched names for the remaning lists (with cards)");
+                    console.log("|D| Fetched names for the remaining lists (with cards)");
                     fetchBoardNames(userArray);
                 }
             });
