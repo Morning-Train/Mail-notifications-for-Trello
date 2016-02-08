@@ -23,30 +23,30 @@ $(document).ready(function() {
     var no = $('#no');
 
     // Create new record form
-    function getNameOfBoard(myArray, searchTerm){
-          for(var i = 0, len = myArray.length; i < len; i++){
-            if(myArray[i].id === searchTerm) return myArray[i].name;
-          }
-          return -1;
+    function getNameOfBoard(myArray, searchTerm) {
+        for (var i = 0, len = myArray.length; i < len; i++) {
+            if (myArray[i].id === searchTerm) return myArray[i].name;
+        }
+        return -1;
     }
 
     // Empty variable for inserting object later
     var boards = {};
 
     // Get all boards from Trello
-    var getAllBoards = $.get( '/getBoards', function( data ) {
+    var getAllBoards = $.get('/getBoards', function(data) {
         boards = data;
-        for(i = 0; i < boards.length; i++) {
-            $('#myBoards').append('<option value="'+boards[i].id+'">'+boards[i].name+'</option>');
-            $('.mySoloBoards').append('<option value="'+boards[i].id+'">'+boards[i].name+'</option>');
+        for (i = 0; i < boards.length; i++) {
+            $('#myBoards').append('<option value="' + boards[i].id + '">' + boards[i].name + '</option>');
+            $('.mySoloBoards').append('<option value="' + boards[i].id + '">' + boards[i].name + '</option>');
         }
-    }).done(function(){
+    }).done(function() {
         $('#loader').fadeOut('slow');
         body.removeClass('no-scroll');
         getAllNotifiers();
     });
 
-    getAllBoards.fail(function(jqXHR, textStatus, errorThrown){
+    getAllBoards.fail(function(jqXHR, textStatus, errorThrown) {
         if (textStatus == 'timeout')
             console.log('The server is not responding');
 
@@ -55,13 +55,13 @@ $(document).ready(function() {
     });
 
     // Alert box on remove click in Email Notifiers Modal box
-    $('#modal-rmv').click(function(e){
+    $('#modal-rmv').click(function(e) {
         e.preventDefault();
         approve.show();
     });
 
     // if yes
-    yes.click(function(e){
+    yes.click(function(e) {
         e.preventDefault();
 
         var data = $('#modal-form').serialize();
@@ -73,8 +73,7 @@ $(document).ready(function() {
             // Remember to change this.
             data: data
         }).
-        success(function(res) {
-        }).
+        success(function(res) {}).
         fail(function(err) {
             // Error feedback
             recordError.empty();
@@ -97,13 +96,13 @@ $(document).ready(function() {
             notify.hide();
             body.removeClass('no-scroll');
         }).
-        always(function(){
+        always(function() {
             getAllNotifiers();
         });
     });
 
     // if no
-    no.click(function(){
+    no.click(function() {
         approve.hide();
 
         // Remove blue bg from remove btn's
@@ -124,11 +123,10 @@ $(document).ready(function() {
         // Ajax call to php/post.php
         $.ajax({
             type: 'POST',
-            url:'mongies/notifiers/post',
+            url: 'mongies/notifiers/post',
             data: newNotifyForm.serialize()
         }).
-        success(function(res) {
-        }).
+        success(function(res) {}).
         fail(function(err) {
             // Error feedback
             recordError.empty();
@@ -149,40 +147,39 @@ $(document).ready(function() {
             newCheckBtn.hide();
 
             // Response from submit answer will be emptified.
-             submitAnswer.empty();
+            submitAnswer.empty();
         }).
-        always(function(){
+        always(function() {
             // Update notifier list (on frontpage)
             getAllNotifiers();
         });
     });
 
     // Modal submit - change this to modal-update-notifier
-    $('#modal-submit').click(function(e){
+    $('#modal-submit').click(function(e) {
         e.preventDefault();
         var data = $('#modal-form').serialize();
         // Ajax call to php/update.php with the right data (all data from the single notifier).
         $.ajax({
             type: 'POST',
-            url:'mongies/notifiers/updateOne',
+            url: 'mongies/notifiers/updateOne',
             // Remember to change this.
             data: data
         }).
-        success(function() {
-        }).
+        success(function() {}).
         fail(function(err) {
             // Error feedback
             recordError.empty();
             recordError.append('<h3>Error in updating the record!</h3>');
             recordError.fadeIn(400).delay(800).fadeOut(800);
         }).
-        done(function(){
+        done(function() {
             // Success feedback
             recordSuccess.empty();
             recordSuccess.append('<h3>Updated record!</h3>');
             recordSuccess.fadeIn(400).delay(800).fadeOut(800);
         }).
-        always(function(){
+        always(function() {
             // Update notifier list (on frontpage)
             getAllNotifiers();
         });
@@ -190,25 +187,25 @@ $(document).ready(function() {
 
     var getAllNotifiers = function() {
         // Get freshData just gets fresh data (notifiers) from database.
-        $.get( 'mongies/notifiers/all/', function( data ) {
+        $.get('mongies/notifiers/all/', function(data) {
             $('.current_notifiers').remove();
             $('#fieldset-info').remove();
             //console.log(data);
-            $.each(data, function(i, val){
+            $.each(data, function(i, val) {
                 var textToInsert = '';
                 textToInsert += "<fieldset class='current_notifiers'>";
-                textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='"+ val._id +"' disabled>";
+                textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='" + val._id + "' disabled>";
                 textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "' disabled>";
-                textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='"+ val.email +"' disabled>";
-                textToInsert += "<input type='text' class='field-info-item board-name' value='"+ getNameOfBoard(boards, val.board) +"' disabled>";
+                textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='" + val.email + "' disabled>";
+                textToInsert += "<input type='text' class='field-info-item board-name' value='" + getNameOfBoard(boards, val.board) + "' disabled>";
                 textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div>";
                 textToInsert += "<div class='resend resend-this'><img class='img-swap' src='img/resend.svg' alt='resend' /></div></fieldset>";
                 $('#field-info').after(textToInsert);
             });
 
-        }).done(function(){
-            $('.board-name').each(function( index ) {
-              // console.log( index + ": " + $( this ).val() );
+        }).done(function() {
+            $('.board-name').each(function(index) {
+                // console.log( index + ": " + $( this ).val() );
             });
         });
     };
@@ -223,52 +220,51 @@ $(document).ready(function() {
         $('#mySoloBoards').empty();
         $('#myEmailsEdit').empty();
 
-        $.get( 'mongies/notifiers/' + currentId, function( data ) {
+        $.get('mongies/notifiers/' + currentId, function(data) {
 
-          $('#modal-notifier-id').val(data._id);
-          $('#modal-project').val(data.project);
+            $('#modal-notifier-id').val(data._id);
+            $('#modal-project').val(data.project);
 
-          for(var i = 0; i < data.email.length; i++) {
+            for (var i = 0; i < data.email.length; i++) {
                 $('#myEmailsEdit').append('<div><input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off"></div>');
                 $('div #modal-email').last().val(data.email[i]);
-                if(i === 0) {
+                if (i === 0) {
                     // Add another email field button
                     $('#myEmailsEdit div').last().append('<button type="button" id="add-email-button" class="email-button">&#43;</button>');
-                }
-                else {
+                } else {
                     // Remove email field button
                     $('#myEmailsEdit div').last().append('<button type="button" id="rem-email-button" class="email-button">&#45;</button>');
                 }
-          }
-          var $options = $('#myBoards > option').clone();
-          $('#mySoloBoards').append($options);
-          $('#mySoloBoards').val(data.board);
-        }, 'json').done(function(data){
+            }
+            var $options = $('#myBoards > option').clone();
+            $('#mySoloBoards').append($options);
+            $('#mySoloBoards').val(data.board);
+        }, 'json').done(function(data) {
 
             var myCheckedLists = [];
 
-            data.lists.forEach(function(entry){
+            data.lists.forEach(function(entry) {
                 myCheckedLists.push(entry._id);
             })
 
-            function arrayIndexOf(searchTerm){
-                      for(var i = 0, len = myCheckedLists.length; i < len; i++){
-                        if(myCheckedLists[i] === searchTerm) return true;
-                      }
-                      return false;
+            function arrayIndexOf(searchTerm) {
+                for (var i = 0, len = myCheckedLists.length; i < len; i++) {
+                    if (myCheckedLists[i] === searchTerm) return true;
+                }
+                return false;
             }
 
 
             checkBtn.html('<h3>Listnames:</h3>');
-            $.get( '/getLists/' + data.board, function( data ) {
+            $.get('/getLists/' + data.board, function(data) {
                 arr = data;
                 //console.log(" done of getSolo ");
                 //console.log(data);
-                for(i = 0; i < arr.length; i++) {
-                    if(arrayIndexOf(arr[i].id)){
-                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'" checked> '+arr[i].name+'</div>');
+                for (i = 0; i < arr.length; i++) {
+                    if (arrayIndexOf(arr[i].id)) {
+                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="' + arr[i].id + '" checked> ' + arr[i].name + '</div>');
                     } else {
-                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+                        checkBtn.append('<div class="checkbox"><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</div>');
                     }
 
                 }
@@ -277,14 +273,14 @@ $(document).ready(function() {
     });
 
     // Edit / Save fieldsets -> Add another email input field
-    $('#myEmailsEdit').on('click','#add-email-button', function(e){
+    $('#myEmailsEdit').on('click', '#add-email-button', function(e) {
         e.preventDefault();
         $('#myEmailsEdit').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="rem-email-button" class="email-button">&#45;</button></div>');
         $('#myEmailsEdit [type=email]:last').focus();
     });
-    
+
     // Edit / Save fieldsets -> Remove extra email input field
-    $('#myEmailsEdit').on('click','#rem-email-button', function(e){
+    $('#myEmailsEdit').on('click', '#rem-email-button', function(e) {
         e.preventDefault();
         $(this).parent('div').remove();
     });
@@ -294,15 +290,15 @@ $(document).ready(function() {
         $('#boardIdInForm').remove();
         list.empty();
 
-        $.get( '/getLists/' + $('#myBoards').val(), function( data ) {
+        $.get('/getLists/' + $('#myBoards').val(), function(data) {
             list.html('<h3>Listnames:</h3>');
             newCheckBtn.show();
             $('#project').val($('#myBoards option:selected').text());
             arr = data;
-            for(i = 0; i < arr.length; i++) {
-                list.append('<div class="checkbox"><input name="lists" type="checkbox" value="'+arr[i].id+'"> '+arr[i].name+'</div>');
+            for (i = 0; i < arr.length; i++) {
+                list.append('<div class="checkbox"><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</div>');
             }
-            newNotifyForm.append('<input id="boardIdInForm" type="hidden" name="board" value="'+$('#myBoards').val()+'">');
+            newNotifyForm.append('<input id="boardIdInForm" type="hidden" name="board" value="' + $('#myBoards').val() + '">');
 
         });
     });
@@ -311,23 +307,23 @@ $(document).ready(function() {
     $('#mySoloBoards').change(function() {
         checkBtn.empty();
         checkBtn.html('<h3>Listnames:</h3>');
-        $.get( '/getLists/' + $('#mySoloBoards').val(), function( data ) {
+        $.get('/getLists/' + $('#mySoloBoards').val(), function(data) {
             arr = data;
-            for(i = 0; i < arr.length; i++) {
-                checkBtn.append('<input name="lists" type="checkbox" value="'+arr[i].id+'"> <label>'+arr[i].name+'</label>');
+            for (i = 0; i < arr.length; i++) {
+                checkBtn.append('<input name="lists" type="checkbox" value="' + arr[i].id + '"> <label>' + arr[i].name + '</label>');
             }
         });
     });
 
     // Add another email input field
-    $('#add-email-button').click(function(e){
+    $('#add-email-button').click(function(e) {
         e.preventDefault();
         $('#myEmails').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="rem-email-button" class="email-button">&#45;</button></div>');
         $('[type=email]:last').focus();
     });
-    
+
     // User clicks remove on email input field
-    $('#myEmails').on('click','#rem-email-button', function(e){
+    $('#myEmails').on('click', '#rem-email-button', function(e) {
         e.preventDefault();
         $(this).parent('div').remove();
     });
@@ -335,14 +331,16 @@ $(document).ready(function() {
     // Resend individual notify
     $('#sub-frm').on('click', 'div.resend-this', function(e) {
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
-        $.post( "/runNewCronJob", { id: currentId })
-            .done(function( data ) {
+        $.post("/runNewCronJob", {
+            id: currentId
+        })
+            .done(function(data) {
                 // Success Feedback
                 recordSuccess.empty();
                 recordSuccess.append('<h3>Succesfully re-sent mail!</h3>');
                 recordSuccess.fadeIn(400).delay(800).fadeOut(800);
             })
-            .fail(function(data){
+            .fail(function(data) {
                 // Error feedback
                 recordError.empty();
                 recordError.append('<h3>Error in re-sending the email.</h3>');
