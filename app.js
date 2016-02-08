@@ -83,8 +83,8 @@ var numDaysBetween = function(d1, d2) {
 
 // Set a prototype of Date called getWeek
 Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(),0,1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
+    var onejan = new Date(this.getFullYear(), 0, 1);
+    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
 };
 
 // Get week number for this week
@@ -155,8 +155,7 @@ var runNewCronJob = function(notifierid) {
             if (notify._id == notifierid) {
                 myNotifiers.push(notify);
                 Boards.push(notify.board);
-            }
-            else if (notifierid === undefined) {
+            } else if (notifierid === undefined) {
                 //if (!arrayContains(notify.board, Boards)) {
                 myNotifiers.push(notify);
                 Boards.push(notify.board);
@@ -430,12 +429,12 @@ var sendEmailToUser = function(emailContent, email) {
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, function(error, info) {
-    	if (error) {
-    		console.log(email);
-    		console.log(error);
-    	} else {
-    		console.log("Message sent to: " + email + ", " + info.response);
-    	}
+        if (error) {
+            console.log(email);
+            console.log(error);
+        } else {
+            console.log("Message sent to: " + email + ", " + info.response);
+        }
     });
 
 };
