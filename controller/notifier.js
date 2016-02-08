@@ -4,7 +4,7 @@ module.exports = function(app, db, Notifier) {
     var createNewNotifier = function(req, res) {
 
         // Setting up internal vars (projectname, email, board)
-        var project_name, board;
+        var project_name, board, daysBetweenNotify;
         var email = [];
         var lists = [];
         var continueThis;
@@ -15,6 +15,7 @@ module.exports = function(app, db, Notifier) {
                 if (continueThis) {
                     project_name = req.body.project_name;
                     email = req.body.email;
+                    daysBetweenNotify = req.body.daysBetweenNotify;
                     board = req.body.board;
                     lists = req.body.lists;
 
@@ -22,6 +23,7 @@ module.exports = function(app, db, Notifier) {
                     var myNotifier = new Notifier();
                     myNotifier.project = project_name;
                     myNotifier.email = email;
+                    myNotifier.daysBetweenNotify = daysBetweenNotify;
                     myNotifier.board = board;
 
                     // If type of req.body.lists is only one (only one list checked), then push that into a array lists in notifier object
