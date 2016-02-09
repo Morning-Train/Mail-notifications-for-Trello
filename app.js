@@ -63,13 +63,23 @@ require('./controller/notifier')(app, null, Notifier);
 =            Utils            =
 =============================*/
 
-// Get today date.
-var today = new Date();
-var dd = today.getDate();
-var mm = today.getMonth() + 1; //January is 0!
-var year = today.getFullYear();
-var combinedDate = dd + "" + mm + "" + year;
+// Set a prototype of Date called getWeek
+Date.prototype.getWeek = function() {
+    var onejan = new Date(this.getFullYear(), 0, 1);
+    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
+};
 
+// Get today's date
+var today, dd, mm, year, combinedDate, weekno;
+var updateTodaysDate = function() {
+    today = new Date();
+    dd = today.getDate();
+    mm = today.getMonth() + 1; //January is 0!
+    year = today.getFullYear();
+    combinedDate = dd + "" + mm + "" + year;
+    weekno = today.getWeek();
+    console.log(today);
+}
 
 // Search array for a needle
 function arrayContains(needle, arrhaystack) {
@@ -82,17 +92,6 @@ var numDaysBetween = function(d1, d2) {
     return diff / (1000 * 60 * 60 * 24);
 };
 
-// Set a prototype of Date called getWeek
-Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
-};
-
-// Get week number for this week
-var weekno = today.getWeek();
-
-
-
 /*======================================
 =            Server startup            =
 ======================================*/
@@ -104,6 +103,9 @@ var server = app.listen(config.serverport, function() {
 
     console.log("Server is running at http://%s:%s", host, port);
 });
+
+// Set today's date on initialization
+updateTodaysDate();
 
 
 /*=====================================
@@ -145,6 +147,9 @@ app.get("/getLists/:boardId", function(req, res) {
 
 // runNewCronJob
 var runNewCronJob = function(notifierid) {
+    // Update today's date
+    updateTodaysDate();
+
     var Boards = [];
     // myNotifiers are the notifiers that the cronjob should handle
     var myNotifiers = [];
