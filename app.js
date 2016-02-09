@@ -219,7 +219,7 @@ var getAllCardsForEachUser = function(notifiers) {
         };
 
         notify.lists.forEach(function(list) {
-            var myCards = getAllCardsWithListId(notify.board, list._id);
+            var myCards = getAllCardsWithListId(notify, list._id);
 
             var aList = {
                 listId: list._id,
@@ -243,8 +243,9 @@ var getAllCardsForEachUser = function(notifiers) {
 
 };
 
-var getAllCardsWithListId = function(boardId, listId) {
+var getAllCardsWithListId = function(notify, listId) {
     var cards = [];
+    var boardId = notify.board;
 
     boardData.forEach(function(board) {
         if (board.boardId == boardId) {
@@ -256,8 +257,15 @@ var getAllCardsWithListId = function(boardId, listId) {
                     var cardActivityTime = card.dateLastActivity.split("T")[0].split('-');
                     cardActivityTime = new Date(cardActivityTime[0], cardActivityTime[1] - 1, cardActivityTime[2]);
 
-                    if (numDaysBetween(today, cardActivityTime) < config.daysBetweenNotifiers) {
-                        cards.push(card.name);
+                    // Use notify's daysBetweenNotify if it has a value, otherwise use the config variable
+                    if (notify.daysBetweenNotify != undefined) {
+                        if (numDaysBetween(today, cardActivityTime) < notify.daysBetweenNotify) {
+                            cards.push(card.name);
+                        }
+                    } else {
+                        if (numDaysBetween(today, cardActivityTime) < config.daysBetweenNotifiers) {
+                            cards.push(card.name);
+                        }
                     }
 
                 }
