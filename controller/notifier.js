@@ -8,7 +8,7 @@ module.exports = function(app, db, Notifier) {
         var email = [];
         var lists = [];
         var continueThis;
-		// Numbers between days of changes (in Trello Lists). Will use global config value if empty
+		// Number of days between email notifications. Will use global config value if null
         var daysBetweenNotify;
 
         // letMeContinue saves the notifier to our mongodb server - this will only happend if continueThis is true.
@@ -36,7 +36,7 @@ module.exports = function(app, db, Notifier) {
                         // notifier objects array.
                         req.body.lists.forEach(function(entry) {
                             myNotifier.lists.push(entry);
-                            console.log(entry);
+                            //console.log(entry);
                         });
                     }
                     // Send back response about everything is okay (to the client).
@@ -149,14 +149,13 @@ module.exports = function(app, db, Notifier) {
 
     // Function of getting a single notifier (used when Modal box pops up)
     var getOneNotifier = function(req, res) {
-        console.log(req.params);
+        //console.log(req.params);
         Notifier.findOne({
             _id: req.params.id
         }, function(err, notifier) {
             if (notifier === undefined || notifier === null) {
                 res.status(400).send("Notifier not found");
             } else {
-                console.log("Hello!");
                 res.status(200).send(notifier);
             }
         });

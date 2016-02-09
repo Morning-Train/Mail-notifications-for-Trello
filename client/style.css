@@ -251,6 +251,10 @@ input#modal-rmv {
     margin-right: 0;
 }
 
+#last-email {
+    font-size: .8em;
+}
+
 input#modal-submit, input#modal-rmv {
     background: #2ecc71;
 }
