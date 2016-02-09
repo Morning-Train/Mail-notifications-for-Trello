@@ -4,10 +4,12 @@ module.exports = function(app, db, Notifier) {
     var createNewNotifier = function(req, res) {
 
         // Setting up internal vars (projectname, email, board)
-        var project_name, board, daysBetweenNotify;
+        var project_name, board;
         var email = [];
         var lists = [];
         var continueThis;
+		// Numbers between days of changes (in Trello Lists). Will use global config value if empty
+        var daysBetweenNotify;
 
         // letMeContinue saves the notifier to our mongodb server - this will only happend if continueThis is true.
         // This is my best example of a callback function
@@ -109,6 +111,7 @@ module.exports = function(app, db, Notifier) {
                         notifier.board = req.body.board;
                         notifier.project = req.body.project_name;
                         notifier.email = req.body.email;
+                        notifier.daysBetweenNotify = req.body.daysBetweenNotify;
                         notifier.lists = [];
 
                         if (typeof req.body.lists === "string") {
