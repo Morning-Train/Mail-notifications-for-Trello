@@ -29,6 +29,7 @@ var NotifierSchema = new mongoose.Schema({
         list: 'string'
     }],
     daysBetweenNotify: Number,
+    lastNotified: Date,
     updated_at: {
         type: Date,
         default: Date.now
@@ -147,6 +148,7 @@ app.get("/getLists/:boardId", function(req, res) {
 
 // runNewCronJob
 var runNewCronJob = function(notifierid) {
+    console.log("runNewCronJob called");
     // Update today's date
     updateTodaysDate();
 
@@ -156,16 +158,32 @@ var runNewCronJob = function(notifierid) {
     Notifier.find({}, function(err, notifiers) {
 
         notifiers.forEach(function(notify) {
-
-            console.log(notifierid + " " + notify._id);
+            // Handle the specified notify (resend functionality)
             if (notify._id == notifierid) {
                 myNotifiers.push(notify);
                 Boards.push(notify.board);
-            } else if (notifierid === undefined) {
-                //if (!arrayContains(notify.board, Boards)) {
-                myNotifiers.push(notify);
-                Boards.push(notify.board);
-                //}   
+            }
+
+            // Handle all notifies
+            else if (notifierid === undefined) {
+                // Handle notifiers with no lastNotified value
+                if (notify.lastNotified === undefined) {
+                    myNotifiers.push(notify);
+                    Boards.push(notify.board);
+                } else {
+                    // Set daysBetweenNotify to either config or notify value
+                    var daysBetweenNotify;
+                    if (notify.daysBetweenNotify === null) {
+                        daysBetweenNotify = config.daysBetweenNotifiers;
+                    } else {
+                        daysBetweenNotify = notify.daysBetweenNotify;
+                    }
+                    // Handle notify if days since lastNotified is greater than daysBetweenNotify 
+                    if (numDaysBetween(today, notify.lastNotified) > daysBetweenNotify) {
+                        myNotifiers.push(notify);
+                        Boards.push(notify.board);
+                    }
+                }
             }
         });
 
@@ -213,6 +231,7 @@ var getAllCardsForEachUser = function(notifiers) {
 
     notifiers.forEach(function(notify) {
         var user = {
+            _id: notify._id,
             usermail: notify.email,
             boardId: notify.board,
             lists: []
@@ -257,15 +276,16 @@ var getAllCardsWithListId = function(notify, listId) {
                     var cardActivityTime = card.dateLastActivity.split("T")[0].split('-');
                     cardActivityTime = new Date(cardActivityTime[0], cardActivityTime[1] - 1, cardActivityTime[2]);
 
-                    // Use notify's daysBetweenNotify if it has a value, otherwise use the config variable
-                    if (notify.daysBetweenNotify != undefined) {
-                        if (numDaysBetween(today, cardActivityTime) < notify.daysBetweenNotify) {
-                            cards.push(card.name);
-                        }
+                    // Set daysBetweenNotify to either config or notify value
+                    var daysBetweenNotify;
+                    if (notify.daysBetweenNotify === null) {
+                        daysBetweenNotify = config.daysBetweenNotifiers;
                     } else {
-                        if (numDaysBetween(today, cardActivityTime) < config.daysBetweenNotifiers) {
-                            cards.push(card.name);
-                        }
+                        daysBetweenNotify = notify.daysBetweenNotify;
+                    }
+                    // Add card to list if days since cardActivityTime is less than daysBetweenNotify
+                    if (numDaysBetween(today, cardActivityTime) < daysBetweenNotify) {
+                        cards.push(card.name);
                     }
 
                 }
@@ -421,7 +441,7 @@ var setupEmailTemplate = function(userArray, res) {
 
             // users += user.lists;
 
-            sendEmailToUser(emailContent, user.usermail);
+            sendEmailToUser(emailContent, user.usermail, user._id);
 
         }
 
@@ -429,9 +449,24 @@ var setupEmailTemplate = function(userArray, res) {
 
 };
 
+// Update lastNotify in notify when sending emails
+var updateLastNotified = function(userId) {
+    Notifier.findOne({
+        _id: userId
+    }, function(err, notifier) {
+        if (notifier === undefined || notifier === null) {
+            console.log("Failed to update lastNotified");
+        } else {
+            notifier.lastNotified = new Date();
+            notifier.save();
+            console.log("lastNotified updated for id: " + userId);
+        }
+    });
+}
+
 
 // Send the email to the user
-var sendEmailToUser = function(emailContent, email) {
+var sendEmailToUser = function(emailContent, email, userId) {
 
     // setup e-mail data with unicode symbols
     var mailOptions = {
@@ -448,6 +483,7 @@ var sendEmailToUser = function(emailContent, email) {
             console.log(error);
         } else {
             console.log("Message sent to: " + email + ", " + info.response);
+            updateLastNotified(userId);
         }
     });
 
