@@ -218,7 +218,8 @@ $(document).ready(function() {
 
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $('#mySoloBoards').empty();
-        $('#myEmailsEdit').empty();
+        $('#my-emails-edit').empty();
+        $('#modal-last-notified').empty();
 
         $.get('mongies/notifiers/' + currentId, function(data) {
 
@@ -226,18 +227,26 @@ $(document).ready(function() {
             $('#modal-project').val(data.project);
 
             for (var i = 0; i < data.email.length; i++) {
-                $('#myEmailsEdit').append('<div><input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off"></div>');
+                $('#my-emails-edit').append('<div><input type="email" placeholder="email@example.com" name="email" id="modal-email" autocomplete="off"></div>');
                 $('div #modal-email').last().val(data.email[i]);
                 if (i === 0) {
                     // Add another email field button
-                    $('#myEmailsEdit div').last().append('<button type="button" id="add-email-button" class="email-button">&#43;</button>');
+                    $('#my-emails-edit div').last().append('<button type="button" id="add-email-button" class="email-button">&#43;</button>');
                 } else {
                     // Remove email field button
-                    $('#myEmailsEdit div').last().append('<button type="button" id="rem-email-button" class="email-button">&#45;</button>');
+                    $('#my-emails-edit div').last().append('<button type="button" id="rem-email-button" class="email-button">&#45;</button>');
                 }
             }
 
-            $('#modal-daysBetweenNotify').val(data.daysBetweenNotify);
+            $('#modal-days-between-notify').val(data.daysBetweenNotify);
+            var lastNotified = data.lastNotified;
+            if (data.lastNotified === undefined) {
+                lastNotified = "None";
+            } else {
+                myDate = new Date(data.lastNotified);
+                lastNotified = myDate.toLocaleString()
+            }
+            $('#modal-last-notified').append('<label id="last-email">Last email notification: ' + lastNotified + '</label>');
 
             var $options = $('#myBoards > option').clone();
             $('#mySoloBoards').append($options);
@@ -276,14 +285,14 @@ $(document).ready(function() {
     });
 
     // Edit / Save fieldsets -> Add another email input field
-    $('#myEmailsEdit').on('click', '#add-email-button', function(e) {
+    $('#my-emails-edit').on('click', '#add-email-button', function(e) {
         e.preventDefault();
-        $('#myEmailsEdit').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="rem-email-button" class="email-button">&#45;</button></div>');
-        $('#myEmailsEdit [type=email]:last').focus();
+        $('#my-emails-edit').append('<div><input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="rem-email-button" class="email-button">&#45;</button></div>');
+        $('#my-emails-edit [type=email]:last').focus();
     });
 
     // Edit / Save fieldsets -> Remove extra email input field
-    $('#myEmailsEdit').on('click', '#rem-email-button', function(e) {
+    $('#my-emails-edit').on('click', '#rem-email-button', function(e) {
         e.preventDefault();
         $(this).parent('div').remove();
     });
