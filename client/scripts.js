@@ -25,6 +25,7 @@ $(document).ready(function() {
     var resend = $('#resend-wrap');
     var yesResend = $('#yes-resend');
     var noResend = $('#no-resend');
+    var resendId;
 
     // Create new record form
     function getNameOfBoard(myArray, searchTerm) {
@@ -347,21 +348,22 @@ $(document).ready(function() {
     // Resend individual notify
     $('#sub-frm').on('click', 'div.resend-this', function(e) {
         e.preventDefault();
+        resendId = $(this).parent('fieldset').find('.notifier-id').val();
         resend.show();
     });
 
     // if yes
     yesResend.click(function(e) {
         e.preventDefault();
-        var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $.post("/runNewCronJob", {
-            id: currentId
+            id: resendId
         })
             .done(function(data) {
                 // Success Feedback
                 recordSuccess.empty();
                 recordSuccess.append('<h3>Succesfully re-sent mail!</h3>');
                 recordSuccess.fadeIn(400).delay(800).fadeOut(800);
+                resend.hide();
             })
             .fail(function(data) {
                 // Error feedback
