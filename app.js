@@ -157,7 +157,7 @@ app.get("/getLists/:boardId", function(req, res) {
 
 // runNewCronJob
 var runNewCronJob = function(notifierid) {
-    console.log("runNewCronJob called");
+    console.log("runNewCronJob(" + notifierid + ") called");
     // Update today's date
     updateTodaysDate();
 
