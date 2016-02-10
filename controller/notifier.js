@@ -8,7 +8,7 @@ module.exports = function(app, db, Notifier) {
         var email = [];
         var lists = [];
         var continueThis;
-		// Number of days between email notifications. Will use global config value if null
+        // Number of days between email notifications. Will use global config value if null
         var daysBetweenNotify;
 
         // letMeContinue saves the notifier to our mongodb server - this will only happend if continueThis is true.
@@ -111,7 +111,7 @@ module.exports = function(app, db, Notifier) {
                         notifier.board = req.body.board;
                         notifier.project = req.body.project_name;
                         notifier.email = req.body.email;
-                        notifier.daysBetweenNotify = req.body.daysBetweenNotify;
+                        notifier.daysBetweenNotify = req.body.days_between_notify;
                         notifier.lists = [];
 
                         if (typeof req.body.lists === "string") {

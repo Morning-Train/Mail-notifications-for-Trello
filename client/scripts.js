@@ -22,6 +22,10 @@ $(document).ready(function() {
     var yes = $('#yes');
     var no = $('#no');
 
+    var resend = $('#resend-wrap');
+    var yesResend = $('#yes-resend');
+    var noResend = $('#no-resend');
+
     // Create new record form
     function getNameOfBoard(myArray, searchTerm) {
         for (var i = 0, len = myArray.length; i < len; i++) {
@@ -342,7 +346,13 @@ $(document).ready(function() {
 
     // Resend individual notify
     $('#sub-frm').on('click', 'div.resend-this', function(e) {
-        // Perhaps this should have a confirm dialog?
+        e.preventDefault();
+        resend.show();
+    });
+
+    // if yes
+    yesResend.click(function(e) {
+        e.preventDefault();
         var currentId = $(this).parent('fieldset').find('.notifier-id').val();
         $.post("/runNewCronJob", {
             id: currentId
@@ -359,6 +369,15 @@ $(document).ready(function() {
                 recordError.append('<h3>Error in re-sending the email.</h3>');
                 recordError.fadeIn(400).delay(800).fadeOut(800);
             });
+    });
+
+    // if no
+    noResend.click(function() {
+        resend.hide();
+
+        // Remove blue bg from remove btn's
+        $(this).removeClass('blue-bg');
+        yesResend.removeClass('blue-bg');
     });
 
 });
