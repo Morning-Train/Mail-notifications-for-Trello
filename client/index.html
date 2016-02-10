@@ -11,6 +11,15 @@
     <div id="loader">
     </div>
 
+    <!-- Approve resend -->
+    <div id="resend-wrap">
+        <div class="approve-alert">
+            <p>Are you sure you want to resend this record? This will send an email.</p>
+            <button id="yes-resend">Yes</button>
+            <button id="no-resend">No</button>
+        </div>
+    </div>
+
     <!-- Approve remove -->
     <div id="approve-wrap">
         <div class="approve-alert">
@@ -46,7 +55,7 @@
 
                     <fieldset>
                         <label for="days-between-notify">Days between notifications:</label>
-                        <input type="number" placeholder="1-365 (optional)" name="days-between-notify" id="modal-days-between-notify" autocomplete="off">
+                        <input type="number" placeholder="1-365 (optional)" name="days_between_notify" id="modal-days-between-notify" autocomplete="off">
                         <div id="modal-last-notified"></div>
                     </fieldset>
 
@@ -108,8 +117,8 @@
                 <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="add-email-button" class="email-button">&#43;</button>
             </div>
 
-            <label for="daysBetweenNotify">Days between notifications:</label>
-            <input type="number" step="1" placeholder="1-365 (optional)" id="daysBetweenNotify" name="daysBetweenNotify" id="daysBetweenNotify" autocomplete="off">
+            <label for="days-between-notify">Days between notifications:</label>
+            <input type="number" step="1" placeholder="1-365 (optional)" id="days-between-notify" name="days_between_notify" id="days-between-notify" autocomplete="off">
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
