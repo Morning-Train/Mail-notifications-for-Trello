@@ -453,6 +453,15 @@ fieldset#check-btn label {
     background: #6ec7fa;
 }
 
+#resend-wrap {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 999999;
+}
+
 /*=======================================
 =            Add New Record             =
 =======================================*/

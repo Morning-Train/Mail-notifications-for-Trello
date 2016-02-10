@@ -93,6 +93,15 @@ var numDaysBetween = function(d1, d2) {
     return diff / (1000 * 60 * 60 * 24);
 };
 
+// Return appropriate daysBetweenNotify variable (either notify value or config value)
+var getDaysBetweenNotifiers = function(notify) {
+    if (notify.daysBetweenNotify === undefined || notify.daysBetweenNotify === null) {
+        return config.daysBetweenNotifiers;
+    } else {
+        return notify.daysBetweenNotify;
+    }
+}
+
 /*======================================
 =            Server startup            =
 ======================================*/
@@ -170,18 +179,15 @@ var runNewCronJob = function(notifierid) {
                 if (notify.lastNotified === undefined) {
                     myNotifiers.push(notify);
                     Boards.push(notify.board);
-                } else {
-                    // Set daysBetweenNotify to either config or notify value
-                    var daysBetweenNotify;
-                    if (notify.daysBetweenNotify === null) {
-                        daysBetweenNotify = config.daysBetweenNotifiers;
-                    } else {
-                        daysBetweenNotify = notify.daysBetweenNotify;
-                    }
-                    // Handle notify if days since lastNotified is greater than daysBetweenNotify 
-                    if (numDaysBetween(today, notify.lastNotified) > daysBetweenNotify) {
+                }
+                // Handle notify if days since lastNotified is greater than daysBetweenNotify 
+                else {
+                    if (numDaysBetween(today, notify.lastNotified) > getDaysBetweenNotifiers(notify)) {
                         myNotifiers.push(notify);
                         Boards.push(notify.board);
+                    } else {
+                        var daysUntilNextNotified = getDaysBetweenNotifiers(notify) - numDaysBetween(today, notify.lastNotified);
+                        console.log("id:" + notify._id + " will be notified in " + daysUntilNextNotified + " days");
                     }
                 }
             }
@@ -276,15 +282,8 @@ var getAllCardsWithListId = function(notify, listId) {
                     var cardActivityTime = card.dateLastActivity.split("T")[0].split('-');
                     cardActivityTime = new Date(cardActivityTime[0], cardActivityTime[1] - 1, cardActivityTime[2]);
 
-                    // Set daysBetweenNotify to either config or notify value
-                    var daysBetweenNotify;
-                    if (notify.daysBetweenNotify === null) {
-                        daysBetweenNotify = config.daysBetweenNotifiers;
-                    } else {
-                        daysBetweenNotify = notify.daysBetweenNotify;
-                    }
                     // Add card to list if days since cardActivityTime is less than daysBetweenNotify
-                    if (numDaysBetween(today, cardActivityTime) < daysBetweenNotify) {
+                    if (numDaysBetween(today, cardActivityTime) < getDaysBetweenNotifiers(notify)) {
                         cards.push(card.name);
                     }
 
