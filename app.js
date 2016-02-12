@@ -244,36 +244,38 @@ var getAllCardsForEachUser = function(notifiers) {
 
     notifiers.forEach(function(notify) {
         // det crasher her:
-        var togglProject = getTogglProjectSummary(notify);
-        var user = {
-            _id: notify._id,
-            usermail: notify.email,
-            boardId: notify.board,
-            overallTime: togglProject.time,
-            lists: []
-        };
-
-        notify.lists.forEach(function(list) {
-            var myCards = getAllCardsWithListId(notify, list._id);
-
-            var aList = {
-                listId: list._id,
-                cards: myCards
+        getTogglProjectSummary(notify, function(togglProject){
+            var user = {
+                _id: notify._id,
+                usermail: notify.email,
+                boardId: notify.board,
+                overallTime: togglProject.time,
+                lists: []
             };
 
-            if (myCards.length > 0) {
-                user.lists.push(aList);
-            }
+            notify.lists.forEach(function(list) {
+                var myCards = getAllCardsWithListId(notify, list._id);
 
+                var aList = {
+                    listId: list._id,
+                    cards: myCards
+                };
+
+                if (myCards.length > 0) {
+                    user.lists.push(aList);
+                }
+
+            });
+
+            counter++;
+            userArray.push(user);
+
+            if (counter === notifiers.length) {
+                console.log("|B| Sorted all lists based on listId in each card + removed cards that are outside limit");
+                removeEmptyLists(userArray);
+            }
         });
 
-        counter++;
-        userArray.push(user);
-
-        if (counter === notifiers.length) {
-            console.log("|B| Sorted all lists based on listId in each card + removed cards that are outside limit");
-            removeEmptyLists(userArray);
-        }
     });
 
 };
@@ -616,45 +618,45 @@ var getTogglProjects = function(callback) {
     req.end();
 };
 
-var getTogglProjectSummary = function(notify) {
+var getTogglProjectSummary = function(notify, callback) {
     var d = new Date();
     d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
-    var since = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+    var since = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 
     var options = {
-      "method": "GET",
-      "hostname": "toggl.com",
-      "path": "/reports/api/v2/summary?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId +
-                "&project_ids=" + notify.togglProject + "&since=" + since + "",
-       "headers": {
+        "method": "GET",
+        "hostname": "toggl.com",
+        "path": "/reports/api/v2/summary?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId +
+            "&project_ids=" + notify.togglProject + "&since=" + since + "",
+        "headers": {
             "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
         }
     };
 
-    var req = http.request(options, function (res) {
-      var chunks = [];
+    var req = http.request(options, function(res) {
+        var chunks = [];
 
-      res.on("data", function (chunk) {
-        chunks.push(chunk);
-      });
+        res.on("data", function(chunk) {
+            chunks.push(chunk);
+        });
 
-      var projects = [];
-      res.on("end", function () {
-        var body = Buffer.concat(chunks);
-        var json = JSON.parse(body);
-        json.data.forEach(function(entry) {
-            var project = {
-                'id': entry.id,
-                'title': entry.title.project,
-                'time': entry.time
+        var projects = [];
+        res.on("end", function() {
+            var body = Buffer.concat(chunks);
+            var json = JSON.parse(body);
+            json.data.forEach(function(entry) {
+                var project = {
+                    'id': entry.id,
+                    'title': entry.title.project,
+                    'time': entry.time
+                }
+                projects.push(project);
+            })
+            if (projects.length === 1) {
+                //console.log(projects[0]);
+                return callback(projects[0]);
             }
-            projects.push(project);
-        })
-        if(projects.length === 1) {
-            //console.log(projects[0]);
-            return projects[0];
-        }
-      });
+        });
     });
 
     req.end();
