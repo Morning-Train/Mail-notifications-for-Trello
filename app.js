@@ -165,7 +165,6 @@ app.get("/getTogglProjects", function(req, res) {
 
 // runNewCronJob
 var runNewCronJob = function(notifierid) {
-    console.log("runNewCronJob(" + notifierid + ") called");
     // Update today's date
     updateTodaysDate();
 
@@ -244,10 +243,13 @@ var getAllCardsForEachUser = function(notifiers) {
     var counter = 0;
 
     notifiers.forEach(function(notify) {
+        // det crasher her:
+        var togglProject = getTogglProjectSummary(notify);
         var user = {
             _id: notify._id,
             usermail: notify.email,
             boardId: notify.board,
+            overallTime: togglProject.time,
             lists: []
         };
 
@@ -416,6 +418,9 @@ var setupEmailTemplate = function(userArray, res) {
             emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='  margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>Email-Notifier</h1><h2 style='   margin: 0 !important; padding-top: 7px;  color: #fff;font-size: 10px; text-transform: uppercase;'>Your notifier from your Trello boards</h2></th>";
             emailContent += "<tr>";
             emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>" + config.myName + " is working at " + getBoardName(user.boardId) + "</td>";
+            emailContent += "</tr>";
+            emailContent += "<tr>";
+            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Total time spent in toggl: " + user.overallTime + "</td>";
             emailContent += "</tr>";
             emailContent += "<tr>";
             emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is a overview of what have changed:</td>";
@@ -610,3 +615,47 @@ var getTogglProjects = function(callback) {
 
     req.end();
 };
+
+var getTogglProjectSummary = function(notify) {
+    var d = new Date();
+    d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
+    var since = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+
+    var options = {
+      "method": "GET",
+      "hostname": "toggl.com",
+      "path": "/reports/api/v2/summary?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId +
+                "&project_ids=" + notify.togglProject + "&since=" + since + "",
+       "headers": {
+            "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
+        }
+    };
+
+    var req = http.request(options, function (res) {
+      var chunks = [];
+
+      res.on("data", function (chunk) {
+        chunks.push(chunk);
+      });
+
+      var projects = [];
+      res.on("end", function () {
+        var body = Buffer.concat(chunks);
+        var json = JSON.parse(body);
+        json.data.forEach(function(entry) {
+            var project = {
+                'id': entry.id,
+                'title': entry.title.project,
+                'time': entry.time
+            }
+            projects.push(project);
+        })
+        if(projects.length === 1) {
+            //console.log(projects[0]);
+            return projects[0];
+        }
+      });
+    });
+
+    req.end();
+}
