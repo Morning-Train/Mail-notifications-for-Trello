@@ -10,6 +10,7 @@ module.exports = function(app, db, Notifier) {
         var continueThis;
         // Number of days between email notifications. Will use global config value if null
         var daysBetweenNotify;
+        var togglProject;
 
         // letMeContinue saves the notifier to our mongodb server - this will only happend if continueThis is true.
         // This is my best example of a callback function
@@ -19,6 +20,7 @@ module.exports = function(app, db, Notifier) {
                     email = req.body.email;
                     daysBetweenNotify = req.body.daysBetweenNotify;
                     board = req.body.board;
+                    togglProject = req.body.togglProject;
                     lists = req.body.lists;
 
                     // Creating a Notifier object. Setting project, email and boardId - made from the webform
@@ -27,6 +29,7 @@ module.exports = function(app, db, Notifier) {
                     myNotifier.email = email;
                     myNotifier.daysBetweenNotify = daysBetweenNotify;
                     myNotifier.board = board;
+                    myNotifier.togglProject = togglProject;
 
                     // If type of req.body.lists is only one (only one list checked), then push that into a array lists in notifier object
                     if (typeof req.body.lists === "string") {
@@ -111,7 +114,8 @@ module.exports = function(app, db, Notifier) {
                         notifier.board = req.body.board;
                         notifier.project = req.body.project_name;
                         notifier.email = req.body.email;
-                        notifier.daysBetweenNotify = req.body.days_between_notify;
+                        notifier.daysBetweenNotify = req.body.daysBetweenNotify;
+                        notifier.togglProject = req.body.togglProject;
                         notifier.lists = [];
 
                         if (typeof req.body.lists === "string") {

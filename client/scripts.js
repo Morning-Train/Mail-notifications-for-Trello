@@ -37,13 +37,13 @@ $(document).ready(function() {
 
     // Empty variable for inserting object later
     var boards = {};
+    var togglProjects = {};
 
     // Get all boards from Trello
     var getAllBoards = $.get('/getBoards', function(data) {
         boards = data;
         for (i = 0; i < boards.length; i++) {
             $('#myBoards').append('<option value="' + boards[i].id + '">' + boards[i].name + '</option>');
-            $('.mySoloBoards').append('<option value="' + boards[i].id + '">' + boards[i].name + '</option>');
         }
     }).done(function() {
         $('#loader').fadeOut('slow');
@@ -57,6 +57,17 @@ $(document).ready(function() {
 
         if (textStatus == 'error')
             alert('NodeJS server not responding.... Please refresh the page (we should make a reconnect function)');
+    });
+
+    // Get all projects from Toggl
+    var getTogglProjects = $.get('/getTogglProjects', function(data) {
+        projects = data;
+        for (i = 0; i < projects.length; i++) {
+            $('#myTogglProjects').append('<option value="' + projects[i].id + '">' + projects[i].name + '</option>');
+        }
+    }).done(function() {
+        $('#loader').fadeOut('slow');
+        body.removeClass('no-scroll');
     });
 
     // Alert box on remove click in Email Notifiers Modal box
@@ -253,6 +264,11 @@ $(document).ready(function() {
             }
             $('#modal-last-notified').append('<label id="last-email">Last email notification: ' + lastNotified + '</label>');
 
+            var $options = $('#myTogglProjects > option').clone();
+            $('#mySoloTogglProjects').append($options);
+            $('#mySoloTogglProjects').val(data.togglProject);
+        }, 'json').done(function(data) {
+
             var $options = $('#myBoards > option').clone();
             $('#mySoloBoards').append($options);
             $('#mySoloBoards').val(data.board);
@@ -319,6 +335,11 @@ $(document).ready(function() {
 
         });
     });
+
+    $('#myTogglProjects').change(function() {
+        $('#togglProjectIdInForm').remove();
+        newNotifyForm.append('<input id="togglProjectIdInForm" type="hidden" name="togglProject" value="' + $('#myTogglProjects').val() + '">');
+    })
 
     // Append the fetched list items to html
     $('#mySoloBoards').change(function() {
