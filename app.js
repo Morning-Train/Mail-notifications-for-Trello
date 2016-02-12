@@ -17,6 +17,8 @@ var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/mailnotifiersForTrello');
 
+var http = require("https");
+
 // Loading config
 var config = require('./config/config');
 
@@ -25,6 +27,7 @@ var NotifierSchema = new mongoose.Schema({
     project: String,
     email: Array,
     board: String,
+    togglProject: String,
     lists: [{
         list: 'string'
     }],
@@ -148,6 +151,11 @@ app.get("/getLists/:boardId", function(req, res) {
     } else {
         res.status(400).send("No board id was specified");
     }
+});
+
+// Get toggl projects for the toggl user
+app.get("/getTogglProjects", function(req, res) {
+    getTogglProjects(res);
 });
 
 
@@ -562,4 +570,43 @@ var getBoardName = function(boardId) {
 
     return theName;
 
+};
+
+/*===================================================
+=            Functions for Toggl Projects            =
+===================================================*/
+
+var getTogglProjects = function(callback) {
+    var options = {
+        "method": "GET",
+        "hostname": "toggl.com",
+        "path": "/api/v8/me?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId + "&with_related_data=true",
+        "headers": {
+            "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
+        }
+    };
+
+    var req = http.request(options, function(res) {
+        var chunks = [];
+
+        res.on("data", function(chunk) {
+            chunks.push(chunk);
+        });
+
+        var projects = [];
+        res.on("end", function() {
+            var body = Buffer.concat(chunks);
+            var json = JSON.parse(body);
+            json.data.projects.forEach(function(entry) {
+                var project = {
+                    'id': entry.id,
+                    'name': entry.name
+                }
+                projects.push(project);
+            });
+            callback.send(projects);
+        });
+    });
+
+    req.end();
 };

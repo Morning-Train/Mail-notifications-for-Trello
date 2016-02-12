@@ -48,14 +48,19 @@
 
                     <fieldset>
                         <label for="board">Boardname:</label>
-                            <select name="board" id="mySoloBoards">
+                        <select name="board" id="mySoloBoards">
+                        </select>
+                    </fieldset>
 
-                            </select>
+                    <fieldset>
+                        <label for="togglProject">Toggl project:</label>
+                        <select name="togglProject" id="mySoloTogglProjects">
+                        </select>
                     </fieldset>
 
                     <fieldset>
                         <label for="days-between-notify">Days between notifications:</label>
-                        <input type="number" placeholder="1-365 (optional)" name="days_between_notify" id="modal-days-between-notify" autocomplete="off">
+                        <input type="number" placeholder="1-365 (optional)" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
                         <div id="modal-last-notified"></div>
                     </fieldset>
 
@@ -104,10 +109,14 @@
             <select id="myBoards">
                 <option value="none">None chosen</option>
             </select>
-                <fieldset id="new-check-btn" style="display: none">
-                    <div id="lists">
-                    </div>
-                </fieldset>
+            <fieldset id="new-check-btn" style="display: none">
+                <div id="lists"></div>
+            </fieldset>
+
+            <label for="togglProject">Toggl project:</label>
+            <select id="myTogglProjects">
+                <option value="none">None chosen</option>
+            </select>
 
             <label for="project">Projectname:</label>
             <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
@@ -118,7 +127,7 @@
             </div>
 
             <label for="days-between-notify">Days between notifications:</label>
-            <input type="number" step="1" placeholder="1-365 (optional)" id="days-between-notify" name="days_between_notify" id="days-between-notify" autocomplete="off">
+            <input type="number" step="1" placeholder="1-365 (optional)" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off">
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
