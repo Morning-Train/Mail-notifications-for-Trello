@@ -153,7 +153,7 @@ app.get("/getLists/:boardId", function(req, res) {
     }
 });
 
-// Get toggl projects for the toggl user
+// Get all toggl projects for the toggl user
 app.get("/getTogglProjects", function(req, res) {
     getTogglProjects(res);
 });
@@ -165,6 +165,7 @@ app.get("/getTogglProjects", function(req, res) {
 
 // runNewCronJob
 var runNewCronJob = function(notifierid) {
+    console.log("Received runNewCronJob(" + notifierid + ") request");
     // Update today's date
     updateTodaysDate();
 
@@ -243,15 +244,18 @@ var getAllCardsForEachUser = function(notifiers) {
     var counter = 0;
 
     notifiers.forEach(function(notify) {
-        // det crasher her:
-        getTogglProjectSummary(notify, function(togglProject){
+        getTogglProjectSummary(notify, function(togglProject) {
             var user = {
                 _id: notify._id,
                 usermail: notify.email,
                 boardId: notify.board,
-                overallTime: togglProject.time,
                 lists: []
             };
+
+            // If notify includes a toggle project
+            if (togglProject != null) {
+                user["overallTime"] = togglProject.time;
+            }
 
             notify.lists.forEach(function(list) {
                 var myCards = getAllCardsWithListId(notify, list._id);
@@ -422,11 +426,18 @@ var setupEmailTemplate = function(userArray, res) {
             emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>" + config.myName + " is working at " + getBoardName(user.boardId) + "</td>";
             emailContent += "</tr>";
             emailContent += "<tr>";
-            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Total time spent in toggl: " + user.overallTime + "</td>";
-            emailContent += "</tr>";
-            emailContent += "<tr>";
             emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is a overview of what have changed:</td>";
             emailContent += "</tr>";
+            if (user.overallTime != null) {
+                var x = user.overallTime / 1000;
+                x /= 60;
+                var minutes = x % 60 | 0;
+                x /= 60;
+                var hours = x | 0;
+                emailContent += "<tr>";
+                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Time spent in toggl: <b>" + hours + " hours and " + minutes + " minutes.</b></td>";
+                emailContent += "</tr>";
+            }
 
             var styleColor = "";
 
@@ -619,45 +630,49 @@ var getTogglProjects = function(callback) {
 };
 
 var getTogglProjectSummary = function(notify, callback) {
-    var d = new Date();
-    d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
-    var since = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    if (notify.togglProject === undefined || notify.togglProject === "none") {
+        return callback(null);
+    } else {
+        var d = new Date();
+        d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
+        var since = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 
-    var options = {
-        "method": "GET",
-        "hostname": "toggl.com",
-        "path": "/reports/api/v2/summary?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId +
-            "&project_ids=" + notify.togglProject + "&since=" + since + "",
-        "headers": {
-            "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
-        }
-    };
-
-    var req = http.request(options, function(res) {
-        var chunks = [];
-
-        res.on("data", function(chunk) {
-            chunks.push(chunk);
-        });
-
-        var projects = [];
-        res.on("end", function() {
-            var body = Buffer.concat(chunks);
-            var json = JSON.parse(body);
-            json.data.forEach(function(entry) {
-                var project = {
-                    'id': entry.id,
-                    'title': entry.title.project,
-                    'time': entry.time
-                }
-                projects.push(project);
-            })
-            if (projects.length === 1) {
-                //console.log(projects[0]);
-                return callback(projects[0]);
+        var options = {
+            "method": "GET",
+            "hostname": "toggl.com",
+            "path": "/reports/api/v2/summary?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId +
+                "&project_ids=" + notify.togglProject + "&since=" + since + "",
+            "headers": {
+                "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
             }
-        });
-    });
+        };
 
-    req.end();
-}
+        var req = http.request(options, function(res) {
+            var chunks = [];
+
+            res.on("data", function(chunk) {
+                chunks.push(chunk);
+            });
+
+            var projects = [];
+            res.on("end", function() {
+                var body = Buffer.concat(chunks);
+                var json = JSON.parse(body);
+                json.data.forEach(function(entry) {
+                    var project = {
+                        'id': entry.id,
+                        'title': entry.title.project,
+                        'time': entry.time
+                    }
+                    projects.push(project);
+                })
+                if (projects.length === 1) {
+                    //console.log(projects[0]);
+                    return callback(projects[0]);
+                }
+            });
+        });
+
+        req.end();
+    };
+};
