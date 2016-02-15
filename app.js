@@ -667,8 +667,10 @@ var getTogglProjectSummary = function(notify, callback) {
                     projects.push(project);
                 })
                 if (projects.length === 1) {
-                    //console.log(projects[0]);
                     return callback(projects[0]);
+                }
+                else {
+                    return callback(null);
                 }
             });
         });
