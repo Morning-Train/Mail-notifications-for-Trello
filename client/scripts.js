@@ -236,6 +236,8 @@ $(document).ready(function() {
         $('#mySoloBoards').empty();
         $('#my-emails-edit').empty();
         $('#modal-last-notified').empty();
+        $('#mySoloTogglProjects').empty();
+        $('#mySoloNotifyDays').empty();
 
         $.get('mongies/notifiers/' + currentId, function(data) {
 
@@ -264,14 +266,18 @@ $(document).ready(function() {
             }
             $('#modal-last-notified').append('<label id="last-email">Last email notification: ' + lastNotified + '</label>');
 
-            var $options = $('#myTogglProjects > option').clone();
-            $('#mySoloTogglProjects').append($options);
-            $('#mySoloTogglProjects').val(data.togglProject);
-        }, 'json').done(function(data) {
-
             var $options = $('#myBoards > option').clone();
             $('#mySoloBoards').append($options);
             $('#mySoloBoards').val(data.board);
+
+            var $togglOptions = $('#myTogglProjects > option').clone();
+            $('#mySoloTogglProjects').append($togglOptions);
+            $('#mySoloTogglProjects').val(data.togglProject);
+
+            var $dayOptions = $('#myNotifyDays > option').clone();
+            $('#mySoloNotifyDays').append($dayOptions);
+            $('#mySoloNotifyDays').val(data.notifyDay);
+
         }, 'json').done(function(data) {
 
             var myCheckedLists = [];
@@ -339,6 +345,11 @@ $(document).ready(function() {
     $('#myTogglProjects').change(function() {
         $('#togglProjectIdInForm').remove();
         newNotifyForm.append('<input id="togglProjectIdInForm" type="hidden" name="togglProject" value="' + $('#myTogglProjects').val() + '">');
+    })
+
+    $('#myNotifyDays').change(function() {
+        $('#notifyDayIdInForm').remove();
+        newNotifyForm.append('<input id="notifyDayIdInForm" type="hidden" name="notifyDay" value="' + $('#myNotifyDays').val() + '">');
     })
 
     // Append the fetched list items to html
