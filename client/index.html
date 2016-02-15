@@ -124,6 +124,11 @@
                 <option value="none">None chosen</option>
             </select>
 
+            <fieldset id="toggl-check-btn" style="display: none">
+                <div class="checkbox"><label><input name="billableHours" type="checkbox" value="billableHours"> Only display billable hours</label></div>
+                <div class="checkbox"><label><input name="rounding" type="checkbox" value="rounding"> Use rounding to 30 minutes</label></div>
+            </fieldset>
+
             <label for="project">Projectname&#42;:</label>
             <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
 
