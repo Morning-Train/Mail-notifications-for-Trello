@@ -37,17 +37,17 @@
                 <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
                     <input type="hidden" name="notifier_id" id="modal-notifier-id">
                     <fieldset>
-                        <label for="project">Projectname:</label>
+                        <label for="project">Projectname&#42;:</label>
                         <input type="text" placeholder="Super awesome project" name="project_name" id="modal-project" autocomplete="off">
                     </fieldset>
 
                     <fieldset>
-                        <label for="email">Email:</label>
+                        <label for="email">Email&#42;:</label>
                         <div id="my-emails-edit"></div>
                     </fieldset>
 
                     <fieldset>
-                        <label for="board">Boardname:</label>
+                        <label for="board">Boardname&#42;:</label>
                         <select name="board" id="mySoloBoards">
                         </select>
                     </fieldset>
@@ -59,8 +59,14 @@
                     </fieldset>
 
                     <fieldset>
+                        <label for="notify-day">Notification day:</label>
+                        <select name="notifyDay" id="mySoloNotifyDays">
+                        </select>
+                    </fieldset>
+
+                    <fieldset>
                         <label for="days-between-notify">Days between notifications:</label>
-                        <input type="number" placeholder="1-365 (optional)" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
+                        <input type="number" placeholder="1-365" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
                         <div id="modal-last-notified"></div>
                     </fieldset>
 
@@ -105,7 +111,7 @@
         <h1>Email Notify</h1>
         <!-- Add new mail notify -->
         <form id="new-custom-frm" action="#submit-answer" method="POST">
-            <label for="board">Board:</label>
+            <label for="board">Board&#42;:</label>
             <select id="myBoards">
                 <option value="none">None chosen</option>
             </select>
@@ -118,16 +124,29 @@
                 <option value="none">None chosen</option>
             </select>
 
-            <label for="project">Projectname:</label>
+            <label for="project">Projectname&#42;:</label>
             <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
 
             <div id="myEmails">
-                <label for="email">Email:</label>
+                <label for="email">Email&#42;:</label>
                 <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="add-email-button" class="email-button">&#43;</button>
             </div>
 
+            <label for="notify-day">Notification day:</label>
+            <select id="myNotifyDays">
+                <option value="7">Automatic</option>
+                <option value="1" selected="selected">Monday</option>
+                <option value="2">Tuesday</option>
+                <option value="3">Wednesday</option>
+                <option value="4">Thursday</option>
+                <option value="5">Friday</option>
+                <option value="6">Saturday</option>
+                <option value="0">Sunday</option>
+            </select>
+            <input id="notifyDayIdInForm" type="hidden" name="notifyDay" value="1">
+
             <label for="days-between-notify">Days between notifications:</label>
-            <input type="number" step="1" placeholder="1-365 (optional)" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off">
+            <input type="number" step="1" placeholder="1-365" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off">
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">

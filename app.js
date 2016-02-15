@@ -32,6 +32,7 @@ var NotifierSchema = new mongoose.Schema({
         list: 'string'
     }],
     daysBetweenNotify: Number,
+    notifyDay: Number,
     lastNotified: Date,
     updated_at: {
         type: Date,
@@ -183,18 +184,21 @@ var runNewCronJob = function(notifierid) {
 
             // Handle all notifies
             else if (notifierid === undefined) {
-                // Handle notifiers with no lastNotified value
-                if (notify.lastNotified === undefined) {
-                    myNotifiers.push(notify);
-                    Boards.push(notify.board);
-                }
-                // Handle notify if days since lastNotified is greater than daysBetweenNotify 
-                else {
-                    if (numDaysBetween(today, notify.lastNotified) > getDaysBetweenNotifiers(notify)) {
+                // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
+                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
+                    // Handle notify if it doesn't have a last notification date
+                    if (notify.lastNotified === undefined) {
                         myNotifiers.push(notify);
                         Boards.push(notify.board);
-                    } else {
-                        var daysUntilNextNotified = getDaysBetweenNotifiers(notify) - numDaysBetween(today, notify.lastNotified);
+                    }
+                    // Handle notify if days since lastNotified is greater than daysBetweenNotify
+                    else if (Math.floor(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)) {
+                        myNotifiers.push(notify);
+                        Boards.push(notify.board);
+                    }
+                    // Log time until next notification in console
+                    else {
+                        var daysUntilNextNotified = Math.floor(getDaysBetweenNotifiers(notify) - numDaysBetween(today, notify.lastNotified));
                         console.log("id:" + notify._id + " will be notified in " + daysUntilNextNotified + " days");
                     }
                 }
@@ -213,9 +217,7 @@ var runNewCronJob = function(notifierid) {
 
                 data.forEach(function(entry, index) {
                     if (!arrayContains(entry.idList, theBoard.lists)) {
-
                         theBoard.lists.push(entry.idList);
-
                     }
 
                     // Here we got all boards, and their cards and lists.
@@ -605,26 +607,42 @@ var getTogglProjects = function(callback) {
     };
 
     var req = http.request(options, function(res) {
-        var chunks = [];
+        if (res.statusCode == 404 || res.statusCode == 403) {
+            console.log(res.statusCode + ": Toggl api FAILED!");
+            req.abort();
+        } else {
+            var chunks = [];
 
-        res.on("data", function(chunk) {
-            chunks.push(chunk);
-        });
-
-        var projects = [];
-        res.on("end", function() {
-            var body = Buffer.concat(chunks);
-            var json = JSON.parse(body);
-            json.data.projects.forEach(function(entry) {
-                var project = {
-                    'id': entry.id,
-                    'name': entry.name
-                }
-                projects.push(project);
+            res.on("data", function(chunk) {
+                chunks.push(chunk);
             });
-            callback.send(projects);
-        });
+
+            var projects = [];
+            res.on("end", function() {
+                var body = Buffer.concat(chunks);
+                var json = JSON.parse(body);
+                json.data.projects.forEach(function(entry) {
+                    var project = {
+                        'id': entry.id,
+                        'name': entry.name
+                    }
+                    projects.push(project);
+                });
+                callback.send(projects);
+            });
+        }
     });
+
+    req.on("error", function(e) {
+        console.log(e);
+    });
+
+    req.on("timeout", function() {
+        console.log("toggl api timed out");
+        req.abort();
+    });
+
+    req.setTimeout(5000);
 
     req.end();
 };
@@ -648,32 +666,47 @@ var getTogglProjectSummary = function(notify, callback) {
         };
 
         var req = http.request(options, function(res) {
-            var chunks = [];
+            if (res.statusCode == 404 || res.statusCode == 403) {
+                console.log(res.statusCode + ": Toggl api FAILED!");
+                req.abort();
+            } else {
+                var chunks = [];
 
-            res.on("data", function(chunk) {
-                chunks.push(chunk);
-            });
+                res.on("data", function(chunk) {
+                    chunks.push(chunk);
+                });
 
-            var projects = [];
-            res.on("end", function() {
-                var body = Buffer.concat(chunks);
-                var json = JSON.parse(body);
-                json.data.forEach(function(entry) {
-                    var project = {
-                        'id': entry.id,
-                        'title': entry.title.project,
-                        'time': entry.time
+                var projects = [];
+                res.on("end", function() {
+                    var body = Buffer.concat(chunks);
+                    var json = JSON.parse(body);
+                    json.data.forEach(function(entry) {
+                        var project = {
+                            'id': entry.id,
+                            'title': entry.title.project,
+                            'time': entry.time
+                        }
+                        projects.push(project);
+                    })
+                    if (projects.length === 1) {
+                        return callback(projects[0]);
+                    } else {
+                        return callback(null);
                     }
-                    projects.push(project);
-                })
-                if (projects.length === 1) {
-                    return callback(projects[0]);
-                }
-                else {
-                    return callback(null);
-                }
-            });
+                });
+            }
         });
+
+        req.on("error", function(e) {
+            console.log(e);
+        });
+
+        req.on("timeout", function() {
+            console.log("timeout");
+            req.abort();
+        });
+
+        req.setTimeout(10000);
 
         req.end();
     };
