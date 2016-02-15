@@ -106,6 +106,19 @@ var getDaysBetweenNotifiers = function(notify) {
     }
 }
 
+var showConsoleInfo = function(notify) {
+    if (notify.lastNotified === undefined || notify.lastNotified === null) {
+        console.log("id:" + notify._id + " will be notified on weekDay[" + notify.notifyDay + "], today is weekDay[" + today.getDay() + "]");
+    }
+    else {
+        console.log(Math.floor(numDaysBetween(today, notify.lastNotified)) + " >= " + getDaysBetweenNotifiers(notify));
+        var daysUntilNextNotified = getDaysBetweenNotifiers(notify) - Math.floor(numDaysBetween(today, notify.lastNotified));
+        console.log("id:" + notify._id + " will be notified in " + daysUntilNextNotified + " days");
+
+        Math.floor(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)
+    }
+}
+
 /*======================================
 =            Server startup            =
 ======================================*/
@@ -184,6 +197,7 @@ var runNewCronJob = function(notifierid) {
 
             // Handle all notifies
             else if (notifierid === undefined) {
+                showConsoleInfo(notify);
                 // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
                 if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
                     // Handle notify if it doesn't have a last notification date
@@ -195,11 +209,6 @@ var runNewCronJob = function(notifierid) {
                     else if (Math.floor(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)) {
                         myNotifiers.push(notify);
                         Boards.push(notify.board);
-                    }
-                    // Log time until next notification in console
-                    else {
-                        var daysUntilNextNotified = Math.floor(getDaysBetweenNotifiers(notify) - numDaysBetween(today, notify.lastNotified));
-                        console.log("id:" + notify._id + " will be notified in " + daysUntilNextNotified + " days");
                     }
                 }
             }
