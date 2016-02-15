@@ -345,6 +345,12 @@ $(document).ready(function() {
     $('#myTogglProjects').change(function() {
         $('#togglProjectIdInForm').remove();
         newNotifyForm.append('<input id="togglProjectIdInForm" type="hidden" name="togglProject" value="' + $('#myTogglProjects').val() + '">');
+        if ($('#myTogglProjects').val() != "none") {
+            $('#toggl-check-btn').css('display', 'block');
+        }
+        else {
+            $('#toggl-check-btn').css('display', 'none');
+        }
     })
 
     $('#myNotifyDays').change(function() {

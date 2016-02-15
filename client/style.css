@@ -489,7 +489,7 @@ fieldset#check-btn label {
     }
 }
 
-#lists {
+#lists, #toggl-check-btn {
     overflow: hidden;
     margin-bottom: 15px;
 }
@@ -535,20 +535,20 @@ input#web-submit:hover {
     display: block;
 }
 
-fieldset#new-check-btn {
+fieldset#new-check-btn, fieldset#toggl-check-btn {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     border: none;
 }
 
-fieldset#new-check-btn input {
+fieldset#new-check-btn input, fieldset#toggl-check-btn input {
     width: 5%;
     height: 15px;
     display: inline-block;
 }
 
-fieldset#new-check-btn label {
+fieldset#new-check-btn label, fieldset#toggl-check-btn label {
     width: 85%;
     display: inline-block;
     padding-left: 2%;
