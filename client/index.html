@@ -56,6 +56,10 @@
                         <label for="togglProject">Toggl project:</label>
                         <select name="togglProject" id="mySoloTogglProjects">
                         </select>
+                        <div id="solo-toggl-check-btn" style="display: none">
+                            <div class="checkbox"><label><input name="billableHours" id="billableHours" type="checkbox" value="true"> Billable hours</label></div>
+                            <div class="checkbox"><label><input name="rounding" id="rounding" type="checkbox" value="true"> Use rounding</label></div>
+                        </div>
                     </fieldset>
 
                     <fieldset>
@@ -66,21 +70,12 @@
 
                     <fieldset>
                         <label for="days-between-notify">Days between notifications:</label>
-                        <input type="number" placeholder="1-365" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
+                        <input type="number" placeholder="1-365 (Will use config value if empty)" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
                         <div id="modal-last-notified"></div>
                     </fieldset>
 
                     <fieldset id="check-btn">
                         <h3>Listnames:</h3>
-                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                        <input type="checkbox" name="title" id="testing" value="Testing"><label for="testing">Testing</label>
-                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
-                        <input type="checkbox" name="titles" id="this" value="This"><label for="this">This</label>
                     </fieldset>
 
                     <input type="submit" value="Update" id="modal-submit">
@@ -125,8 +120,8 @@
             </select>
 
             <fieldset id="toggl-check-btn" style="display: none">
-                <div class="checkbox"><label><input name="billableHours" type="checkbox" value="billableHours"> Only display billable hours</label></div>
-                <div class="checkbox"><label><input name="rounding" type="checkbox" value="rounding"> Use rounding to 30 minutes</label></div>
+                <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only display billable hours</label></div>
+                <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace settings</label></div>
             </fieldset>
 
             <label for="project">Projectname&#42;:</label>
@@ -151,7 +146,7 @@
             <input id="notifyDayIdInForm" type="hidden" name="notifyDay" value="1">
 
             <label for="days-between-notify">Days between notifications:</label>
-            <input type="number" step="1" placeholder="1-365" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off">
+            <input type="number" step="1" placeholder="1-365 (Will use config value if empty)" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off">
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
