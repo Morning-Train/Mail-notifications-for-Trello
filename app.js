@@ -70,9 +70,16 @@ require('./controller/notifier')(app, null, Notifier);
 
 // Set a prototype of Date called getWeek
 Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(), 0, 1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay()) / 7);
-};
+  var date = new Date(this.getTime());
+   date.setHours(0, 0, 0, 0);
+  // Thursday in current week decides the year.
+  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+  // January 4 is always in week 1.
+  var week1 = new Date(date.getFullYear(), 0, 4);
+  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+  return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000
+                        - 3 + (week1.getDay() + 6) % 7) / 7);
+}
 
 // Get today's date
 var today, dd, mm, year, combinedDate, weekno;
@@ -103,19 +110,6 @@ var getDaysBetweenNotifiers = function(notify) {
         return config.daysBetweenNotifiers;
     } else {
         return notify.daysBetweenNotify;
-    }
-}
-
-var showConsoleInfo = function(notify) {
-    if (notify.lastNotified === undefined || notify.lastNotified === null) {
-        console.log("id:" + notify._id + " will be notified on weekDay[" + notify.notifyDay + "], today is weekDay[" + today.getDay() + "]");
-    }
-    else {
-        console.log(Math.floor(numDaysBetween(today, notify.lastNotified)) + " >= " + getDaysBetweenNotifiers(notify));
-        var daysUntilNextNotified = getDaysBetweenNotifiers(notify) - Math.floor(numDaysBetween(today, notify.lastNotified));
-        console.log("id:" + notify._id + " will be notified in " + daysUntilNextNotified + " days");
-
-        Math.floor(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)
     }
 }
 
@@ -197,15 +191,19 @@ var runNewCronJob = function(notifierid) {
 
             // Handle all notifies
             else if (notifierid === undefined) {
-                showConsoleInfo(notify);
-                // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
-                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
+                // Handle notify if notifyDay is set to current day of the week (0-6)
+                if (notify.notifyDay === today.getDay()) {
+                    myNotifiers.push(notify);
+                    Boards.push(notify.board);
+                }
+                // Handle notify notifyDay is set to automatic (7)
+                else if (notify.notifyDay === 7) {
                     // Handle notify if it doesn't have a last notification date
                     if (notify.lastNotified === undefined) {
                         myNotifiers.push(notify);
                         Boards.push(notify.board);
                     }
-                    // Handle notify if days since lastNotified is greater than daysBetweenNotify
+                    // Handle notify if days since lastNotified is greater or equal to daysBetweenNotify
                     else if (Math.floor(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)) {
                         myNotifiers.push(notify);
                         Boards.push(notify.board);
