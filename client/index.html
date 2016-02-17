@@ -57,7 +57,7 @@
                         <select name="togglProject" id="mySoloTogglProjects">
                         </select>
                         <div id="solo-toggl-check-btn" style="display: none">
-                            <div class="checkbox"><label><input name="billableHours" id="billableHours" type="checkbox" value="true"> Billable hours</label></div>
+                            <div class="checkbox"><label><input name="billableHours" id="billableHours" type="checkbox" value="true"> Only billable hours</label></div>
                             <div class="checkbox"><label><input name="rounding" id="rounding" type="checkbox" value="true"> Use rounding</label></div>
                         </div>
                     </fieldset>
@@ -120,8 +120,8 @@
             </select>
 
             <fieldset id="toggl-check-btn" style="display: none">
-                <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only display billable hours</label></div>
-                <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace settings</label></div>
+                <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only show billable hours</label></div>
+                <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace setting</label></div>
             </fieldset>
 
             <label for="project">Projectname&#42;:</label>
@@ -160,7 +160,7 @@
             <div id="field-info" class="clearfix">
                 <div class="field-info-item"><p>Projectname</p></div>
                 <div class="field-info-item res-hide"><p>Email</p></div>
-                <div class="field-info-item"><p>Boardname</p></div>
+                <div class="field-info-item res-hide"><p>Boardname</p></div>
                 <div class="edit"><p>Edit</p></div>
                 <div class="resend"><p>Resend</p></div>
             </div>
