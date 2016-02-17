@@ -291,13 +291,17 @@ h3 {
     font-size: 1em;
 }
 
-fieldset#check-btn input {
+div#solo-toggl-check-btn {
+    margin-top: -15px;
+}
+
+fieldset#check-btn input, div#solo-toggl-check-btn input {
     width: 20px;
     height: 15px;
     display: inline-block;
 }
 
-fieldset#check-btn label {
+fieldset#check-btn label, div#solo-toggl-check-btn label {
     margin-left: 5px;
     display: inline-block;
 }
@@ -335,7 +339,7 @@ fieldset#check-btn label {
     }
 
     .modal-form input, .modal-form select {
-        width: 100%;
+        width: 90%;
     }
 
     .modal-form {
