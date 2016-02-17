@@ -238,6 +238,8 @@ $(document).ready(function() {
         $('#modal-last-notified').empty();
         $('#mySoloTogglProjects').empty();
         $('#mySoloNotifyDays').empty();
+        $('#billableHours').prop('checked', false);
+        $('#rounding').prop('checked', false);
 
         $.get('mongies/notifiers/' + currentId, function(data) {
 
@@ -277,6 +279,15 @@ $(document).ready(function() {
             var $dayOptions = $('#myNotifyDays > option').clone();
             $('#mySoloNotifyDays').append($dayOptions);
             $('#mySoloNotifyDays').val(data.notifyDay);
+
+            $('#billableHours').prop('checked', data.billableHours);
+            $('#rounding').prop('checked', data.rounding);
+
+            if ($('#mySoloTogglProjects').val() != "none") {
+                $('#solo-toggl-check-btn').css('display', 'block');
+            } else {
+                $('#solo-toggl-check-btn').css('display', 'none');
+            }
 
         }, 'json').done(function(data) {
 
@@ -347,9 +358,18 @@ $(document).ready(function() {
         newNotifyForm.append('<input id="togglProjectIdInForm" type="hidden" name="togglProject" value="' + $('#myTogglProjects').val() + '">');
         if ($('#myTogglProjects').val() != "none") {
             $('#toggl-check-btn').css('display', 'block');
-        }
-        else {
+        } else {
             $('#toggl-check-btn').css('display', 'none');
+        }
+    })
+
+    $('#mySoloTogglProjects').change(function() {
+        if ($('#mySoloTogglProjects').val() != "none") {
+            $('#solo-toggl-check-btn').css('display', 'block');
+        } else {
+            $('#solo-toggl-check-btn').css('display', 'none');
+            $('#billableHours').prop('checked', false);
+            $('#rounding').prop('checked', false);
         }
     })
 
@@ -420,4 +440,5 @@ $(document).ready(function() {
         yesResend.removeClass('blue-bg');
     });
 
+    $("#myTogglProjects").chosen()
 });
