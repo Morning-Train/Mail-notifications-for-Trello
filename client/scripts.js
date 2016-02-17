@@ -164,6 +164,8 @@ $(document).ready(function() {
 
             // Response from submit answer will be emptified.
             submitAnswer.empty();
+
+            $('#toggl-check-btn').css('display', 'none');
         }).
         always(function() {
             // Update notifier list (on frontpage)
@@ -213,7 +215,7 @@ $(document).ready(function() {
                 textToInsert += "<input type='hidden' class='field-info-item notifier-id' name='id' value='" + val._id + "' disabled>";
                 textToInsert += "<input type='text' class='field-info-item project-name' value='" + val.project + "' disabled>";
                 textToInsert += "<input type='text' class='field-info-item email-name res-hide' value='" + val.email + "' disabled>";
-                textToInsert += "<input type='text' class='field-info-item board-name' value='" + getNameOfBoard(boards, val.board) + "' disabled>";
+                textToInsert += "<input type='text' class='field-info-item board-name res-hide' value='" + getNameOfBoard(boards, val.board) + "' disabled>";
                 textToInsert += "<div class='edit edit-this'><img class='img-swap' src='img/edit.svg' alt='edit' /></div>";
                 textToInsert += "<div class='resend resend-this'><img class='img-swap' src='img/resend.svg' alt='resend' /></div></fieldset>";
                 $('#field-info').after(textToInsert);
@@ -358,6 +360,8 @@ $(document).ready(function() {
         newNotifyForm.append('<input id="togglProjectIdInForm" type="hidden" name="togglProject" value="' + $('#myTogglProjects').val() + '">');
         if ($('#myTogglProjects').val() != "none") {
             $('#toggl-check-btn').css('display', 'block');
+            $('#billableHours').prop('checked', false);
+            $('#rounding').prop('checked', false);
         } else {
             $('#toggl-check-btn').css('display', 'none');
         }
@@ -440,5 +444,4 @@ $(document).ready(function() {
         yesResend.removeClass('blue-bg');
     });
 
-    $("#myTogglProjects").chosen()
 });

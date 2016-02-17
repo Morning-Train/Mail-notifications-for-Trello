@@ -251,8 +251,8 @@ input#modal-rmv {
     margin-right: 0;
 }
 
-#last-email {
-    font-size: .8em;
+#last-email, div#solo-toggl-check-btn {
+    font-size: .9em;
 }
 
 input#modal-submit, input#modal-rmv {
@@ -493,7 +493,7 @@ fieldset#check-btn label, div#solo-toggl-check-btn label {
     }
 }
 
-#lists, #toggl-check-btn {
+#lists, fieldset#toggl-check-btn {
     overflow: hidden;
     margin-bottom: 15px;
 }
@@ -506,6 +506,10 @@ fieldset#check-btn label, div#solo-toggl-check-btn label {
     border: none;
     text-indent: 10px;
     border: 1px solid #dadada;
+}
+
+#new-custom-frm input[type="checkbox"] {
+    margin-bottom: 0;
 }
 
 input#frm-submit, input#web-submit {
@@ -541,13 +545,12 @@ input#web-submit:hover {
 
 fieldset#new-check-btn, fieldset#toggl-check-btn {
     padding: 0;
-    margin: 0;
     box-sizing: border-box;
     border: none;
 }
 
 fieldset#new-check-btn input, fieldset#toggl-check-btn input {
-    width: 5%;
+    width: 15px;
     height: 15px;
     display: inline-block;
 }
@@ -701,19 +704,12 @@ input[type="text"]:disabled {
     }
 
     .field-info-item {
-        width: 25%;
+        width: 50%;
         padding-left: 4%;
         padding-right: 4%;
     }
 
     .edit, .resend {
-        width: 12.3%;
-    }
-}
-
-@media screen and (max-width: 416px) {
-    .field-info-item {
-        width: 25%;
-        overflow: hidden;
+        width: 16.5%;
     }
 }
