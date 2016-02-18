@@ -89,7 +89,7 @@ var updateTodaysDate = function() {
     dd = today.getDate();
     mm = today.getMonth() + 1; //January is 0!
     year = today.getFullYear();
-    combinedDate = dd + "" + mm + "" + year;
+    combinedDate = dd + "-" + mm + "-" + year;
     weekno = today.getWeek();
     console.log(today);
 }
@@ -186,19 +186,15 @@ var runNewCronJob = function(notifierid) {
         notifiers.forEach(function(notify) {
             // Handle the specified notify (resend functionality)
             if (notify._id == notifierid) {
+                notify["resend"] = true;
                 myNotifiers.push(notify);
                 Boards.push(notify.board);
             }
 
             // Handle all notifies
             else if (notifierid === undefined) {
-                // Handle notify if notifyDay is set to current day of the week (0-6)
-                if (notify.notifyDay === today.getDay()) {
-                    myNotifiers.push(notify);
-                    Boards.push(notify.board);
-                }
-                // Handle notify if notifyDay is set to automatic (7)
-                else if (notify.notifyDay === 7) {
+                // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
+                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
                     // Handle notify if it doesn't have a last notification date
                     if (notify.lastNotified === undefined) {
                         myNotifiers.push(notify);
@@ -255,16 +251,25 @@ var getAllCardsForEachUser = function(notifiers) {
 
     notifiers.forEach(function(notify) {
         getTogglProjectSummary(notify, function(togglProject) {
+            var d = new Date();
+            d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
+            var since = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
+
             var user = {
                 _id: notify._id,
                 usermail: notify.email,
                 boardId: notify.board,
+                since: since,
                 lists: []
             };
 
             // If notify includes a toggle project
             if (togglProject != null) {
                 user["overallTime"] = togglProject.time;
+            }
+
+            if (notify.resend === true) {
+                user["resend"] = true;
             }
 
             notify.lists.forEach(function(list) {
@@ -438,6 +443,9 @@ var setupEmailTemplate = function(userArray, res) {
             emailContent += "<tr>";
             emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is an overview of what have changed:</td>";
             emailContent += "</tr>";
+            emailContent += "<tr>";
+            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>From <b>" + user.since + "</b> to <b>" + combinedDate + "</b></td>";
+            emailContent += "</tr>";
             if (user.overallTime != null) {
                 var x = user.overallTime / 1000;
                 x /= 60;
@@ -476,7 +484,7 @@ var setupEmailTemplate = function(userArray, res) {
 
             // users += user.lists;
 
-            sendEmailToUser(emailContent, user.usermail, user._id);
+            sendEmailToUser(emailContent, user.usermail, user._id, user.resend);
 
         }
 
@@ -501,7 +509,7 @@ var updateLastNotified = function(userId) {
 
 
 // Send the email to the user
-var sendEmailToUser = function(emailContent, email, userId) {
+var sendEmailToUser = function(emailContent, email, userId, resend) {
 
     // setup e-mail data with unicode symbols
     var mailOptions = {
@@ -518,7 +526,9 @@ var sendEmailToUser = function(emailContent, email, userId) {
             console.log(error);
         } else {
             console.log("Message sent to: " + email + ", " + info.response);
-            updateLastNotified(userId);
+            if (resend != true) {
+                updateLastNotified(userId);
+            }
         }
     });
 
