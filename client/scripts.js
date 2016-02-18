@@ -165,6 +165,7 @@ $(document).ready(function() {
             // Response from submit answer will be emptified.
             submitAnswer.empty();
 
+            $('#togglProjectIdInForm').remove();
             $('#toggl-check-btn').css('display', 'none');
         }).
         always(function() {

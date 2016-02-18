@@ -120,6 +120,7 @@
             </select>
 
             <fieldset id="toggl-check-btn" style="display: none">
+                <h3>Options:</h3>
                 <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only show billable hours</label></div>
                 <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace setting</label></div>
             </fieldset>
@@ -133,7 +134,7 @@
             </div>
 
             <label for="notify-day">Notification day:</label>
-            <select id="myNotifyDays">
+            <select id="myNotifyDays" title="The day the email notification is sent. Using automatic will calculate a day based on days between notifications.">
                 <option value="7">Automatic</option>
                 <option value="1" selected="selected">Monday</option>
                 <option value="2">Tuesday</option>
@@ -146,7 +147,7 @@
             <input id="notifyDayIdInForm" type="hidden" name="notifyDay" value="1">
 
             <label for="days-between-notify">Days between notifications:</label>
-            <input type="number" step="1" placeholder="1-365 (Will use config value if empty)" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off">
+            <input type="number" step="1" placeholder="1-365" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off" title="Days between email notifications. If left empty the default value in the config will be used.">
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
