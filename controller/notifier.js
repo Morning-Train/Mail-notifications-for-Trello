@@ -22,7 +22,13 @@ module.exports = function(app, db, Notifier) {
                     daysBetweenNotify = req.body.daysBetweenNotify;
                     notifyDay = parseInt(req.body.notifyDay);
                     board = req.body.board;
-                    togglProject = req.body.togglProject;
+                    
+                    if (req.body.togglProject === undefined) {
+                    	togglProject = "none";
+                    } else {
+                    	togglProject = req.body.togglProject;
+                    }
+                    
                     billableHours = req.body.billableHours;
                     rounding = req.body.rounding;
                     lists = req.body.lists;
