@@ -470,13 +470,13 @@ fieldset#check-btn label, div#solo-toggl-check-btn label {
 /*=======================================
 =            Add New Record             =
 =======================================*/
-#left {
+div#left {
     float: left;
     width: 45%;
     padding-right: 5%;
 }
 
-#right {
+div#right {
     float: left;
     width: 45%;
     padding-left: 5%;
@@ -487,8 +487,8 @@ fieldset#check-btn label, div#solo-toggl-check-btn label {
 }
 
 #new-custom-frm, #web-custom-frm {
-    width: 70%;
-    max-width: 1000px;
+    width: 65%;
+    max-width: 900px;
     height: auto;
     margin: 0 auto;
     margin-top: 50px;
@@ -724,5 +724,11 @@ input[type="text"]:disabled {
 
     .edit, .resend {
         width: 16.5%;
+    }
+
+    div#right, div#left {
+        float: none;
+        width: 100%;
+        padding-left: 0;
     }
 }
