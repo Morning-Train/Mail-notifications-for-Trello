@@ -470,13 +470,25 @@ fieldset#check-btn label, div#solo-toggl-check-btn label {
 /*=======================================
 =            Add New Record             =
 =======================================*/
+#left {
+    float: left;
+    width: 45%;
+    padding-right: 5%;
+}
+
+#right {
+    float: left;
+    width: 45%;
+    padding-left: 5%;
+}
+
 #notify-content {
     display: block;
 }
 
 #new-custom-frm, #web-custom-frm {
-    width: 50%;
-    max-width: 700px;
+    width: 70%;
+    max-width: 1000px;
     height: auto;
     margin: 0 auto;
     margin-top: 50px;
@@ -562,10 +574,10 @@ fieldset#new-check-btn label, fieldset#toggl-check-btn label {
     padding-left: 2%;
 }
 
-.checkbox {
+/*.checkbox {
     width: 50%;
     float: left;
-}
+}*/
 
 .email-button {
     position: absolute;

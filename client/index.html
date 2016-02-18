@@ -106,48 +106,53 @@
         <h1>Email Notify</h1>
         <!-- Add new mail notify -->
         <form id="new-custom-frm" action="#submit-answer" method="POST">
-            <label for="board">Board&#42;:</label>
-            <select id="myBoards">
-                <option value="none">None chosen</option>
-            </select>
-            <fieldset id="new-check-btn" style="display: none">
-                <div id="lists"></div>
-            </fieldset>
+            <div id="left">
+                <label for="board">Board&#42;:</label>
+                <select id="myBoards">
+                    <option value="none">None chosen</option>
+                </select>
+                <fieldset id="new-check-btn" style="display: none">
+                    <div id="lists"></div>
+                </fieldset>
 
-            <label for="togglProject">Toggl project:</label>
-            <select id="myTogglProjects">
-                <option value="none">None chosen</option>
-            </select>
+                <label for="project">Projectname&#42;:</label>
+                <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
 
-            <fieldset id="toggl-check-btn" style="display: none">
-                <h3>Options:</h3>
-                <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only show billable hours</label></div>
-                <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace setting</label></div>
-            </fieldset>
-
-            <label for="project">Projectname&#42;:</label>
-            <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
-
-            <div id="myEmails">
+                <div id="myEmails">
                 <label for="email">Email&#42;:</label>
                 <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="add-email-button" class="email-button">&#43;</button>
+                </div>
+
             </div>
 
-            <label for="notify-day">Notification day:</label>
-            <select id="myNotifyDays" title="The day the email notification is sent. Using automatic will calculate a day based on days between notifications.">
-                <option value="7">Automatic</option>
-                <option value="1" selected="selected">Monday</option>
-                <option value="2">Tuesday</option>
-                <option value="3">Wednesday</option>
-                <option value="4">Thursday</option>
-                <option value="5">Friday</option>
-                <option value="6">Saturday</option>
-                <option value="0">Sunday</option>
-            </select>
-            <input id="notifyDayIdInForm" type="hidden" name="notifyDay" value="1">
+            <div id="right">
+                <label for="togglProject">Toggl project:</label>
+                <select id="myTogglProjects">
+                    <option value="none">None chosen</option>
+                </select>
 
-            <label for="days-between-notify">Days between notifications:</label>
-            <input type="number" step="1" placeholder="1-365" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off" title="Days between email notifications. If left empty the default value in the config will be used.">
+                <fieldset id="toggl-check-btn" style="display: none">
+                    <h3>Options:</h3>
+                    <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only show billable hours</label></div>
+                    <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace setting</label></div>
+                </fieldset>
+
+                <label for="notify-day">Notification day:</label>
+                <select id="myNotifyDays" title="The day the email notification is sent. Using automatic will calculate a day based on days between notifications.">
+                    <option value="7">Automatic</option>
+                    <option value="1" selected="selected">Monday</option>
+                    <option value="2">Tuesday</option>
+                    <option value="3">Wednesday</option>
+                    <option value="4">Thursday</option>
+                    <option value="5">Friday</option>
+                    <option value="6">Saturday</option>
+                    <option value="0">Sunday</option>
+                </select>
+                <input id="notifyDayIdInForm" type="hidden" name="notifyDay" value="1">
+
+                <label for="days-between-notify">Days between notifications:</label>
+                <input type="number" step="1" placeholder="1-365" id="days-between-notify" name="daysBetweenNotify" id="days-between-notify" autocomplete="off" title="Days between email notifications. If left empty the default value in the config will be used.">
+            </div>
 
             <input type="submit" value="Submit" id="frm-submit">
             <input type="hidden" name="submitted" value="true">
