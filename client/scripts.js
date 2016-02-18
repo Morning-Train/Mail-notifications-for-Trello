@@ -343,17 +343,20 @@ $(document).ready(function() {
         $('#boardIdInForm').remove();
         list.empty();
 
-        $.get('/getLists/' + $('#myBoards').val(), function(data) {
-            list.html('<h3>Listnames:</h3>');
-            newCheckBtn.show();
-            $('#project').val($('#myBoards option:selected').text());
-            arr = data;
-            for (i = 0; i < arr.length; i++) {
-                list.append('<div class="checkbox"><label><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</label></div>');
-            }
-            newNotifyForm.append('<input id="boardIdInForm" type="hidden" name="board" value="' + $('#myBoards').val() + '">');
-
-        });
+        if ($('#myBoards').val() != "none") {
+            $.get('/getLists/' + $('#myBoards').val(), function(data) {
+                list.html('<h3>Listnames:</h3>');
+                newCheckBtn.show();
+                $('#project').val($('#myBoards option:selected').text());
+                arr = data;
+                for (i = 0; i < arr.length; i++) {
+                    list.append('<div class="checkbox"><label><input name="lists" type="checkbox" value="' + arr[i].id + '"> ' + arr[i].name + '</label></div>');
+                }
+                newNotifyForm.append('<input id="boardIdInForm" type="hidden" name="board" value="' + $('#myBoards').val() + '">');
+            });
+        } else {
+            $('#new-check-btn').css('display', 'none');
+        }
     });
 
     $('#myTogglProjects').change(function() {
