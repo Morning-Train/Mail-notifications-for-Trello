@@ -289,6 +289,7 @@ fieldset#check-btn {
 h3 {
     font-weight: 300;
     font-size: 1em;
+    margin: 0px 0px 5px 0px;
 }
 
 div#solo-toggl-check-btn {
