@@ -201,7 +201,7 @@ var runNewCronJob = function(notifierid) {
                         Boards.push(notify.board);
                     }
                     // Handle notify if days since lastNotified is greater or equal to daysBetweenNotify
-                    else if (Math.floor(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)) {
+                    else if (Math.round(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)) {
                         myNotifiers.push(notify);
                         Boards.push(notify.board);
                     }
