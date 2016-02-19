@@ -36,50 +36,56 @@
             <div class="modalbox">
                 <form id="modal-form" class="modal-form" action="#update-mail-notifier" method="POST">
                     <input type="hidden" name="notifier_id" id="modal-notifier-id">
-                    <fieldset>
-                        <label for="project">Projectname&#42;:</label>
-                        <input type="text" placeholder="Super awesome project" name="project_name" id="modal-project" autocomplete="off">
-                    </fieldset>
+                    <div class="left">
+                        <fieldset>
+                            <label for="project">Projectname&#42;:</label>
+                            <input type="text" placeholder="Super awesome project" name="project_name" id="modal-project" autocomplete="off">
+                        </fieldset>
 
-                    <fieldset>
-                        <label for="email">Email&#42;:</label>
-                        <div id="my-emails-edit"></div>
-                    </fieldset>
+                        <fieldset>
+                            <label for="board">Boardname&#42;:</label>
+                            <select name="board" id="mySoloBoards">
+                            </select>
+                            <fieldset id="check-btn">
+                                <h3>Listnames:</h3>
+                            </fieldset>
+                        </fieldset>
 
-                    <fieldset>
-                        <label for="board">Boardname&#42;:</label>
-                        <select name="board" id="mySoloBoards">
-                        </select>
-                    </fieldset>
+                        <fieldset>
+                            <label for="email">Email&#42;:</label>
+                            <div id="my-emails-edit"></div>
+                        </fieldset>
+                    </div>
 
-                    <fieldset>
-                        <label for="togglProject">Toggl project:</label>
-                        <select name="togglProject" id="mySoloTogglProjects">
-                        </select>
-                        <div id="solo-toggl-check-btn" style="display: none">
-                            <div class="checkbox"><label><input name="billableHours" id="billableHours" type="checkbox" value="true"> Only billable hours</label></div>
-                            <div class="checkbox"><label><input name="rounding" id="rounding" type="checkbox" value="true"> Use rounding</label></div>
-                        </div>
-                    </fieldset>
+                    <div class="right">
+                        <fieldset>
+                            <label for="togglProject">Toggl project:</label>
+                            <select name="togglProject" id="mySoloTogglProjects">
+                            </select>
+                            <fieldset id="solo-toggl-check-btn" style="display: none">
+                                <h3>Options:</h3>
+                                <div class="checkbox"><label><input name="billableHours" id="billableHours" type="checkbox" value="true"> Only billable hours</label></div>
+                                <div class="checkbox"><label><input name="rounding" id="rounding" type="checkbox" value="true"> Use rounding</label></div>
+                            </fieldset>
+                        </fieldset>
 
-                    <fieldset>
-                        <label for="notify-day">Notification day:</label>
-                        <select name="notifyDay" id="mySoloNotifyDays">
-                        </select>
-                    </fieldset>
+                        <fieldset>
+                            <label for="notify-day">Notification day:</label>
+                            <select name="notifyDay" id="mySoloNotifyDays">
+                            </select>
+                        </fieldset>
 
-                    <fieldset>
-                        <label for="days-between-notify">Days between notifications:</label>
-                        <input type="number" placeholder="1-365 (Will use config value if empty)" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
-                        <div id="modal-last-notified"></div>
-                    </fieldset>
+                        <fieldset>
+                            <label for="days-between-notify">Days between notifications:</label>
+                            <input type="number" placeholder="1-365" name="daysBetweenNotify" id="modal-days-between-notify" autocomplete="off">
+                            <div id="modal-last-notified"></div>
+                        </fieldset>
+                    </div>
 
-                    <fieldset id="check-btn">
-                        <h3>Listnames:</h3>
-                    </fieldset>
-
-                    <input type="submit" value="Update" id="modal-submit">
-                    <input type="submit" value="Remove" id="modal-rmv" class="remove-record">
+                    <div id="modal-btn">
+                        <input type="submit" value="Update" id="modal-submit">
+                        <input type="submit" value="Remove" id="modal-rmv" class="remove-record">
+                    </div>
                     <div class="clearfix"></div>
                     <input type="hidden" name="submitted" value="true">
                     <div class="small-space"></div>
@@ -106,7 +112,7 @@
         <h1>Email Notify</h1>
         <!-- Add new mail notify -->
         <form id="new-custom-frm" action="#submit-answer" method="POST">
-            <div id="left">
+            <div class="left">
                 <label for="board">Board&#42;:</label>
                 <select id="myBoards">
                     <option value="none">None chosen</option>
@@ -119,22 +125,20 @@
                 <input type="text" placeholder="Super awesome project" id="project" name="project_name" autocomplete="off">
 
                 <div id="myEmails">
-                <label for="email">Email&#42;:</label>
-                <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="add-email-button" class="email-button">&#43;</button>
+                    <label for="email">Email&#42;:</label>
+                    <input type="email" placeholder="email@example.com" id="email" name="email" autocomplete="off"><button type="button" id="add-email-button" class="email-button">&#43;</button>
                 </div>
-
             </div>
 
-            <div id="right">
+            <div class="right">
                 <label for="togglProject">Toggl project:</label>
                 <select id="myTogglProjects">
                     <option value="none">None chosen</option>
                 </select>
-
                 <fieldset id="toggl-check-btn" style="display: none">
                     <h3>Options:</h3>
-                    <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only show billable hours</label></div>
-                    <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding to workspace setting</label></div>
+                    <div class="checkbox"><label><input name="billableHours" type="checkbox" value="true"> Only billable hours</label></div>
+                    <div class="checkbox"><label><input name="rounding" type="checkbox" value="true"> Use rounding</label></div>
                 </fieldset>
 
                 <label for="notify-day">Notification day:</label>
