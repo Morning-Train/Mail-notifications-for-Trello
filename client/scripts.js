@@ -167,6 +167,7 @@ $(document).ready(function() {
 
             $('#togglProjectIdInForm').remove();
             $('#toggl-check-btn').css('display', 'none');
+            $('#myEmails div').remove();
         }).
         always(function() {
             // Update notifier list (on frontpage)
@@ -393,7 +394,7 @@ $(document).ready(function() {
         $.get('/getLists/' + $('#mySoloBoards').val(), function(data) {
             arr = data;
             for (i = 0; i < arr.length; i++) {
-                checkBtn.append('<label><input name="lists" type="checkbox" value="' + arr[i].id + '">' + arr[i].name + '</label>');
+                checkBtn.append('<div class="checkbox"><label><input name="lists" type="checkbox" value="' + arr[i].id + '">' + arr[i].name + '</label></div>');
             }
         });
     });
