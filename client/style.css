@@ -307,16 +307,11 @@ fieldset#check-btn label, fieldset#solo-toggl-check-btn label {
 
 @media screen and (max-width: 1077px) {
     fieldset#check-btn label {
-        width: 29%;
+        width: 70%;
     }
 }
 
 @media screen and (max-width: 900px) {
-    fieldset#check-btn label {
-        width: 44.2%;
-        margin-left: 5px;
-    }
-
     .close-btn-fix, .modalbox {
         margin: 10px auto;
     }
@@ -352,22 +347,12 @@ fieldset#check-btn label, fieldset#solo-toggl-check-btn label {
 }
 @media screen and (max-width: 674px) {
     fieldset#check-btn label {
-        width: 43%;
-    }
-}
-
-@media screen and (max-width: 565px) {
-    fieldset#check-btn label {
-        width: 41%;
+        width: 70%;
     }
 }
 
 
 @media screen and (max-width: 495px) {
-    fieldset#check-btn label {
-        width: 87%;
-        margin-left: 5px;
-    }
 
     fieldset#check-btn {
       padding: 5px 0 20px 0px;
