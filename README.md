@@ -1,5 +1,5 @@
 ## Mail notifications for Trello
-###### Notify your customers when changes happens in your Trello boards.
+###### Notify your customers when changes happens in your Trello boards with optional Toggl support for tracking time spent on your projects.
 
 This was coded on an early [morningtrain.dk](http://morningtrain.dk/)
 
@@ -70,13 +70,23 @@ Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-us
 
 
 
+    config.togglApplicationKey = "<<Insert your application token>>";
+Read https://support.toggl.com/my-profile for how to find your application token. Note: this is optional.
+
+
+
+    config.togglWorkspaceId = "<<Insert your Toggl Workspace Id>>";
+Read https://support.toggl.com/workspace/ for how to setup workspaces. Your ID will be in the URL of the Workspace settings/reports. Note: this is optional.
+
+
+
 	config.crontimezone = "Europe/Copenhagen";
 Read https://github.com/ncb000gt/node-cron on how to set this.
 Visit http://momentjs.com/timezone/ for finding your timezone.
 
 
 	config.daysBetweenNotifiers = 7;
-This will be the number of days that should be between checking for changes (default: from today and the last 7 days). This can be any number you want, but make sure to set cron time like wise.
+This will be the default number of days that should be between checking for changes (from today and the last 7 days). This can be any number you want.
 
 
 
@@ -114,4 +124,4 @@ was not made with security in mind, but made with the perspective of
 example: functions, methods, datastructures, etc. Please report them
 to us or make a pull request. (Suggestions are always welcome!).
 
-Please notice that we are not affiliated, associated, authorized, endorsed by or in any way officially connected to Trello, Inc. (www.trello.com).
+Please notice that we are not affiliated, associated, authorized, endorsed by or in any way officially connected to Trello, Inc. (www.trello.com) or Toggl (www.toggl.com).
