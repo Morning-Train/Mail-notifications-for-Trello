@@ -17,17 +17,25 @@ var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/mailnotifiersForTrello');
 
+var http = require("https");
+
 // Loading config
 var config = require('./config/config');
 
 // Notifier Schema for mails
 var NotifierSchema = new mongoose.Schema({
     project: String,
-    email: String,
+    email: Array,
     board: String,
+    togglProject: String,
+    billableHours: Boolean,
+    rounding: Boolean,
     lists: [{
         list: 'string'
     }],
+    daysBetweenNotify: Number,
+    notifyDay: Number,
+    lastNotified: Date,
     updated_at: {
         type: Date,
         default: Date.now
@@ -62,13 +70,29 @@ require('./controller/notifier')(app, null, Notifier);
 =            Utils            =
 =============================*/
 
-// Get today date.
-var today = new Date();
-var dd = today.getDate();
-var mm = today.getMonth() + 1; //January is 0!
-var year = today.getFullYear();
-var combinedDate = dd + "" + mm + "" + year;
+// Set a prototype of Date called getWeek
+Date.prototype.getWeek = function() {
+    var date = new Date(this.getTime());
+    date.setHours(0, 0, 0, 0);
+    // Thursday in current week decides the year.
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    // January 4 is always in week 1.
+    var week1 = new Date(date.getFullYear(), 0, 4);
+    // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
 
+// Get today's date
+var today, dd, mm, year, combinedDate, weekno;
+var updateTodaysDate = function() {
+    today = new Date();
+    dd = today.getDate();
+    mm = today.getMonth() + 1; //January is 0!
+    year = today.getFullYear();
+    combinedDate = dd + "-" + mm + "-" + year;
+    weekno = today.getWeek();
+    console.log(today);
+}
 
 // Search array for a needle
 function arrayContains(needle, arrhaystack) {
@@ -81,16 +105,14 @@ var numDaysBetween = function(d1, d2) {
     return diff / (1000 * 60 * 60 * 24);
 };
 
-// Set a prototype of Date called getWeek
-Date.prototype.getWeek = function() {
-    var onejan = new Date(this.getFullYear(),0,1);
-    return Math.ceil((((this - onejan) / 86400000) + onejan.getDay())/7);
-};
-
-// Get week number for this week
-var weekno = today.getWeek();
-
-
+// Return appropriate daysBetweenNotify variable (either notify value or config value)
+var getDaysBetweenNotifiers = function(notify) {
+    if (notify.daysBetweenNotify === undefined || notify.daysBetweenNotify === null) {
+        return config.daysBetweenNotifiers;
+    } else {
+        return notify.daysBetweenNotify;
+    }
+}
 
 /*======================================
 =            Server startup            =
@@ -104,14 +126,17 @@ var server = app.listen(config.serverport, function() {
     console.log("Server is running at http://%s:%s", host, port);
 });
 
+// Set today's date on initialization
+updateTodaysDate();
+
 
 /*=====================================
 =            HTTP Requests            =
 =====================================*/
 
 // Run cronjob
-app.get("/runNewCronJob", function(req, res) {
-    runNewCronJob();
+app.post("/runNewCronJob", function(req, res) {
+    runNewCronJob(req.body.id);
     // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
     res.send("Ok your request is getting processed");
 });
@@ -127,7 +152,7 @@ app.get("/getLists/:boardId", function(req, res) {
     if (boardId !== "none" || boardId === undefined) {
         t.get("/1/boards/" + boardId + "/lists", function(err, data) {
             if (data === undefined) {
-                res.status(400).send("No lists was found!");
+                res.status(400).send("No lists were found!");
             } else {
                 res.send(data);
             }
@@ -137,19 +162,50 @@ app.get("/getLists/:boardId", function(req, res) {
     }
 });
 
+// Get all toggl projects for the toggl user
+app.get("/getTogglProjects", function(req, res) {
+    getTogglProjects(res);
+});
+
 
 /*===================================================
 =            Functions for Sending Mails            =
 ===================================================*/
 
 // runNewCronJob
-var runNewCronJob = function() {
+var runNewCronJob = function(notifierid) {
+    console.log("Received runNewCronJob(" + notifierid + ") request");
+    // Update today's date
+    updateTodaysDate();
+
     var Boards = [];
+    // myNotifiers are the notifiers that the cronjob should handle
+    var myNotifiers = [];
     Notifier.find({}, function(err, notifiers) {
 
         notifiers.forEach(function(notify) {
-            if (!arrayContains(notify.board, Boards)) {
+            // Handle the specified notify (resend functionality)
+            if (notify._id == notifierid) {
+                notify["resend"] = true;
+                myNotifiers.push(notify);
                 Boards.push(notify.board);
+            }
+
+            // Handle all notifies
+            else if (notifierid === undefined) {
+                // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
+                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
+                    // Handle notify if it doesn't have a last notification date
+                    if (notify.lastNotified === undefined) {
+                        myNotifiers.push(notify);
+                        Boards.push(notify.board);
+                    }
+                    // Handle notify if days since lastNotified is greater or equal to daysBetweenNotify
+                    else if (Math.round(numDaysBetween(today, notify.lastNotified)) >= getDaysBetweenNotifiers(notify)) {
+                        myNotifiers.push(notify);
+                        Boards.push(notify.board);
+                    }
+                }
             }
         });
 
@@ -165,9 +221,7 @@ var runNewCronJob = function() {
 
                 data.forEach(function(entry, index) {
                     if (!arrayContains(entry.idList, theBoard.lists)) {
-
                         theBoard.lists.push(entry.idList);
-
                     }
 
                     // Here we got all boards, and their cards and lists.
@@ -178,8 +232,8 @@ var runNewCronJob = function() {
                 counterX++;
 
                 if (counterX === Boards.length) {
-                    getAllCardsForEachUser();
                     console.log("|A| Got all boards and their cards");
+                    getAllCardsForEachUser(myNotifiers);
                 }
             });
         });
@@ -188,25 +242,38 @@ var runNewCronJob = function() {
     boardData = [];
 };
 
-
 // getAllCardsForEachUser
-var getAllCardsForEachUser = function() {
+var getAllCardsForEachUser = function(notifiers) {
     var userArray = [];
 
-    Notifier.find({}, function(err, notifiers) {
+    // console.log(notifiers.length);
+    var counter = 0;
 
-        // console.log(notifiers.length);
-        var counter = 0;
+    notifiers.forEach(function(notify) {
+        getTogglProjectSummary(notify, function(togglProject) {
+            var d = new Date();
+            d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
+            var since = d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear();
 
-        notifiers.forEach(function(notify) {
             var user = {
+                _id: notify._id,
                 usermail: notify.email,
                 boardId: notify.board,
+                since: since,
                 lists: []
             };
 
+            // If notify includes a toggle project
+            if (togglProject != null) {
+                user["overallTime"] = togglProject.time;
+            }
+
+            if (notify.resend === true) {
+                user["resend"] = true;
+            }
+
             notify.lists.forEach(function(list) {
-                var myCards = getAllCardsWithListId(notify.board, list._id);
+                var myCards = getAllCardsWithListId(notify, list._id);
 
                 var aList = {
                     listId: list._id,
@@ -217,27 +284,24 @@ var getAllCardsForEachUser = function() {
                     user.lists.push(aList);
                 }
 
-                // console.log(list._id);
-                // console.log(myCards);
             });
 
             counter++;
             userArray.push(user);
 
             if (counter === notifiers.length) {
-                console.log("|B| Sorted all lists based on listId in each card + removed cards that is outside limit");
+                console.log("|B| Sorted all lists based on listId in each card + removed cards that are outside limit");
                 removeEmptyLists(userArray);
             }
-
         });
-
 
     });
 
 };
 
-var getAllCardsWithListId = function(boardId, listId) {
+var getAllCardsWithListId = function(notify, listId) {
     var cards = [];
+    var boardId = notify.board;
 
     boardData.forEach(function(board) {
         if (board.boardId == boardId) {
@@ -249,7 +313,8 @@ var getAllCardsWithListId = function(boardId, listId) {
                     var cardActivityTime = card.dateLastActivity.split("T")[0].split('-');
                     cardActivityTime = new Date(cardActivityTime[0], cardActivityTime[1] - 1, cardActivityTime[2]);
 
-                    if (numDaysBetween(today, cardActivityTime) < config.daysBetweenNotifiers) {
+                    // Add card to list if days since cardActivityTime is less than daysBetweenNotify
+                    if (numDaysBetween(today, cardActivityTime) < getDaysBetweenNotifiers(notify)) {
                         cards.push(card.name);
                     }
 
@@ -307,7 +372,7 @@ var fetchListNames = function(userArray, listsInTotal) {
                 counter++;
 
                 if (counter == listsInTotal) {
-                    console.log("|D| Fetched names for the remaning lists (with cards)");
+                    console.log("|D| Fetched names for the remaining lists (with cards)");
                     fetchBoardNames(userArray);
                 }
             });
@@ -376,8 +441,21 @@ var setupEmailTemplate = function(userArray, res) {
             emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>" + config.myName + " is working at " + getBoardName(user.boardId) + "</td>";
             emailContent += "</tr>";
             emailContent += "<tr>";
-            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is a overview of what have changed:</td>";
+            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is an overview of what have changed:</td>";
             emailContent += "</tr>";
+            emailContent += "<tr>";
+            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>From <b>" + user.since + "</b> to <b>" + combinedDate + "</b></td>";
+            emailContent += "</tr>";
+            if (user.overallTime != null) {
+                var x = user.overallTime / 1000;
+                x /= 60;
+                var minutes = x % 60 | 0;
+                x /= 60;
+                var hours = x | 0;
+                emailContent += "<tr>";
+                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Time spent in toggl: <b>" + hours + " hours and " + minutes + " minutes.</b></td>";
+                emailContent += "</tr>";
+            }
 
             var styleColor = "";
 
@@ -406,7 +484,7 @@ var setupEmailTemplate = function(userArray, res) {
 
             // users += user.lists;
 
-            sendEmailToUser(emailContent, user.usermail);
+            sendEmailToUser(emailContent, user.usermail, user._id, user.resend);
 
         }
 
@@ -414,9 +492,24 @@ var setupEmailTemplate = function(userArray, res) {
 
 };
 
+// Update lastNotify in notify when sending emails
+var updateLastNotified = function(userId) {
+    Notifier.findOne({
+        _id: userId
+    }, function(err, notifier) {
+        if (notifier === undefined || notifier === null) {
+            console.log("Failed to update lastNotified");
+        } else {
+            notifier.lastNotified = new Date();
+            notifier.save();
+            console.log("lastNotified updated for id: " + userId);
+        }
+    });
+}
+
 
 // Send the email to the user
-var sendEmailToUser = function(emailContent, email) {
+var sendEmailToUser = function(emailContent, email, userId, resend) {
 
     // setup e-mail data with unicode symbols
     var mailOptions = {
@@ -428,12 +521,15 @@ var sendEmailToUser = function(emailContent, email) {
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, function(error, info) {
-    	if (error) {
-    		console.log(email);
-    		console.log(error);
-    	} else {
-    		console.log("Message sent to: " + email + ", " + info.response);
-    	}
+        if (error) {
+            console.log(email);
+            console.log(error);
+        } else {
+            console.log("Message sent to: " + email + ", " + info.response);
+            if (resend != true) {
+                updateLastNotified(userId);
+            }
+        }
     });
 
 };
@@ -512,4 +608,131 @@ var getBoardName = function(boardId) {
 
     return theName;
 
+};
+
+/*===================================================
+=            Functions for Toggl Projects            =
+===================================================*/
+
+var getTogglProjects = function(callback) {
+    var options = {
+        "method": "GET",
+        "hostname": "toggl.com",
+        "path": "/api/v8/me?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId + "&with_related_data=true",
+        "headers": {
+            "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
+        }
+    };
+
+    var req = http.request(options, function(res) {
+        if (res.statusCode == 404 || res.statusCode == 403) {
+            console.log(res.statusCode + ": Toggl api FAILED!");
+            req.abort();
+        } else {
+            var chunks = [];
+
+            res.on("data", function(chunk) {
+                chunks.push(chunk);
+            });
+
+            var projects = [];
+            res.on("end", function() {
+                var body = Buffer.concat(chunks);
+                var json = JSON.parse(body);
+                json.data.projects.forEach(function(entry) {
+                    var project = {
+                        'id': entry.id,
+                        'name': entry.name
+                    }
+                    projects.push(project);
+                });
+                callback.send(projects);
+            });
+        }
+    });
+
+    req.on("error", function(e) {
+        console.log(e);
+    });
+
+    req.on("timeout", function() {
+        console.log("toggl api timed out");
+        req.abort();
+    });
+
+    req.setTimeout(5000);
+
+    req.end();
+};
+
+var getTogglProjectSummary = function(notify, callback) {
+    if (notify.togglProject === undefined || notify.togglProject === "none") {
+        return callback(null);
+    } else {
+        var d = new Date();
+        d.setDate(today.getDate() - getDaysBetweenNotifiers(notify));
+        var since = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+
+        var options = {
+            "method": "GET",
+            "hostname": "toggl.com",
+            "path": "/reports/api/v2/summary?user_agent=mailnotifiersForTrello&workspace_id=" + config.togglWorkspaceId +
+                "&project_ids=" + notify.togglProject + "&since=" + since + "",
+            "headers": {
+                "authorization": "Basic " + new Buffer(config.togglApplicationKey + ":" + "api_token").toString("base64")
+            }
+        };
+
+        if (notify.billableHours === true) {
+            options["path"] += "&billable=yes";
+        }
+        if (notify.rounding === true) {
+            options["path"] += "&rounding=on";
+        }
+
+        var req = http.request(options, function(res) {
+            if (res.statusCode == 404 || res.statusCode == 403) {
+                console.log(res.statusCode + ": Toggl api FAILED!");
+                req.abort();
+            } else {
+                var chunks = [];
+
+                res.on("data", function(chunk) {
+                    chunks.push(chunk);
+                });
+
+                var projects = [];
+                res.on("end", function() {
+                    var body = Buffer.concat(chunks);
+                    var json = JSON.parse(body);
+                    json.data.forEach(function(entry) {
+                        var project = {
+                            'id': entry.id,
+                            'title': entry.title.project,
+                            'time': entry.time
+                        }
+                        projects.push(project);
+                    })
+                    if (projects.length === 1) {
+                        return callback(projects[0]);
+                    } else {
+                        return callback(null);
+                    }
+                });
+            }
+        });
+
+        req.on("error", function(e) {
+            console.log(e);
+        });
+
+        req.on("timeout", function() {
+            console.log("timeout");
+            req.abort();
+        });
+
+        req.setTimeout(10000);
+
+        req.end();
+    };
 };

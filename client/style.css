@@ -165,8 +165,6 @@ header h1 {
 }
 
 .modalbox fieldset {
-    width: 50%;
-    float: left;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -178,6 +176,12 @@ header h1 {
     max-width: 630px;
     margin: 0 auto;
     float: none;
+}
+
+div#modal-btn {
+    padding: 50px 0px 0px 0px;
+    width: 100%;
+    float: left;
 }
 
 .close-btn {
@@ -251,6 +255,10 @@ input#modal-rmv {
     margin-right: 0;
 }
 
+#last-email {
+    font-size: .9em;
+}
+
 input#modal-submit, input#modal-rmv {
     background: #2ecc71;
 }
@@ -276,41 +284,34 @@ input#modal-webhooks-submit:hover, input#modal-webhooks-rmv:hover, input#modal-w
     margin-bottom: 5px;
 }
 
-fieldset#check-btn {
-    width: 100%;
-    float: left;
-    padding: 5px 0 50px 0px;
-}
-
 h3 {
     font-weight: 300;
     font-size: 1em;
+    margin: 0px 0px 5px 0px;
 }
 
-fieldset#check-btn input {
+fieldset#solo-toggl-check-btn {
+    margin-bottom: 15px;
+}
+
+fieldset#check-btn input, fieldset#solo-toggl-check-btn input {
     width: 20px;
     height: 15px;
     display: inline-block;
 }
 
-fieldset#check-btn label {
-    width: 21.4%;
+fieldset#check-btn label, fieldset#solo-toggl-check-btn label {
     margin-left: 5px;
     display: inline-block;
 }
 
 @media screen and (max-width: 1077px) {
     fieldset#check-btn label {
-        width: 29%;
+        width: 70%;
     }
 }
 
 @media screen and (max-width: 900px) {
-    fieldset#check-btn label {
-        width: 44.2%;
-        margin-left: 5px;
-    }
-
     .close-btn-fix, .modalbox {
         margin: 10px auto;
     }
@@ -332,7 +333,7 @@ fieldset#check-btn label {
     }
 
     .modal-form input, .modal-form select {
-        width: 100%;
+        width: 90%;
     }
 
     .modal-form {
@@ -346,22 +347,12 @@ fieldset#check-btn label {
 }
 @media screen and (max-width: 674px) {
     fieldset#check-btn label {
-        width: 43%;
-    }
-}
-
-@media screen and (max-width: 565px) {
-    fieldset#check-btn label {
-        width: 41%;
+        width: 70%;
     }
 }
 
 
 @media screen and (max-width: 495px) {
-    fieldset#check-btn label {
-        width: 87%;
-        margin-left: 5px;
-    }
 
     fieldset#check-btn {
       padding: 5px 0 20px 0px;
@@ -450,16 +441,37 @@ fieldset#check-btn label {
     background: #6ec7fa;
 }
 
+#resend-wrap {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 999999;
+}
+
 /*=======================================
 =            Add New Record             =
 =======================================*/
+div.left {
+    float: left;
+    width: 45%;
+    padding-right: 5%;
+}
+
+div.right {
+    float: left;
+    width: 45%;
+    padding-left: 5%;
+}
+
 #notify-content {
     display: block;
 }
 
 #new-custom-frm, #web-custom-frm {
-    width: 50%;
-    max-width: 700px;
+    width: 65%;
+    max-width: 900px;
     height: auto;
     margin: 0 auto;
     margin-top: 50px;
@@ -467,19 +479,14 @@ fieldset#check-btn label {
 
 @media screen and (max-width: 960px) {
     #new-custom-frm, #web-custom-frm {
-        width: 80%;
+        width: 70%;
     }
 }
 
 @media screen and (max-width: 400px) {
     #new-custom-frm, #web-custom-frm {
-        width: 95%;
+        width: 70%;
     }
-}
-
-#lists {
-    overflow: hidden;
-    margin-bottom: 15px;
 }
 
 #new-custom-frm input, #new-custom-frm select, #web-custom-frm input, #web-custom-frm select {
@@ -490,6 +497,10 @@ fieldset#check-btn label {
     border: none;
     text-indent: 10px;
     border: 1px solid #dadada;
+}
+
+#new-custom-frm input[type="checkbox"], input[type="checkbox"] {
+    margin-bottom: 0;
 }
 
 input#frm-submit, input#web-submit {
@@ -523,20 +534,20 @@ input#web-submit:hover {
     display: block;
 }
 
-fieldset#new-check-btn {
+fieldset#new-check-btn, fieldset#toggl-check-btn, fieldset#check-btn {
     padding: 0;
-    margin: 0;
     box-sizing: border-box;
     border: none;
+    margin-bottom: 15px;
 }
 
-fieldset#new-check-btn input {
-    width: 5%;
+fieldset#new-check-btn input, fieldset#toggl-check-btn input {
+    width: 15px;
     height: 15px;
     display: inline-block;
 }
 
-fieldset#new-check-btn label {
+fieldset#new-check-btn label, fieldset#toggl-check-btn label {
     width: 85%;
     display: inline-block;
     padding-left: 2%;
@@ -545,6 +556,26 @@ fieldset#new-check-btn label {
 .checkbox {
     width: 50%;
     float: left;
+}
+
+.email-button {
+    position: absolute;
+    width: 30px;
+    font-weight: bold;
+    background: #2ecc71;
+    color: #fff;
+    border-radius: 5px;
+    border: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+    -webkit-transition: background .5s; /* For Safari 3.1 to 6.0 */
+    -moz-transition: background .5s;
+    -o-transition: background .5s;
+    transition: background .5s;
+}
+
+.email-button:hover {
+    background: #34ec82;
 }
 
 /*=========================================
@@ -600,29 +631,35 @@ input#sub-frm-submit:hover {
 }
 
 .field-info-item {
-    width: 24.9%;
+    width: 19.9%;
     height: 40px;
     padding: 0;
     border: none;
     border-right: 1px solid #dadada;
 }
 
-.field-info-item p, .edit p {
+.field-info-item p, .edit p, .resend p {
     font-weight: 700;
 }
 
 .edit {
     height: 40px;
-    width: 8.8%;
+    width: 9.8%;
+    border-right: 1px solid #dadada;
 }
 
-.edit img, .edit-web img {
+.resend {
+    height: 40px;
+    width: 9.8%;
+}
+
+.edit img, .edit-web img, .resend img {
     display: block;
     margin: 10px auto;
     cursor: pointer;
 }
 
-.field-info-item, .edit {
+.field-info-item, .edit, .resend {
     text-align: center;
     line-height: 40px;
     color: #000;
@@ -659,15 +696,18 @@ input[type="text"]:disabled {
     }
 
     .field-info-item {
-        width: 35.3%;
+        width: 50%;
         padding-left: 4%;
         padding-right: 4%;
     }
-}
 
-@media screen and (max-width: 416px) {
-    .field-info-item {
-        width: 35%;
-        overflow: hidden;
+    .edit, .resend {
+        width: 16.5%;
+    }
+
+    div.right, div.left {
+        float: none;
+        width: 100%;
+        padding-left: 0;
     }
 }
