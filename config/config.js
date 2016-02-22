@@ -6,11 +6,15 @@
 var config = {};
 
 /* Numbers between days of changes (in Trello Lists) */
-config.daysBetweenNotifiers = 30; // Default is 7
+config.daysBetweenNotifiers = 7; // Default is 7
 
 /* Trello API Access */
 config.trelloApplicationKey = "<< Application Key >>"; // Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key
 config.trelloUserToken = "<< User Token >>"; // Read https://trello.com/docs/gettingstarted/index.html#getting-a-token-from-a-user
+
+/* Toggl API Access */
+config.togglApplicationKey = "<< Application Token"; // Read https://support.toggl.com/my-profile/
+config.togglWorkspaceId = "<< Workspace Id >>"; // Read https://support.toggl.com/workspace/
 
 /* Email settings */
 config.myEmail = "<< Your email >>";
