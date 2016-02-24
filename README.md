@@ -14,13 +14,13 @@ at last sent to a specified email (often a client email-address). This is perfec
 
 ### Images of Mail notifications for Trello
 #### Adding a notification
-![alt text](https://morningtrain.dk/img/MailNotifier3.png "Add Notifier Overview")
+![alt text](https://morningtrain.dk/img/MailNotifier3-v2.png "Add Notifier Overview")
 #### Overview of all notification setups
-![alt text](https://morningtrain.dk/img/MailNotifier1.png "All Notifiers Overview")
+![alt text](https://morningtrain.dk/img/MailNotifier1-v2.png "All Notifiers Overview")
 #### Edit a notification (modal box)
-![alt text](https://morningtrain.dk/img/MailNotifier2.png "Edit Notifier Modal box")
+![alt text](https://morningtrain.dk/img/MailNotifier2-v2.png "Edit Notifier Modal box")
 #### Email of a notification
-![alt text](https://morningtrain.dk/img/MailNotifier4.png "Email of Notification")
+![alt text](https://morningtrain.dk/img/MailNotifier4-v2.png "Email of Notification")
 
 ### Setting up Mail notifications for Trello
 #### 1 Getting NodeJS:
