@@ -42,6 +42,20 @@ $(document).ready(function() {
     // Get all boards from Trello
     var getAllBoards = $.get('/getBoards', function(data) {
         boards = data;
+
+        // Sort the boards by name alphabetically
+        boards.sort(function(a, b) {
+            var nameA = a.name.toLowerCase(),
+                nameB = b.name.toLowerCase()
+            if (nameA < nameB) {
+                return -1
+            } else if (nameA > nameB) {
+                return 1
+            } else {
+                return 0 //default return value (no sorting)
+            }
+        });
+
         for (i = 0; i < boards.length; i++) {
             $('#myBoards').append('<option value="' + boards[i].id + '">' + boards[i].name + '</option>');
         }
