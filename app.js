@@ -212,11 +212,12 @@ var runNewCronJob = function(notifierid) {
         var counterX = 0;
 
         Boards.forEach(function(board, index) {
-            t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity", function(err, data) {
+            t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity,idChecklists", function(err, data) {
                 var theBoard = {
                     boardId: board,
                     lists: [],
-                    cards: []
+                    cards: [],
+                    checklists: []
                 };
 
                 data.forEach(function(entry, index) {
@@ -227,7 +228,11 @@ var runNewCronJob = function(notifierid) {
                     // Here we got all boards, and their cards and lists.
                     theBoard.cards.push(entry);
 
+                    // Pushing the array of checklists to theBoard.
+                    theBoard.checklists.push(entry.idChecklists)
+
                 });
+
                 boardData.push(theBoard);
                 counterX++;
 
@@ -315,9 +320,19 @@ var getAllCardsWithListId = function(notify, listId) {
 
                     // Add card to list if days since cardActivityTime is less than daysBetweenNotify
                     if (numDaysBetween(today, cardActivityTime) < getDaysBetweenNotifiers(notify)) {
-                        cards.push(card.name);
-                    }
+                        var myCard = {
+                            name: card.name,
+                            checklists: []
+                        }
 
+                        card.idChecklists.forEach(function(checklistId) {
+                            fetchChecklist(checklistId, function(checklist) {
+                                myCard.checklists.push(checklist);
+                            });
+                        });
+
+                        cards.push(myCard);
+                    }
                 }
             });
         }
@@ -325,6 +340,33 @@ var getAllCardsWithListId = function(notify, listId) {
 
     return cards;
 
+};
+
+// Fetch checklist data from checklistId
+var fetchChecklist = function(checklistId, callback) {
+    t.get("/1/checklists/" + checklistId, function(err, data) {
+        if (err) {
+            throw err;
+        }
+
+        var checklist = {
+            id: data.id,
+            name: data.name,
+            checkItems: []
+        }
+
+        data.checkItems.forEach(function(dataCheckItem) {
+            var checkItem = {
+                id: dataCheckItem.id,
+                name: dataCheckItem.name,
+                state: dataCheckItem.state
+            }
+            checklist.checkItems.push(checkItem);
+        });
+
+        return callback(checklist);
+
+    });
 };
 
 
@@ -361,7 +403,6 @@ var fetchListNames = function(userArray, listsInTotal) {
     userArray.forEach(function(user) {
         user.lists.forEach(function(list) {
             t.get("/1/lists/" + list.listId + "?fields=name", function(err, data) {
-
                 var listObject = {
                     listName: data.name,
                     listId: data.id
@@ -467,8 +508,23 @@ var setupEmailTemplate = function(userArray, res) {
 
                 list.cards.forEach(function(card) {
 
-                    emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card + "</font></li>";
+                    emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card.name + "</font></li>";
 
+                    card.checklists.forEach(function(checklist) {
+                        emailContent += "<font color='" + styleColor + "' style='font-size: 14px; padding-left:5%'>" + checklist.name + "</font>";
+                        emailContent += "<table style='padding-left: 10%;'>";
+                        checklist.checkItems.forEach(function(checkItem) {
+                            var state = "&#9633;";
+                            if (checkItem.state === "complete") {
+                                state = "&#10003;";
+                            }
+                            emailContent += "<tr style='margin-top: 10px; margin-bottom:10px;'>";
+                            emailContent += "<td style='font-size: 20px; vertical-align: middle;'>" + state + "</td>";
+                            emailContent += "<td style='font-size: 14px;'>" + checkItem.name + "</td>";
+                            emailContent += "</tr>";
+                        });
+                        emailContent += "</table>";
+                    });
                 });
 
                 emailContent += "</ul>";
