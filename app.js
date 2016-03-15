@@ -231,7 +231,7 @@ var runNewCronJob = function(notifierid) {
 
         var counterX = 0;
 
-        Boards.forEach(function(board, index) {
+        Boards.forEach(function(board) {
             limiter.removeTokens(1, function() {
                 t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity,idChecklists", function(err, data) {
                     var theBoard = {
@@ -241,7 +241,7 @@ var runNewCronJob = function(notifierid) {
                         checklists: []
                     };
 
-                    data.forEach(function(entry, index) {
+                    data.forEach(function(entry) {
                         if (!arrayContains(entry.idList, theBoard.lists)) {
                             theBoard.lists.push(entry.idList);
                         }
@@ -495,80 +495,80 @@ var fetchBoardNames = function(userArray) {
 
 // Setup Email Template
 var setupEmailTemplate = function(userArray, res) {
-userArray.forEach(function(user) {
-    var emailContent = '';
+    userArray.forEach(function(user) {
+        var emailContent = '';
 
-    if (user.lists.length > 0) {
+        if (user.lists.length > 0) {
 
-        emailContent += "<meta charset='UTF-8'>";
-        emailContent += "<div style='width: 100%; background-color: #F3F3F3; padding-bottom: 5%; padding-top: 5%;'>";
-        emailContent += "<table align='center' style='font-family: arial,sans-serif; background-color:#fff; margin: 0 auto; max-width: 950px;width: 95%; border-radius: 10px;'>";
-        emailContent += "<tbody style='background-color: #fff; margin: 0 auto; border: 1px solid #dadada;'>";
-        emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='  margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>Email-Notifier</h1><h2 style='   margin: 0 !important; padding-top: 7px;  color: #fff;font-size: 10px; text-transform: uppercase;'>Your notifier from your Trello boards</h2></th>";
-        emailContent += "<tr>";
-        emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>" + config.myName + " is working at " + getBoardName(user.boardId) + "</td>";
-        emailContent += "</tr>";
-        emailContent += "<tr>";
-        emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is an overview of what have changed:</td>";
-        emailContent += "</tr>";
-        emailContent += "<tr>";
-        emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>From <b>" + user.since + "</b> to <b>" + combinedDate + "</b></td>";
-        emailContent += "</tr>";
-        if (user.overallTime != null) {
-            var x = user.overallTime / 1000;
-            x /= 60;
-            var minutes = x % 60 | 0;
-            x /= 60;
-            var hours = x | 0;
+            emailContent += "<meta charset='UTF-8'>";
+            emailContent += "<div style='width: 100%; background-color: #F3F3F3; padding-bottom: 5%; padding-top: 5%;'>";
+            emailContent += "<table align='center' style='font-family: arial,sans-serif; background-color:#fff; margin: 0 auto; max-width: 950px;width: 95%; border-radius: 10px;'>";
+            emailContent += "<tbody style='background-color: #fff; margin: 0 auto; border: 1px solid #dadada;'>";
+            emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='  margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>Email-Notifier</h1><h2 style='   margin: 0 !important; padding-top: 7px;  color: #fff;font-size: 10px; text-transform: uppercase;'>Your notifier from your Trello boards</h2></th>";
             emailContent += "<tr>";
-            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Time spent in toggl: <b>" + hours + " hours and " + minutes + " minutes.</b></td>";
+            emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>" + config.myName + " is working at " + getBoardName(user.boardId) + "</td>";
             emailContent += "</tr>";
-        }
+            emailContent += "<tr>";
+            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is an overview of what have changed:</td>";
+            emailContent += "</tr>";
+            emailContent += "<tr>";
+            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>From <b>" + user.since + "</b> to <b>" + combinedDate + "</b></td>";
+            emailContent += "</tr>";
+            if (user.overallTime != null) {
+                var x = user.overallTime / 1000;
+                x /= 60;
+                var minutes = x % 60 | 0;
+                x /= 60;
+                var hours = x | 0;
+                emailContent += "<tr>";
+                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Time spent in toggl: <b>" + hours + " hours and " + minutes + " minutes.</b></td>";
+                emailContent += "</tr>";
+            }
 
-        var styleColor = "";
+            var styleColor = "";
 
-        // emailContent += user.usermail;
-        user.lists.forEach(function(list) {
-            emailContent += "<tr><td style='padding-top: 15px; padding-bottom: 15px; padding-left: 5%; padding-right: 5%;'>";
-            emailContent += "<h2 style='  letter-spacing: 1px; text-transform: uppercase;  font-size: 14px;   border-bottom: 1px solid #F0F0F0; padding-bottom: 7px;'><font color='" + styleColor + "'>" + getListName(list.listId) + "</font></h2>";
-            emailContent += "<ul style='  margin-top: 30px;'>";
+            // emailContent += user.usermail;
+            user.lists.forEach(function(list) {
+                emailContent += "<tr><td style='padding-top: 15px; padding-bottom: 15px; padding-left: 5%; padding-right: 5%;'>";
+                emailContent += "<h2 style='  letter-spacing: 1px; text-transform: uppercase;  font-size: 14px;   border-bottom: 1px solid #F0F0F0; padding-bottom: 7px;'><font color='" + styleColor + "'>" + getListName(list.listId) + "</font></h2>";
+                emailContent += "<ul style='  margin-top: 30px;'>";
 
-            list.cards.forEach(function(card) {
+                list.cards.forEach(function(card) {
 
-                /*emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card + "</font></li>";*/
+                    /*emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card + "</font></li>";*/
 
-                emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card.name + "</font></li>";
+                    emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card.name + "</font></li>";
 
-                card.checklists.forEach(function(checklist) {
-                    emailContent += "<font color='" + styleColor + "' style='font-size: 14px; padding-left:5%'>" + checklist.name + "</font>";
-                    emailContent += "<table style='padding-left: 10%;'>";
-                    checklist.checkItems.forEach(function(checkItem) {
-                        var state = "&#9633;";
-                        if (checkItem.state === "complete") {
-                            state = "&#10003;";
-                        }
-                        emailContent += "<tr style='margin-top: 10px; margin-bottom:10px;'>";
-                        emailContent += "<td style='font-size: 20px; vertical-align: middle;'>" + state + "</td>";
-                        emailContent += "<td style='font-size: 14px;'>" + checkItem.name + "</td>";
-                        emailContent += "</tr>";
+                    card.checklists.forEach(function(checklist) {
+                        emailContent += "<font color='" + styleColor + "' style='font-size: 14px; padding-left:5%'>" + checklist.name + "</font>";
+                        emailContent += "<table style='padding-left: 10%;'>";
+                        checklist.checkItems.forEach(function(checkItem) {
+                            var state = "&#9633;";
+                            if (checkItem.state === "complete") {
+                                state = "&#10003;";
+                            }
+                            emailContent += "<tr style='margin-top: 10px; margin-bottom:10px;'>";
+                            emailContent += "<td style='font-size: 20px; vertical-align: middle;'>" + state + "</td>";
+                            emailContent += "<td style='font-size: 14px;'>" + checkItem.name + "</td>";
+                            emailContent += "</tr>";
+                        });
+                        emailContent += "</table>";
                     });
-                    emailContent += "</table>";
                 });
+
+                emailContent += "</ul>";
+
             });
 
-            emailContent += "</ul>";
+            emailContent += "</td></tr>";
 
-        });
+            emailContent += "</tbody>";
+            emailContent += "<tr align='center'><td style=' background-color: #0e74af; color: #fff; padding-bottom: 20px;padding-top: 20px;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;   font-size: 11px;'>Thank you for using our plugin</td></tr>";
+            emailContent += "</table>";
+            emailContent += "</div>";
 
-        emailContent += "</td></tr>";
+            sendEmailToUser(emailContent, user.usermail, user._id, user.resend);
 
-        emailContent += "</tbody>";
-        emailContent += "<tr align='center'><td style=' background-color: #0e74af; color: #fff; padding-bottom: 20px;padding-top: 20px;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;   font-size: 11px;'>Thank you for using our plugin</td></tr>";
-        emailContent += "</table>";
-        emailContent += "</div>";
-
-        sendEmailToUser(emailContent, user.usermail, user._id, user.resend);
-        
         }
     });
 };
