@@ -1,4 +1,4 @@
-module.exports = function(app, db, Notifier) {
+module.exports = function(app, db, Notifier, auth) {
 
     // Function for creating a new notifier
     var createNewNotifier = function(req, res) {
@@ -22,13 +22,13 @@ module.exports = function(app, db, Notifier) {
                     daysBetweenNotify = req.body.daysBetweenNotify;
                     notifyDay = parseInt(req.body.notifyDay);
                     board = req.body.board;
-                    
+
                     if (req.body.togglProject === undefined) {
-                    	togglProject = "none";
+                        togglProject = "none";
                     } else {
-                    	togglProject = req.body.togglProject;
+                        togglProject = req.body.togglProject;
                     }
-                    
+
                     billableHours = req.body.billableHours;
                     rounding = req.body.rounding;
                     lists = req.body.lists;
@@ -181,6 +181,8 @@ module.exports = function(app, db, Notifier) {
         });
     }
 
+    app.all("/*", auth);
+
     // The GET request of all users. - this function is deprecated (we actually don't use this anymore).
     app.get('/users', function(req, res, next) {
         myFunction();
@@ -216,8 +218,5 @@ module.exports = function(app, db, Notifier) {
             res.send('collection removed');
         });
     });
-
-
-
 
 };
