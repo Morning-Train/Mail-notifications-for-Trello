@@ -35,6 +35,9 @@ config.settingsForTransporter = {
   }
 };
 
+/* Express Session Secret */
+config.sessionSecret = "mySecretKey";
+
 config.serverport = 3000;
 
 /*-----  End of Configuration of Trello-Train  ------*/

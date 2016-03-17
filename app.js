@@ -15,14 +15,16 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/mailnotifiersForTrello');
+mongoose.connect('mongodb://localhost/mailnotifiersForTrelloX');
 
 var http = require("https");
 
 var RateLimiter = require('limiter').RateLimiter;
 var limiter = new RateLimiter(50, 10000);
 
-var basicAuth = require('basic-auth');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var expressSession = require('express-session');
 
 // Loading config
 var config = require('./config/config');
@@ -64,25 +66,25 @@ app.use(bodyParser.urlencoded({
 // Same goes for the JSON aliens
 app.use(bodyParser.json());
 
-// Using our static client front-end system (look at index.html and scripts.js for more info about this)
-app.use(express.static('./client'));
-
-// Basic authentication
-var auth = function(req, res, next) {
-    var user = basicAuth(req);
-    if (!user || !user.name || !user.pass) {
-        res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-        res.sendStatus(401);
-    } else if (user.name === config.username && user.pass === config.password) {
-        next();
+var isAuthenticated = function (req, res, next) {
+  if (req.isAuthenticated()) {
+        return next();
     } else {
-        res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
-        res.sendStatus(401);
+        res.redirect("/login");
     }
 }
 
+app.use(expressSession({secret: config.sessionSecret, saveUninitialized: true, resave: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Using our static client front-end system (look at index.html and scripts.js for more info about this)
+//app.use(express.static('./login'));
+app.use( "/login", express.static( "./login" ));
+app.use( "/admin", [ isAuthenticated, express.static( "./client" ) ] );
+
 // Requiring the controller of notifier and including the app and Notifier model.
-require('./controller/notifier')(app, null, Notifier, auth);
+require('./controller/notifier')(app, null, Notifier, isAuthenticated);
 
 /*=============================
 =            Utils            =
@@ -136,8 +138,6 @@ var getDaysBetweenNotifiers = function(notify) {
 =            Server startup            =
 ======================================*/
 
-app.all("/*", auth);
-
 var server = app.listen(config.serverport, function() {
 
     var host = server.address().address;
@@ -151,23 +151,88 @@ updateTodaysDate();
 
 
 /*=====================================
-=            HTTP Requests            =
+=               Passport             =
 =====================================*/
 
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+var UserSchema = mongoose.Schema;
+var UserDetail = new UserSchema({
+      username: String,
+      password: String
+    }, {
+      collection: 'userInfo'
+    });
+var UserDetails = mongoose.model('userInfo', UserDetail);
+
+passport.use(new LocalStrategy(function(username, password, done) {
+  process.nextTick(function() {
+    UserDetails.findOne({
+      'username': username, 
+    }, function(err, user) {
+      if (err) {
+        return done(err);
+      }
+
+      if (!user) {
+        return done(null, false);
+      }
+
+      if (user.password != password) {
+        return done(null, false);
+      }
+
+      return done(null, user);
+    });
+  });
+}));
+
+/*=====================================
+=            HTTP Requests            =
+=====================================*/
+app.get("/", function(req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect("/admin")
+    } else {
+        res.redirect("/login");
+    }
+});
+
+app.post("/login",
+    passport.authenticate("local", {
+        successRedirect: "/admin",
+        failureRedirect: "/login"
+    })
+);
+
 // Run cronjob
-app.post("/runNewCronJob", function(req, res) {
+app.post("/runNewCronJob",
+    passport.authenticate("local", { session: false }),
+        function(req, res) {
+            // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
+            runNewCronJob(req.body.id);
+            res.send("Ok your request is getting processed");
+    });
+
+// Run cronjob for specific ID
+app.post("/runNewCronJobId", isAuthenticated, function(req, res) {
     runNewCronJob(req.body.id);
-    // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
     res.send("Ok your request is getting processed");
 });
 
 // Get request of getting all boards owned by user at trello.
-app.get("/getBoards", function(req, res) {
+app.get("/getBoards", isAuthenticated, function(req, res) {
     getAllBoards(req, res);
 });
 
 // Getting all lists appointed to a board and sending all the lists back to client-end
-app.get("/getLists/:boardId", function(req, res) {
+app.get("/getLists/:boardId", isAuthenticated, function(req, res) {
     var boardId = req.params.boardId;
     if (boardId !== "none" || boardId === undefined) {
         t.get("/1/boards/" + boardId + "/lists", function(err, data) {
@@ -183,7 +248,7 @@ app.get("/getLists/:boardId", function(req, res) {
 });
 
 // Get all toggl projects for the toggl user
-app.get("/getTogglProjects", function(req, res) {
+app.get("/getTogglProjects", isAuthenticated, function(req, res) {
     getTogglProjects(res);
 });
 
@@ -214,7 +279,7 @@ var runNewCronJob = function(notifierid) {
             // Handle all notifies
             else if (notifierid === undefined) {
                 // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
-                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
+                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay() - 3) {
                     // Handle notify if it doesn't have a last notification date
                     if (notify.lastNotified === undefined) {
                         myNotifiers.push(notify);
