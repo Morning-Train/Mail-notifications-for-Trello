@@ -5,12 +5,6 @@
 
 var config = {};
 
-/* Username for Baisc Auth */
-config.username = "<< Your username >>";
-
-/* Password for Basic Auth */
-config.password = "<< Your password >>";
-
 /* Numbers between days of changes (in Trello Lists) */
 config.daysBetweenNotifiers = 7; // Default is 7
 
