@@ -48,6 +48,8 @@ The following modules will be installed:
 
 - express, 4.12.2
 
+- express-session, 1.13.0 
+
 - mongodb, 1.4.34
 
 - mongoose, 3.8.25
@@ -55,6 +57,12 @@ The following modules will be installed:
 - node-trello, 1.0.1
 
 - nodemailer, 1.3.1
+
+- limiter, 1.1.0
+
+- passport, 0.3.2
+
+- passport-local, 1.0.0
 
 #### 4 Setting up config file:
 When your modules is installed, you need to open up config/config.js.
@@ -108,6 +116,12 @@ Set this to your name or company name
 	  }
 	}
 Set this to your SMTP service provider, and SMTP user and SMTP pass. Read more here: https://github.com/andris9/Nodemailer
+
+#### 5 Adding a local user:
+You can add a local user by entering Mongo Shell and typing:
+
+    use mailnotifiersForTrello
+    db.userInfo.insert({'username':'yourUsername','password':'yourPassword'});
 
 ### Browser support
 
