@@ -5,6 +5,15 @@
 
 var config = {};
 
+/* Username for login authentication */
+config.username = "<< Insert your admin username >>"
+
+/* Password for login authentication */
+config.password = "<< Insert your admin password >>"
+
+/* Express Session Secret */
+config.sessionSecret = "<< Insert your session secret >>"
+
 /* Numbers between days of changes (in Trello Lists) */
 config.daysBetweenNotifiers = 7; // Default is 7
 
@@ -28,9 +37,6 @@ config.settingsForTransporter = {
       pass: "<< Your service pass >>"
   }
 };
-
-/* Express Session Secret */
-config.sessionSecret = "mySecretKey";
 
 config.serverport = 3000;
 
