@@ -86,7 +86,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Using our static client front-end system (look at index.html and scripts.js for more info about this)
-//app.use(express.static('./login'));
 app.use("/login", express.static("./login"));
 app.use("/admin", [isAuthenticated, express.static("./client")]);
 
@@ -207,11 +206,13 @@ passport.use(new LocalStrategy(function(username, password, done) {
                 return done(null, false);
             }
 
-            if (bcrypt.compare(password, user.password)) {
-                return done(null, false);
-            }
-
-            return done(null, user);
+            bcrypt.compare(password, user.password, function(err, res) {
+                if (res === true) {
+                    return done(null, user);
+                } else {
+                    return done(null, false);
+                }
+            });
         });
     });
 }));
