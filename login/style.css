@@ -1,6 +1,6 @@
 html, body {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
     font-family: 'Titillium Web', sans-serif;
     background: #ecf0f1;
 }
