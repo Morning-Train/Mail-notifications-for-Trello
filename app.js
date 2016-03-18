@@ -26,6 +26,9 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var expressSession = require('express-session');
 
+var bcrypt = require('bcrypt');
+var SALT_WORK_FACTOR = 10;
+
 // Loading config
 var config = require('./config/config');
 
@@ -66,22 +69,26 @@ app.use(bodyParser.urlencoded({
 // Same goes for the JSON aliens
 app.use(bodyParser.json());
 
-var isAuthenticated = function (req, res, next) {
-  if (req.isAuthenticated()) {
+var isAuthenticated = function(req, res, next) {
+    if (req.isAuthenticated()) {
         return next();
     } else {
         res.redirect("/login");
     }
 }
 
-app.use(expressSession({secret: config.sessionSecret, saveUninitialized: true, resave: true}));
+app.use(expressSession({
+    secret: config.sessionSecret,
+    saveUninitialized: true,
+    resave: true
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Using our static client front-end system (look at index.html and scripts.js for more info about this)
 //app.use(express.static('./login'));
-app.use( "/login", express.static( "./login" ));
-app.use( "/admin", [ isAuthenticated, express.static( "./client" ) ] );
+app.use("/login", express.static("./login"));
+app.use("/admin", [isAuthenticated, express.static("./client")]);
 
 // Requiring the controller of notifier and including the app and Notifier model.
 require('./controller/notifier')(app, null, Notifier, isAuthenticated);
@@ -151,47 +158,77 @@ updateTodaysDate();
 
 
 /*=====================================
-=               Passport             =
+=          Passport & Bcrypt         =
 =====================================*/
 
 passport.serializeUser(function(user, done) {
-  done(null, user);
+    done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-  done(null, user);
+    done(null, user);
 });
 
 var UserSchema = mongoose.Schema;
 var UserDetail = new UserSchema({
-      username: String,
-      password: String
-    }, {
-      collection: 'userInfo'
-    });
+    username: String,
+    password: String
+}, {
+    collection: 'userInfo'
+});
 var UserDetails = mongoose.model('userInfo', UserDetail);
 
-passport.use(new LocalStrategy(function(username, password, done) {
-  process.nextTick(function() {
-    UserDetails.findOne({
-      'username': username, 
-    }, function(err, user) {
-      if (err) {
-        return done(err);
-      }
+UserDetail.pre('save', function(next) {
+    var user = this;
+    if (!user.isModified('password')) return next();
 
-      if (!user) {
-        return done(null, false);
-      }
+    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) return next(err);
 
-      if (user.password != password) {
-        return done(null, false);
-      }
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if (err) return next(err);
 
-      return done(null, user);
+            user.password = hash;
+            next();
+        });
     });
-  });
+});
+
+passport.use(new LocalStrategy(function(username, password, done) {
+    process.nextTick(function() {
+        UserDetails.findOne({
+            'username': username,
+        }, function(err, user) {
+            if (err) {
+                return done(err);
+            }
+
+            if (!user) {
+                return done(null, false);
+            }
+
+            if (bcrypt.compare(password, user.password)) {
+                return done(null, false);
+            }
+
+            return done(null, user);
+        });
+    });
 }));
+
+// Recreate admin login
+UserDetails.remove({username: config.username},
+    function(err, results) {
+        var admin = new UserDetails({
+            username: config.username,
+            password: config.password
+        });
+
+        admin.save(function(error, data) {
+            if (error) console.log(error);
+            else console.log('Admin login created succesfully');
+        });
+    });
 
 /*=====================================
 =            HTTP Requests            =
@@ -213,11 +250,13 @@ app.post("/login",
 
 // Run cronjob
 app.post("/runNewCronJob",
-    passport.authenticate("local", { session: false }),
-        function(req, res) {
-            // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
-            runNewCronJob(req.body.id);
-            res.send("Ok your request is getting processed");
+    passport.authenticate("local", {
+        session: false
+    }),
+    function(req, res) {
+        // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
+        runNewCronJob(req.body.id);
+        res.send("Ok your request is getting processed");
     });
 
 // Run cronjob for specific ID

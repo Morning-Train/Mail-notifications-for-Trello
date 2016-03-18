@@ -64,9 +64,17 @@ The following modules will be installed:
 
 - passport-local, 1.0.0
 
+- bcrypt, 0.8.5
+
 #### 4 Setting up config file:
 When your modules is installed, you need to open up config/config.js.
 Inside here you need to set:
+
+    config.username = "<<Insert your admin username>>"
+    config.password = "<<Insert your admin password>>"
+    config.sessionSecret = "<<Insert your session secret>>"
+
+
 
     config.trelloApplicationKey = "<<Insert your application key>>";
 Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key for how to find your application key.
@@ -116,12 +124,6 @@ Set this to your name or company name
 	  }
 	}
 Set this to your SMTP service provider, and SMTP user and SMTP pass. Read more here: https://github.com/andris9/Nodemailer
-
-#### 5 Adding a local user:
-You can add a local user by entering Mongo Shell and typing:
-
-    use mailnotifiersForTrello
-    db.userInfo.insert({'username':'yourUsername','password':'yourPassword'});
 
 ### Browser support
 
