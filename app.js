@@ -323,7 +323,7 @@ var runNewCronJob = function(notifierid) {
             // Handle all notifies
             else if (notifierid === undefined) {
                 // Handle notify if notifyDay is set to automatic (7) or the current day of the week (0-6)
-                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay() - 3) {
+                if (notify.notifyDay === 7 || notify.notifyDay === today.getDay()) {
                     // Handle notify if it doesn't have a last notification date
                     if (notify.lastNotified === undefined) {
                         myNotifiers.push(notify);
