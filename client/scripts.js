@@ -95,7 +95,7 @@ $(document).ready(function() {
         e.preventDefault();
 
         var data = $('#modal-form').serialize();
-        var theURL = 'mongies/notifiers/removeOne';
+        var theURL = '/mongies/notifiers/removeOne';
 
         $.ajax({
             type: 'POST',
@@ -153,7 +153,7 @@ $(document).ready(function() {
         // Ajax call to php/post.php
         $.ajax({
             type: 'POST',
-            url: 'mongies/notifiers/post',
+            url: '/mongies/notifiers/post',
             data: newNotifyForm.serialize()
         }).
         success(function(res) {}).
@@ -196,7 +196,7 @@ $(document).ready(function() {
         // Ajax call to php/update.php with the right data (all data from the single notifier).
         $.ajax({
             type: 'POST',
-            url: 'mongies/notifiers/updateOne',
+            url: '/mongies/notifiers/updateOne',
             // Remember to change this.
             data: data
         }).
@@ -221,10 +221,10 @@ $(document).ready(function() {
 
     var getAllNotifiers = function() {
         // Get freshData just gets fresh data (notifiers) from database.
-        $.get('mongies/notifiers/all/', function(data) {
+        $.get('/mongies/notifiers/all/', function(data) {
             $('.current_notifiers').remove();
             $('#fieldset-info').remove();
-            //console.log(data);
+            console.log(data);
             $.each(data, function(i, val) {
                 var textToInsert = '';
                 textToInsert += "<fieldset class='current_notifiers'>";
@@ -259,7 +259,7 @@ $(document).ready(function() {
         $('#billableHours').prop('checked', false);
         $('#rounding').prop('checked', false);
 
-        $.get('mongies/notifiers/' + currentId, function(data) {
+        $.get('/mongies/notifiers/' + currentId, function(data) {
 
             $('#modal-notifier-id').val(data._id);
             $('#modal-project').val(data.project);
@@ -436,7 +436,7 @@ $(document).ready(function() {
     // if yes
     yesResend.click(function(e) {
         e.preventDefault();
-        $.post("/runNewCronJob", {
+        $.post("/runNewCronJobId", {
             id: resendId
         })
             .done(function(data) {
