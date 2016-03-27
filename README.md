@@ -48,6 +48,8 @@ The following modules will be installed:
 
 - express, 4.12.2
 
+- express-session, 1.13.0 
+
 - mongodb, 1.4.34
 
 - mongoose, 3.8.25
@@ -56,9 +58,23 @@ The following modules will be installed:
 
 - nodemailer, 1.3.1
 
+- limiter, 1.1.0
+
+- passport, 0.3.2
+
+- passport-local, 1.0.0
+
+- bcrypt, 0.8.5
+
 #### 4 Setting up config file:
 When your modules is installed, you need to open up config/config.js.
 Inside here you need to set:
+
+    config.username = "<<Insert your admin username>>"
+    config.password = "<<Insert your admin password>>"
+    config.sessionSecret = "<<Insert your session secret>>"
+
+
 
     config.trelloApplicationKey = "<<Insert your application key>>";
 Read https://trello.com/docs/gettingstarted/index.html#getting-an-application-key for how to find your application key.

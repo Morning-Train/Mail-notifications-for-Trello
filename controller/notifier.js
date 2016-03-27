@@ -1,4 +1,4 @@
-module.exports = function(app, db, Notifier) {
+module.exports = function(app, db, Notifier, isAuthenticated) {
 
     // Function for creating a new notifier
     var createNewNotifier = function(req, res) {
@@ -22,13 +22,13 @@ module.exports = function(app, db, Notifier) {
                     daysBetweenNotify = req.body.daysBetweenNotify;
                     notifyDay = parseInt(req.body.notifyDay);
                     board = req.body.board;
-                    
+
                     if (req.body.togglProject === undefined) {
-                    	togglProject = "none";
+                        togglProject = "none";
                     } else {
-                    	togglProject = req.body.togglProject;
+                        togglProject = req.body.togglProject;
                     }
-                    
+
                     billableHours = req.body.billableHours;
                     rounding = req.body.rounding;
                     lists = req.body.lists;
@@ -181,43 +181,28 @@ module.exports = function(app, db, Notifier) {
         });
     }
 
-    // The GET request of all users. - this function is deprecated (we actually don't use this anymore).
-    app.get('/users', function(req, res, next) {
-        myFunction();
-        res.send("Hello!");
-    });
     // Post request of making a notifier
-    app.post("/mongies/notifiers/post", function(req, res) {
+    app.post("/mongies/notifiers/post", isAuthenticated, function(req, res) {
         createNewNotifier(req, res);
     });
     // Post request of removing one notifier
-    app.post("/mongies/notifiers/removeOne", function(req, res) {
+    app.post("/mongies/notifiers/removeOne", isAuthenticated, function(req, res) {
         removeNotifier(req, res);
     });
 
     // Post request of updating one notifier
-    app.post("/mongies/notifiers/updateOne", function(req, res) {
+    app.post("/mongies/notifiers/updateOne", isAuthenticated, function(req, res) {
         updateNotifier(req, res);
     });
 
     // Get request of all notifiers (locally)
-    app.get("/mongies/notifiers/all", function(req, res) {
+    app.get("/mongies/notifiers/all", isAuthenticated, function(req, res) {
         getAllNotifiers(req, res);
     });
 
     // Get request on a single notifier by ID
-    app.get("/mongies/notifiers/:id", function(req, res) {
+    app.get("/mongies/notifiers/:id", isAuthenticated, function(req, res) {
         getOneNotifier(req, res);
     });
-
-    // Get request on deleting all notifiers (locally) - this request is not referred to anywhere on clientside
-    app.get("mongies/notifiers/deleteAll", function(req, res) {
-        Notifier.remove({}, function(err) {
-            res.send('collection removed');
-        });
-    });
-
-
-
 
 };

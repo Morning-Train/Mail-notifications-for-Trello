@@ -19,6 +19,16 @@ mongoose.connect('mongodb://localhost/mailnotifiersForTrello');
 
 var http = require("https");
 
+var RateLimiter = require('limiter').RateLimiter;
+var limiter = new RateLimiter(50, 10000);
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var expressSession = require('express-session');
+
+var bcrypt = require('bcrypt');
+var SALT_WORK_FACTOR = 10;
+
 // Loading config
 var config = require('./config/config');
 
@@ -59,12 +69,28 @@ app.use(bodyParser.urlencoded({
 // Same goes for the JSON aliens
 app.use(bodyParser.json());
 
+var isAuthenticated = function(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    } else {
+        res.redirect("/login");
+    }
+}
+
+app.use(expressSession({
+    secret: config.sessionSecret,
+    saveUninitialized: true,
+    resave: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Using our static client front-end system (look at index.html and scripts.js for more info about this)
-app.use(express.static('./client'));
+app.use("/login", express.static("./login"));
+app.use("/admin", [isAuthenticated, express.static("./client")]);
 
 // Requiring the controller of notifier and including the app and Notifier model.
-require('./controller/notifier')(app, null, Notifier);
-
+require('./controller/notifier')(app, null, Notifier, isAuthenticated);
 
 /*=============================
 =            Utils            =
@@ -131,23 +157,126 @@ updateTodaysDate();
 
 
 /*=====================================
-=            HTTP Requests            =
+=          Passport & Bcrypt         =
 =====================================*/
 
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
+var UserSchema = mongoose.Schema;
+var UserDetail = new UserSchema({
+    username: String,
+    password: String
+}, {
+    collection: 'userInfo'
+});
+var UserDetails = mongoose.model('userInfo', UserDetail);
+
+UserDetail.pre('save', function(next) {
+    var user = this;
+    if (!user.isModified('password')) return next();
+
+    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+        if (err) return next(err);
+
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if (err) return next(err);
+
+            user.password = hash;
+            next();
+        });
+    });
+});
+
+passport.use(new LocalStrategy(function(username, password, done) {
+    process.nextTick(function() {
+        UserDetails.findOne({
+            'username': username,
+        }, function(err, user) {
+            if (err) {
+                return done(err);
+            }
+
+            if (!user) {
+                return done(null, false);
+            }
+
+            bcrypt.compare(password, user.password, function(err, res) {
+                if (res === true) {
+                    return done(null, user);
+                } else {
+                    return done(null, false);
+                }
+            });
+        });
+    });
+}));
+
+// Recreate admin login
+UserDetails.remove({},
+    function(err, results) {
+        var admin = new UserDetails({
+            username: config.username,
+            password: config.password
+        });
+
+        admin.save(function(error, data) {
+            if (error) console.log(error);
+            else console.log('Admin login created succesfully');
+        });
+    });
+
+/*=====================================
+=            HTTP Requests            =
+=====================================*/
+app.get("/", function(req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect("/admin")
+    } else {
+        res.redirect("/login");
+    }
+});
+
+app.post("/login",
+    passport.authenticate("local", {
+        successRedirect: "/admin",
+        failureRedirect: "/login"
+    })
+);
+
 // Run cronjob
-app.post("/runNewCronJob", function(req, res) {
-    runNewCronJob(req.body.id);
-    // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
-    res.send("Ok your request is getting processed");
+app.post("/runNewCronJob",
+    passport.authenticate("local", {
+        session: false
+    }),
+    function(req, res) {
+        // sendEmailToUser("Testing", "Rubatharisan@gmail.com");
+        runNewCronJob(req.body.id);
+        res.send("Ok your request is getting processed");
+    });
+
+// Run cronjob for specific ID
+app.post("/runNewCronJobId", isAuthenticated, function(req, res) {
+    if(req.body.id != undefined) {
+        runNewCronJob(req.body.id);
+        res.send("Ok your request is getting processed");
+    } else {
+        res.send("Couldn't find the ID..")
+    }
 });
 
 // Get request of getting all boards owned by user at trello.
-app.get("/getBoards", function(req, res) {
+app.get("/getBoards", isAuthenticated, function(req, res) {
     getAllBoards(req, res);
 });
 
 // Getting all lists appointed to a board and sending all the lists back to client-end
-app.get("/getLists/:boardId", function(req, res) {
+app.get("/getLists/:boardId", isAuthenticated, function(req, res) {
     var boardId = req.params.boardId;
     if (boardId !== "none" || boardId === undefined) {
         t.get("/1/boards/" + boardId + "/lists", function(err, data) {
@@ -163,7 +292,7 @@ app.get("/getLists/:boardId", function(req, res) {
 });
 
 // Get all toggl projects for the toggl user
-app.get("/getTogglProjects", function(req, res) {
+app.get("/getTogglProjects", isAuthenticated, function(req, res) {
     getTogglProjects(res);
 });
 
@@ -211,30 +340,37 @@ var runNewCronJob = function(notifierid) {
 
         var counterX = 0;
 
-        Boards.forEach(function(board, index) {
-            t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity", function(err, data) {
-                var theBoard = {
-                    boardId: board,
-                    lists: [],
-                    cards: []
-                };
+        Boards.forEach(function(board) {
+            limiter.removeTokens(1, function() {
+                t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity,idChecklists", function(err, data) {
+                    var theBoard = {
+                        boardId: board,
+                        lists: [],
+                        cards: [],
+                        checklists: []
+                    };
 
-                data.forEach(function(entry, index) {
-                    if (!arrayContains(entry.idList, theBoard.lists)) {
-                        theBoard.lists.push(entry.idList);
+                    data.forEach(function(entry) {
+                        if (!arrayContains(entry.idList, theBoard.lists)) {
+                            theBoard.lists.push(entry.idList);
+                        }
+
+                        // Here we got all boards, and their cards and lists.
+                        theBoard.cards.push(entry);
+
+                        // Pushing the array of checklists to theBoard.
+                        theBoard.checklists.push(entry.idChecklists)
+
+                    });
+
+                    boardData.push(theBoard);
+                    counterX++;
+
+                    if (counterX === Boards.length) {
+                        console.log("|A| Got all boards and their cards");
+                        getAllCardsForEachUser(myNotifiers);
                     }
-
-                    // Here we got all boards, and their cards and lists.
-                    theBoard.cards.push(entry);
-
                 });
-                boardData.push(theBoard);
-                counterX++;
-
-                if (counterX === Boards.length) {
-                    console.log("|A| Got all boards and their cards");
-                    getAllCardsForEachUser(myNotifiers);
-                }
             });
         });
 
@@ -315,9 +451,19 @@ var getAllCardsWithListId = function(notify, listId) {
 
                     // Add card to list if days since cardActivityTime is less than daysBetweenNotify
                     if (numDaysBetween(today, cardActivityTime) < getDaysBetweenNotifiers(notify)) {
-                        cards.push(card.name);
-                    }
+                        var myCard = {
+                            name: card.name,
+                            checklists: []
+                        }
 
+                        card.idChecklists.forEach(function(checklistId, i) {
+                            fetchChecklist(checklistId, function(checklist) {
+                                myCard.checklists.push(checklist);
+                            });
+                        });
+
+                        cards.push(myCard);
+                    }
                 }
             });
         }
@@ -325,6 +471,34 @@ var getAllCardsWithListId = function(notify, listId) {
 
     return cards;
 
+};
+
+// Fetch checklist data from checklistId
+var fetchChecklist = function(checklistId, callback) {
+    limiter.removeTokens(1, function() {
+        t.get("/1/checklists/" + checklistId, function(err, data) {
+            if (err) {
+                throw err;
+            }
+
+            var checklist = {
+                id: data.id,
+                name: data.name,
+                checkItems: []
+            }
+
+            data.checkItems.forEach(function(dataCheckItem) {
+                var checkItem = {
+                    id: dataCheckItem.id,
+                    name: dataCheckItem.name,
+                    state: dataCheckItem.state
+                }
+                checklist.checkItems.push(checkItem);
+            });
+
+            return callback(checklist);
+        });
+    });
 };
 
 
@@ -360,26 +534,25 @@ var fetchListNames = function(userArray, listsInTotal) {
     var counter = 0;
     userArray.forEach(function(user) {
         user.lists.forEach(function(list) {
-            t.get("/1/lists/" + list.listId + "?fields=name", function(err, data) {
+            limiter.removeTokens(1, function() {
+                t.get("/1/lists/" + list.listId + "?fields=name", function(err, data) {
+                    var listObject = {
+                        listName: data.name,
+                        listId: data.id
+                    };
 
-                var listObject = {
-                    listName: data.name,
-                    listId: data.id
-                };
+                    listNames.push(listObject);
 
-                listNames.push(listObject);
+                    counter++;
 
-                counter++;
-
-                if (counter == listsInTotal) {
-                    console.log("|D| Fetched names for the remaining lists (with cards)");
-                    fetchBoardNames(userArray);
-                }
+                    if (counter == listsInTotal) {
+                        console.log("|D| Fetched names for the remaining lists (with cards)");
+                        fetchBoardNames(userArray);
+                    }
+                });
             });
         });
     });
-
-
 };
 
 
@@ -394,30 +567,35 @@ var fetchBoardNames = function(userArray) {
     };
 
     // Get all board ids out
-    t.get("/1/members/me", function(err, data) {
-        if (err) {
-            throw err;
-        }
+    limiter.removeTokens(1, function() {
+        t.get("/1/members/me", function(err, data) {
+            if (err) {
+                throw err;
+            }
 
-        // Setting the boardSize to the length of all boards
-        boardSize = data.idBoards.length;
+            // Setting the boardSize to the length of all boards
+            boardSize = data.idBoards.length;
 
-        // forEach on each board of all boards accessable by user
-        data.idBoards.forEach(function(aBoard) {
+            // forEach on each board of all boards accessable by user
+            data.idBoards.forEach(function(aBoard) {
 
-            // Setting the boardPath to /1/boards/aBoard (aBoard is a id of one of all boards)
-            // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
-            // to the client end
-            var boardPath = "/1/boards/" + aBoard;
-            t.get(boardPath, function(err, theBoard) {
-                counter++;
-                if (err) throw err;
-                var currentBoard = new Board(theBoard.id, theBoard.name);
-                boardArray.push(currentBoard);
-                if (counter === boardSize) {
-                    console.log("|E| Fetched board names");
-                    setupEmailTemplate(userArray);
-                }
+                // Setting the boardPath to /1/boards/aBoard (aBoard is a id of one of all boards)
+                // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
+                // to the client end
+                var boardPath = "/1/boards/" + aBoard;
+                limiter.removeTokens(1, function() {
+                    t.get(boardPath, function(err, theBoard) {
+                        counter++;
+
+                        if (err) throw err;
+                        var currentBoard = new Board(theBoard.id, theBoard.name);
+                        boardArray.push(currentBoard);
+                        if (counter === boardSize) {
+                            console.log("|E| Fetched board names");
+                            setupEmailTemplate(userArray);
+                        }
+                    });
+                });
             });
         });
     });
@@ -426,26 +604,21 @@ var fetchBoardNames = function(userArray) {
 
 // Setup Email Template
 var setupEmailTemplate = function(userArray, res) {
-
     userArray.forEach(function(user) {
         var emailContent = '';
 
         if (user.lists.length > 0) {
 
             emailContent += "<meta charset='UTF-8'>";
-            emailContent += "<div style='width: 100%; background-color: #F3F3F3; padding-bottom: 5%; padding-top: 5%;'>";
-            emailContent += "<table align='center' style='font-family: arial,sans-serif; background-color:#fff; margin: 0 auto; max-width: 950px;width: 95%; border-radius: 10px;'>";
+            emailContent += "<table style='width: 100%; background-color: #F3F3F3; padding-bottom: 5%; padding-top: 5%;'><tr><td>";
+            emailContent += "<table align='center' style='font-family: Helvetica,Arial,sans-serif; background-color: #fff; font-size: 14px; margin: 0 auto; width: 580px; border-radius: 10px;'>";
             emailContent += "<tbody style='background-color: #fff; margin: 0 auto; border: 1px solid #dadada;'>";
-            emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='  margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>Email-Notifier</h1><h2 style='   margin: 0 !important; padding-top: 7px;  color: #fff;font-size: 10px; text-transform: uppercase;'>Your notifier from your Trello boards</h2></th>";
+            emailContent += "<tr style='height: 125px;'>"
+            emailContent += "<th align='center' style='background-color: #0E74AF; width: 100%; margin:0 auto; border-top-left-radius: 10px; border-top-right-radius: 10px; border: 25px solid #0E74AF;'><h1 style='margin: 0 !important; color:#fff; font-size: 12px; text-transform: uppercase; padding-bottom: 7px; font-size: 20px;'>" + getBoardName(user.boardId) + "</h1><h2 style='margin: 0 !important; padding-top: 7px; color: #fff;font-size: 10px; text-transform: uppercase;'>Changes performed by Mail Notifications for Trello</h2></th></tr>";
             emailContent += "<tr>";
-            emailContent += "<td align='center' style='padding-top: 50px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>" + config.myName + " is working at " + getBoardName(user.boardId) + "</td>";
+            emailContent += "<td align='center' style='padding-top: 15px; padding-bottom: 15px; padding-left: 5%; padding-right: 5%;'><br>Here is an overview of the changes committed in your Trello boards.</td>";
             emailContent += "</tr>";
-            emailContent += "<tr>";
-            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Here is an overview of what have changed:</td>";
-            emailContent += "</tr>";
-            emailContent += "<tr>";
-            emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>From <b>" + user.since + "</b> to <b>" + combinedDate + "</b></td>";
-            emailContent += "</tr>";
+
             if (user.overallTime != null) {
                 var x = user.overallTime / 1000;
                 x /= 60;
@@ -453,43 +626,45 @@ var setupEmailTemplate = function(userArray, res) {
                 x /= 60;
                 var hours = x | 0;
                 emailContent += "<tr>";
-                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Time spent in toggl: <b>" + hours + " hours and " + minutes + " minutes.</b></td>";
+                emailContent += "<td align='center' style='padding-top: 5px; padding-bottom: 5px; padding-left: 5%; padding-right: 5%;'>Time spent in Toggl: <b>" + hours + " hours and " + minutes + " minutes.</b></td>";
                 emailContent += "</tr>";
             }
 
-            var styleColor = "";
+            var styleColor = "#000000";
 
-            // emailContent += user.usermail;
             user.lists.forEach(function(list) {
                 emailContent += "<tr><td style='padding-top: 15px; padding-bottom: 15px; padding-left: 5%; padding-right: 5%;'>";
-                emailContent += "<h2 style='  letter-spacing: 1px; text-transform: uppercase;  font-size: 14px;   border-bottom: 1px solid #F0F0F0; padding-bottom: 7px;'><font color='" + styleColor + "'>" + getListName(list.listId) + "</font></h2>";
-                emailContent += "<ul style='  margin-top: 30px;'>";
+                emailContent += "<h2 style='letter-spacing: 1px; text-transform: uppercase; font-size: 14px; border-bottom: 1px solid #F0F0F0; padding-bottom: 7px; color: " + styleColor + "'>" + getListName(list.listId) + "</h2>";
+                emailContent += "<ul>";
 
                 list.cards.forEach(function(card) {
+                    emailContent += "<li style='margin-top: 10px; margin-bottom: 10px; font-size: 14px; list-style-type: circle; color: " + styleColor + "'>" + card.name + "</li>";
 
-                    emailContent += "<li style='margin-top: 10px; margin-bottom:10px; font-size: 14px; list-style-type: circle;'><font color='" + styleColor + "'>" + card + "</font></li>";
-
+                    card.checklists.forEach(function(checklist) {
+                        emailContent += "<table style='width: 100%; margin-top: 5px;'>";
+                        emailContent += "<tr><td style='font-family: Helvetica,Arial,sans-serif; font-size: 14px; margin: 0; padding-left: 2.5%; color: " + styleColor + ";'>" + checklist.name + "</td></tr>"
+                        checklist.checkItems.forEach(function(checkItem) {
+                            var state = "&#9633;";
+                            if (checkItem.state === "complete") {
+                                state = "&#10003;";
+                            }
+                            emailContent += "<tr><td style='font-family: Helvetica,Arial,sans-serif; font-size: 14px; padding: 5px 0px 5px 5%;'>" + state + " " + checkItem.name + "</td></tr>";
+                        });
+                        emailContent += "</table>";
+                    });
                 });
-
-                emailContent += "</ul>";
-
+                emailContent += "</ul></td></tr>";
             });
 
-            emailContent += "</td></tr>";
-
+            emailContent += "<br>";
             emailContent += "</tbody>";
-            emailContent += "<tr align='center'><td style=' background-color: #0e74af; color: #fff; padding-bottom: 20px;padding-top: 20px;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;   font-size: 11px;'>Thank you for using our plugin</td></tr>";
+            emailContent += "<tr align='center'><td style=' background-color: #0E74AF; color: #fff; padding-bottom: 20px;padding-top: 20px;border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; font-size: 11px;'><strong>Thank you for using our plugin</td></tr>";
             emailContent += "</table>";
-            emailContent += "</div>";
-
-            // users += user.lists;
 
             sendEmailToUser(emailContent, user.usermail, user._id, user.resend);
 
         }
-
     });
-
 };
 
 // Update lastNotify in notify when sending emails
@@ -553,30 +728,22 @@ var getAllBoards = function(req, res) {
     var boardSize = 0;
 
     // Get all board ids out
-    t.get("/1/members/me", function(err, data) {
+    t.get("/1/members/me?fields=username,fullName,url&boards=all&board_fields=name", function(err, data) {
         if (err) {
             throw err;
         }
 
         // Setting the boardSize to the length of all boards
-        boardSize = data.idBoards.length;
+        boardSize = data.boards.length;
 
         // forEach on each board of all boards accessable by user
-        data.idBoards.forEach(function(aBoard) {
-
-            // Setting the boardPath to /1/boards/aBoard (aBoard is a id of one of all boards)
-            // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
-            // to the client end
-            var boardPath = "/1/boards/" + aBoard;
-            t.get(boardPath, function(err, theBoard) {
-                counter++;
-                if (err) throw err;
-                var currentBoard = new Board(theBoard.id, theBoard.name);
-                boardArray.push(currentBoard);
-                if (counter === boardSize) {
-                    res.send(boardArray);
-                }
-            });
+        data.boards.forEach(function(aBoard) {
+            counter++;
+            var currentBoard = new Board(aBoard.id, aBoard.name);
+            boardArray.push(currentBoard);
+            if (counter === boardSize) {
+                res.send(boardArray);
+            }
         });
     });
 };
