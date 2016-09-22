@@ -8,14 +8,18 @@ var listNames = [];
 var boardArray = [];
 
 // Requirements of Modules
-//  Trello module
-var Trello = require("node-trello");
+var Trello = require("./controller/trello.js");
 var nodemailer = require("nodemailer");
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/mailnotifiersForTrello');
+
+var connectionString = "mongodb://localhost/mailnotifiersForTrello";
+
+mongoose.connect(connectionString);
+var db = mongoose.connection;
+db.once('open', function () { console.log('MongoDB connection successful.'); });
 
 var http = require("https");
 
@@ -55,7 +59,7 @@ var NotifierSchema = new mongoose.Schema({
 // Setting the Schema as a Model in Mongoose
 var Notifier = mongoose.model('Notifier', NotifierSchema);
 
-//  Making the "t" object (this object access the api at trello) (based on Trello module) - with token key and secret key from Trello
+//  Making the "t" object (this object access the api at trello) - with token key and secret key from Trello
 var t = new Trello(config.trelloApplicationKey, config.trelloUserToken);
 
 // Creating a transporter for sending mails through nodemailer
@@ -373,7 +377,6 @@ var runNewCronJob = function(notifierid) {
                 });
             });
         });
-
     });
     boardData = [];
 };
@@ -477,10 +480,6 @@ var getAllCardsWithListId = function(notify, listId) {
 var fetchChecklist = function(checklistId, callback) {
     limiter.removeTokens(1, function() {
         t.get("/1/checklists/" + checklistId, function(err, data) {
-            if (err) {
-                throw err;
-            }
-
             var checklist = {
                 id: data.id,
                 name: data.name,
@@ -569,10 +568,6 @@ var fetchBoardNames = function(userArray) {
     // Get all board ids out
     limiter.removeTokens(1, function() {
         t.get("/1/members/me", function(err, data) {
-            if (err) {
-                throw err;
-            }
-
             // Setting the boardSize to the length of all boards
             boardSize = data.idBoards.length;
 
@@ -582,24 +577,20 @@ var fetchBoardNames = function(userArray) {
                 // Setting the boardPath to /1/boards/aBoard (aBoard is a id of one of all boards)
                 // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
                 // to the client end
-                var boardPath = "/1/boards/" + aBoard;
                 limiter.removeTokens(1, function() {
-                    t.get(boardPath, function(err, theBoard) {
+                    t.get("/1/boards/" + aBoard, function(err, theBoard) {
                         counter++;
-
-                        if (err) throw err;
                         var currentBoard = new Board(theBoard.id, theBoard.name);
                         boardArray.push(currentBoard);
                         if (counter === boardSize) {
                             console.log("|E| Fetched board names");
                             setupEmailTemplate(userArray);
                         }
-                    });
+                    });                    
                 });
             });
         });
     });
-
 };
 
 // Setup Email Template
@@ -690,7 +681,7 @@ var sendEmailToUser = function(emailContent, email, userId, resend) {
     var mailOptions = {
         from: "" + config.myName + " <" + config.myEmail + ">", // sender address
         to: "" + email, // list of receivers
-        subject: "Changes in week: " + weekno + " - " + year, // Subject line
+        subject: "Changes in week:" + weekno + " - " + year, // Subject line
         html: emailContent // html body
     };
 
@@ -727,7 +718,6 @@ var getAllBoards = function(req, res) {
     var counter = 0;
     var boardSize = 0;
 
-    // Get all board ids out
     t.get("/1/members/me?fields=username,fullName,url&boards=all&board_fields=name", function(err, data) {
         if (err) {
             throw err;
@@ -747,7 +737,6 @@ var getAllBoards = function(req, res) {
         });
     });
 };
-
 
 var getListName = function(listIdx) {
     var theName;
@@ -827,8 +816,7 @@ var getTogglProjects = function(callback) {
         req.abort();
     });
 
-    req.setTimeout(5000);
-
+    req.setTimeout(10000);
     req.end();
 };
 
@@ -899,7 +887,6 @@ var getTogglProjectSummary = function(notify, callback) {
         });
 
         req.setTimeout(10000);
-
         req.end();
     };
 };
