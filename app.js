@@ -16,7 +16,6 @@ var bodyParser = require("body-parser");
 var mongoose = require('mongoose');
 
 var connectionString = "mongodb://localhost/mailnotifiersForTrello";
-
 mongoose.connect(connectionString);
 var db = mongoose.connection;
 db.once('open', function () { console.log('MongoDB connection successful.'); });
@@ -284,6 +283,10 @@ app.get("/getLists/:boardId", isAuthenticated, function(req, res) {
     var boardId = req.params.boardId;
     if (boardId !== "none" || boardId === undefined) {
         t.get("/1/boards/" + boardId + "/lists", function(err, data) {
+            if (err) {
+                throw err;
+            }
+
             if (data === undefined) {
                 res.status(400).send("No lists were found!");
             } else {
@@ -347,6 +350,10 @@ var runNewCronJob = function(notifierid) {
         Boards.forEach(function(board) {
             limiter.removeTokens(1, function() {
                 t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity,idChecklists", function(err, data) {
+                    if (err) {
+                        throw err;
+                    }
+
                     var theBoard = {
                         boardId: board,
                         lists: [],
@@ -378,6 +385,7 @@ var runNewCronJob = function(notifierid) {
             });
         });
     });
+
     boardData = [];
 };
 
@@ -480,6 +488,10 @@ var getAllCardsWithListId = function(notify, listId) {
 var fetchChecklist = function(checklistId, callback) {
     limiter.removeTokens(1, function() {
         t.get("/1/checklists/" + checklistId, function(err, data) {
+            if (err) {
+                throw err;
+            }
+
             var checklist = {
                 id: data.id,
                 name: data.name,
@@ -535,6 +547,10 @@ var fetchListNames = function(userArray, listsInTotal) {
         user.lists.forEach(function(list) {
             limiter.removeTokens(1, function() {
                 t.get("/1/lists/" + list.listId + "?fields=name", function(err, data) {
+                    if (err) {
+                        throw err;
+                    }
+
                     var listObject = {
                         listName: data.name,
                         listId: data.id
@@ -568,6 +584,10 @@ var fetchBoardNames = function(userArray) {
     // Get all board ids out
     limiter.removeTokens(1, function() {
         t.get("/1/members/me", function(err, data) {
+            if (err) {
+                throw err;
+            }
+
             // Setting the boardSize to the length of all boards
             boardSize = data.idBoards.length;
 
@@ -578,7 +598,11 @@ var fetchBoardNames = function(userArray) {
                 // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
                 // to the client end
                 limiter.removeTokens(1, function() {
-                    t.get("/1/boards/" + aBoard, function(err, theBoard) {
+                    t.get("/1/boards/" + aBoard, function(error, theBoard) {
+                        if (error) {
+                            throw error;
+                        }
+
                         counter++;
                         var currentBoard = new Board(theBoard.id, theBoard.name);
                         boardArray.push(currentBoard);
@@ -681,7 +705,7 @@ var sendEmailToUser = function(emailContent, email, userId, resend) {
     var mailOptions = {
         from: "" + config.myName + " <" + config.myEmail + ">", // sender address
         to: "" + email, // list of receivers
-        subject: "Changes in week:" + weekno + " - " + year, // Subject line
+        subject: "Changes in week: " + weekno + " - " + year, // Subject line
         html: emailContent // html body
     };
 
@@ -718,6 +742,7 @@ var getAllBoards = function(req, res) {
     var counter = 0;
     var boardSize = 0;
 
+    // Get all board ids out
     t.get("/1/members/me?fields=username,fullName,url&boards=all&board_fields=name", function(err, data) {
         if (err) {
             throw err;
@@ -816,7 +841,7 @@ var getTogglProjects = function(callback) {
         req.abort();
     });
 
-    req.setTimeout(10000);
+    req.setTimeout(30000);
     req.end();
 };
 
@@ -886,7 +911,7 @@ var getTogglProjectSummary = function(notify, callback) {
             req.abort();
         });
 
-        req.setTimeout(10000);
+        req.setTimeout(30000);
         req.end();
     };
 };
