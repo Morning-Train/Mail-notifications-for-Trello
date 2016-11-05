@@ -583,35 +583,26 @@ var fetchBoardNames = function(userArray) {
 
     // Get all board ids out
     limiter.removeTokens(1, function() {
-        t.get("/1/members/me", function(err, data) {
+        t.get("/1/members/me?fields=username,fullName,url&boards=all&board_fields=name", function(err, data) {
             if (err) {
                 throw err;
             }
 
             // Setting the boardSize to the length of all boards
-            boardSize = data.idBoards.length;
+            boardSize = data.boards.length;
 
             // forEach on each board of all boards accessable by user
-            data.idBoards.forEach(function(aBoard) {
-
+            data.boards.forEach(function(aBoard) {
                 // Setting the boardPath to /1/boards/aBoard (aBoard is a id of one of all boards)
                 // The purpose of this function is to get all names of all boards and put it into a array, and send this array back
                 // to the client end
-                limiter.removeTokens(1, function() {
-                    t.get("/1/boards/" + aBoard, function(error, theBoard) {
-                        if (error) {
-                            throw error;
-                        }
-
-                        counter++;
-                        var currentBoard = new Board(theBoard.id, theBoard.name);
-                        boardArray.push(currentBoard);
-                        if (counter === boardSize) {
-                            console.log("|E| Fetched board names");
-                            setupEmailTemplate(userArray);
-                        }
-                    });                    
-                });
+                counter++;
+                var currentBoard = new Board(aBoard.id, aBoard.name);
+                boardArray.push(currentBoard);
+                if (counter === boardSize) {
+                    console.log("|E| Fetched board names");
+                    setupEmailTemplate(userArray);
+                }
             });
         });
     });
