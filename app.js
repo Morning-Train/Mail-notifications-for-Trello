@@ -318,7 +318,6 @@ var runNewCronJob = function(notifierid) {
     // myNotifiers are the notifiers that the cronjob should handle
     var myNotifiers = [];
     Notifier.find({}, function(err, notifiers) {
-
         notifiers.forEach(function(notify) {
             // Handle the specified notify (resend functionality)
             if (notify._id == notifierid) {
@@ -347,6 +346,10 @@ var runNewCronJob = function(notifierid) {
 
         var counterX = 0;
 
+        Boards = Boards.filter(function(elem, pos) {
+            return Boards.indexOf(elem) == pos;
+        });
+        
         Boards.forEach(function(board) {
             limiter.removeTokens(1, function() {
                 t.get("/1/boards/" + board + "/cards?fields=name,idList,url,dateLastActivity,idChecklists", function(err, data) {
@@ -373,7 +376,6 @@ var runNewCronJob = function(notifierid) {
                         theBoard.checklists.push(entry.idChecklists)
 
                     });
-
                     boardData.push(theBoard);
                     counterX++;
 
@@ -393,7 +395,6 @@ var runNewCronJob = function(notifierid) {
 var getAllCardsForEachUser = function(notifiers) {
     var userArray = [];
 
-    // console.log(notifiers.length);
     var counter = 0;
 
     notifiers.forEach(function(notify) {
@@ -430,7 +431,6 @@ var getAllCardsForEachUser = function(notifiers) {
                 if (myCards.length > 0) {
                     user.lists.push(aList);
                 }
-
             });
 
             counter++;
@@ -451,6 +451,7 @@ var getAllCardsWithListId = function(notify, listId) {
     var boardId = notify.board;
 
     boardData.forEach(function(board) {
+        console.log(board);
         if (board.boardId == boardId) {
 
             board.cards.forEach(function(card) {
