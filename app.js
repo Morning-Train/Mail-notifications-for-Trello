@@ -318,6 +318,7 @@ var runNewCronJob = function(notifierid) {
     // myNotifiers are the notifiers that the cronjob should handle
     var myNotifiers = [];
     Notifier.find({}, function(err, notifiers) {
+
         notifiers.forEach(function(notify) {
             // Handle the specified notify (resend functionality)
             if (notify._id == notifierid) {
@@ -376,6 +377,7 @@ var runNewCronJob = function(notifierid) {
                         theBoard.checklists.push(entry.idChecklists)
 
                     });
+                    
                     boardData.push(theBoard);
                     counterX++;
 
@@ -451,7 +453,6 @@ var getAllCardsWithListId = function(notify, listId) {
     var boardId = notify.board;
 
     boardData.forEach(function(board) {
-        console.log(board);
         if (board.boardId == boardId) {
 
             board.cards.forEach(function(card) {
